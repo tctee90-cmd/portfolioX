@@ -12,28 +12,31 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#02020a;
-  --bg2:#05050f;
-  --bg3:#08080f;
-  --bg4:#0c0c18;
-  --b1:rgba(255,255,255,0.06);
-  --b2:rgba(255,255,255,0.1);
-  --b3:rgba(255,255,255,0.15);
-  --t1:#e8edf8;
-  --t2:rgba(255,255,255,0.4);
-  --t3:rgba(255,255,255,0.18);
-  --blue:#00d4ff;     --bd:rgba(0,212,255,0.06);  --bdd:rgba(0,212,255,0.03);
-  --green:#00e676;    --gd:rgba(0,230,118,0.06);
+  --bg:#010108;
+  --bg2:#030310;
+  --bg3:#05050e;
+  --bg4:#08081a;
+  --b1:rgba(255,255,255,0.07);
+  --b2:rgba(255,255,255,0.12);
+  --b3:rgba(255,255,255,0.2);
+  --t1:#eef2ff;
+  --t2:rgba(255,255,255,0.45);
+  --t3:rgba(255,255,255,0.2);
+  --blue:#00d4ff;     --bd:rgba(0,212,255,0.07);  --bdd:rgba(0,212,255,0.03);
+  --green:#00e676;    --gd:rgba(0,230,118,0.07);
   --red:#ff4d6d;      --rd:rgba(255,77,109,0.08);
   --amber:#ffaa00;
-  --r:8px;--rl:12px;
-  --card-border-top:1px solid var(--b1);
+  --r:8px;--rl:14px;
+  --card-border-top:1px solid rgba(255,255,255,0.18);
+  --glow-gold:rgba(200,148,0,0.35);
+  --glow-blue:rgba(0,180,255,0.25);
 }
-html{background:var(--bg);height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--t1);font-size:13px;min-height:100vh;min-height:-webkit-fill-available;height:100%}
+html{background:#010108;height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;background:#010108;color:var(--t1);font-size:13px;min-height:100vh;min-height:-webkit-fill-available;height:100%;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
+button,input,select,textarea{font-family:inherit}
 
 /* ── Inputs & selects ── */
-input,select{font-family:inherit;font-size:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-top:1px solid rgba(255,255,255,0.12);border-radius:var(--r);color:var(--t1);padding:7px 10px;outline:none;width:100%;transition:all .2s;box-shadow:inset 0 1px 0 rgba(0,0,0,0.3)}
+input,select{font-family:inherit;font-size:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-top:1px solid rgba(255,255,255,0.12);border-radius:var(--r);color:var(--t1);padding:7px 10px;outline:none;width:100%;transition:all .2s;box-shadow:inset 0 1px 0 rgba(0,0,0,0.3);text-align:center}
 input[type="date"]{-webkit-appearance:none;appearance:none;min-height:36px;color:var(--t1)}
 input:focus,select:focus{border-color:rgba(0,212,255,0.5);box-shadow:0 0 0 1px rgba(0,212,255,0.15),inset 0 1px 0 rgba(0,0,0,0.3);background:rgba(0,212,255,0.03)}
 select option{background:#08080f}
@@ -49,18 +52,32 @@ button.amb{border-color:rgba(255,170,0,0.3);color:var(--amber);background:transp
 button.sm{padding:4px 10px;font-size:11px}
 button.ghost{border-color:rgba(255,255,255,0.06);color:var(--t2);background:transparent}
 
-/* ── Cards ── */
+/* ── Cards — premium sharp glass ── */
 .card{
   position:relative;overflow:hidden;
-  background:linear-gradient(160deg,#050508 0%,#07070d 100%);
-  border:1px solid rgba(255,255,255,0.06);
-  border-top:1px solid rgba(255,255,255,0.14);
+  background:linear-gradient(160deg,rgba(12,12,20,0.97) 0%,rgba(8,8,14,0.99) 100%);
+  border:1px solid rgba(255,255,255,0.09);
+  border-top:1px solid rgba(255,255,255,0.22);
   border-radius:var(--rl);
   padding:1rem 1.125rem;
   margin-bottom:.875rem;
-  box-shadow:0 1px 0 rgba(255,255,255,0.06) inset,0 -1px 0 rgba(0,0,0,0.6) inset,0 4px 20px rgba(0,0,0,0.5);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.1) inset,
+    0 -1px 0 rgba(0,0,0,0.7) inset,
+    0 8px 32px rgba(0,0,0,0.6),
+    0 2px 8px rgba(0,0,0,0.8);
+  -webkit-font-smoothing:antialiased;
 }
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent);pointer-events:none}
+.card::before{
+  content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.45),transparent);
+  pointer-events:none;
+}
+.card::after{
+  content:'';position:absolute;inset:0;border-radius:var(--rl);
+  background:linear-gradient(160deg,rgba(255,255,255,0.025) 0%,transparent 50%);
+  pointer-events:none;
+}
 
 /* ── Tables ── */
 .tbl{width:100%;border-collapse:collapse;font-size:12px}
@@ -150,12 +167,21 @@ button.ghost{border-color:rgba(255,255,255,0.06);color:var(--t2);background:tran
 
 /* Header */
 #hd{
-  background:linear-gradient(180deg,#020208 0%,#030309 100%);
-  border-bottom:1px solid rgba(255,255,255,0.06);
+  background:linear-gradient(180deg,rgba(4,4,12,0.98) 0%,rgba(3,3,10,0.99) 100%);
+  border-bottom:1px solid rgba(255,255,255,0.07);
   padding:0 16px;
   display:flex;flex-direction:column;justify-content:center;
   position:fixed;top:0;left:0;right:0;z-index:100;
-  box-shadow:0 4px 24px rgba(0,0,0,.8),0 1px 0 rgba(255,255,255,0.04);
+  box-shadow:
+    0 1px 0 rgba(200,148,0,0.12),
+    0 6px 30px rgba(0,0,0,.9),
+    0 1px 0 rgba(255,255,255,0.05) inset;
+  -webkit-font-smoothing:antialiased;
+}
+#hd::after{
+  content:'';position:absolute;bottom:-1px;left:15%;right:15%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(200,148,0,0.25),transparent);
+  pointer-events:none;
 }
 #hd .logo{
   font-family:'Courier New',monospace;
@@ -317,8 +343,8 @@ button.ghost{border-color:rgba(255,255,255,0.06);color:var(--t2);background:tran
 .settings-btn{padding:8px 6px;background:rgba(255,255,255,0.03);border:1px solid var(--b1);border-radius:8px;color:var(--t1);font-size:11px;font-weight:500;cursor:pointer;font-family:inherit;text-align:center;min-height:34px}
 .bnav-btn:active svg{transform:scale(0.9)}
 #bottom-nav button[data-nav].active{color:var(--blue)}
-#mn{padding-bottom:80px!important;background:var(--bg);min-height:100vh}
-#ct{padding:0 16px;background:var(--bg);min-height:50vh}
+#mn{padding-bottom:80px!important;background:#010108;min-height:100vh}
+#ct{padding:0;background:var(--bg)}
 @keyframes borderPulse{
   0%,100%{opacity:0.6}
   50%{opacity:1}
@@ -331,9 +357,57 @@ button.ghost{border-color:rgba(255,255,255,0.06);color:var(--t2);background:tran
   0%{background-position:200% 0}
   100%{background-position:-200% 0}
 }
+
+/* ── Architectural sphere animations ── */
+/* Orb float — disabled per user request */
+.orb-float-0,.orb-float-1,.orb-float-2{animation:none}
+@keyframes orbGlowPulse{0%,100%{opacity:0.85}50%{opacity:1}}
+.orb-float-0 > div{animation:orbGlowPulse 4s 0s ease-in-out infinite}
+.orb-float-1 > div{animation:orbGlowPulse 5s 1.2s ease-in-out infinite}
+.orb-float-2 > div{animation:orbGlowPulse 6s 0.6s ease-in-out infinite}
+@keyframes orbPulse{0%,100%{opacity:0.5}50%{opacity:1}}
+@keyframes coreBreath{0%,100%{opacity:0.7}50%{opacity:1}}
+@keyframes orbRingScan{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes svgShine0{0%,100%{transform:translateX(-140%) rotate(38deg)}50%{transform:translateX(200%) rotate(38deg)}}
+@keyframes svgShine1{0%,100%{transform:translateX(200%) rotate(38deg)}50%{transform:translateX(-140%) rotate(38deg)}}
+@keyframes svgShine2{0%,60%{transform:translateX(-140%) rotate(38deg)}80%{transform:translateX(200%) rotate(38deg)}100%{transform:translateX(-140%) rotate(38deg)}}
+/* ── Nav — champagne gold minimal ── */
+.bnav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:none;cursor:pointer;padding:8px 4px;color:rgba(255,255,255,0.28);font-size:7.5px;font-weight:400;letter-spacing:.5px;text-transform:uppercase;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;transition:all 0.22s ease;position:relative;flex:1}
+.bnav-btn svg{transition:all 0.22s ease;opacity:0.3}
+.bnav-btn.active{color:rgba(200,160,60,0.9)}
+.bnav-btn.active svg{opacity:1;transform:translateY(-1px);filter:drop-shadow(0 0 4px rgba(200,144,30,0.5))}
+.bnav-btn.active::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:rgba(200,160,60,0.8);box-shadow:0 0 6px rgba(200,144,30,0.6)}
+.bnav-btn:active svg{transform:scale(0.88)}
+
+/* ── Metric card shine ── */
+.metric-card-premium{
+  position:relative;overflow:hidden;
+  background:rgba(255,255,255,0.025);
+  border-top:1px solid rgba(255,255,255,0.1);
+  border-right:1px solid rgba(255,255,255,0.04);
+}
+.metric-card-premium::before{
+  content:'';position:absolute;top:0;left:15%;right:15%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(200,160,60,0.35),transparent);
+  pointer-events:none;
+}
 .pv-hide{display:none}
-body.privacy-on .pv-val{display:none!important}
-body.privacy-on .pv-hide{display:inline!important}
+/* Net worth number — no layout shift on privacy toggle */
+.pv-networth-wrap{position:relative;display:block;min-height:1.05em}
+.pv-networth-wrap .pv-val{visibility:visible;display:block}
+.pv-networth-wrap .pv-hide{display:block!important;position:absolute;top:0;left:0;visibility:hidden;white-space:nowrap;pointer-events:none}
+body.privacy-on .pv-networth-wrap .pv-val{visibility:hidden}
+body.privacy-on .pv-networth-wrap .pv-hide{visibility:visible}
+
+/* ── PRIVACY MODE ── */
+body.privacy-on .pv-val:not(.pv-networth-wrap .pv-val){display:none!important}
+body.privacy-on .pv-hide:not(.pv-networth-wrap .pv-hide){display:block!important}
+body.privacy-on span.pv-hide:not(.pv-networth-wrap .pv-hide){display:inline!important}
+body.privacy-on .orb-num.pv-val{display:none!important}
+body.privacy-on .orb-num.pv-hide{display:block!important}
+/* SVG text privacy */
+body.privacy-on svg .pv-val{display:block!important;visibility:hidden!important}
+body.privacy-on svg .pv-hide{display:block!important;visibility:visible!important}
 /* Blur ALL financial numbers across all tabs */
 body.privacy-on .pv-num,
 body.privacy-on .kv,
@@ -358,19 +432,29 @@ body.privacy-on .kc > div:last-child *{
 /* Blur inline currency values, % badges, bold numbers throughout */
 body.privacy-on #mn span[style*="font-size:18px"],
 body.privacy-on #mn span[style*="font-size:22px"],
+body.privacy-on #mn span[style*="font-size:26px"],
 body.privacy-on #mn div[style*="font-size:18px"],
 body.privacy-on #mn div[style*="font-size:22px"],
+body.privacy-on #mn div[style*="font-size:26px"],
+body.privacy-on #mn div[style*="font-size:20px"],
+body.privacy-on #mn span[style*="font-size:20px"],
 body.privacy-on #mn span[style*="font-size:10px"][style*="color"],
 body.privacy-on #mn span[style*="font-weight:600"],
 body.privacy-on #mn span[style*="font-weight:700"],
 body.privacy-on #mn span[style*="font-weight:800"],
+body.privacy-on #mn span[style*="font-weight:900"],
 body.privacy-on #mn div[style*="font-weight:600"],
 body.privacy-on #mn div[style*="font-weight:700"],
 body.privacy-on #mn div[style*="font-weight:800"],
+body.privacy-on #mn div[style*="font-weight:900"],
 body.privacy-on #mn span[style*="color:var(--green)"],
 body.privacy-on #mn span[style*="color:var(--red)"],
 body.privacy-on #mn span[style*="color:#4caf"],
-body.privacy-on #mn span[style*="color:#f060"]{
+body.privacy-on #mn span[style*="color:#f060"],
+body.privacy-on #mn span[style*="color:#00e676"],
+body.privacy-on #mn span[style*="color:#ff4d6d"],
+body.privacy-on #mn div[style*="color:#00e676"],
+body.privacy-on #mn div[style*="color:#ff4d6d"]{
   color:transparent!important;
   text-shadow:0 0 7px rgba(180,180,180,0.6);
   filter:blur(5px);
@@ -380,7 +464,7 @@ body.privacy-on #mn span[style*="color:#f060"]{
 /* Tab bar — fixed below header */
 #tb-wrap{background:rgba(2,2,10,0.98);border-bottom:1px solid rgba(255,255,255,0.05);position:fixed;left:0;right:0;z-index:99;backdrop-filter:blur(10px);}
 
-#mn{max-width:1300px;margin:0 auto;padding:16px 16px 60px;background:var(--bg)}
+#mn{max-width:1300px;margin:0 auto;padding:0 0 60px;background:#010108}
 #date-bar{font-size:12px;color:rgba(255,255,255,0.5);background:rgba(2,2,10,0.98)!important;}
 
 /* Back button */
@@ -443,44 +527,41 @@ body.privacy-on #mn span[style*="color:#f060"]{
 </div>
 <input type="file" id="welcome-restore-input" accept=".json" style="display:none" onchange="doWelcomeRestore(event)">
 <div id="hd">
-  <div style="display:flex;align-items:center;width:100%;min-height:90px;flex-wrap:nowrap">
-    <!-- Left: Logo centred -->
-    <div style="display:flex;flex-direction:column;justify-content:center;align-items:center;flex:1;padding-right:0">
-      <div class="logo" id="logo-row" style="flex-direction:row;align-items:center;gap:6px;display:inline-flex">
-        <!-- Hexagon gem icon -->
-        <svg width="30" height="30" viewBox="0 0 26 26" style="flex-shrink:0;animation:gemSpin 6s linear infinite;filter:drop-shadow(0 0 6px #00d4ff) drop-shadow(0 0 12px rgba(0,150,255,0.4))">
-          <polygon points="13,2 22,7 22,19 13,24 4,19 4,7" fill="none" stroke="url(#gemGrad)" stroke-width="1.5"/>
-          <polygon points="13,6 19,9.5 19,16.5 13,20 7,16.5 7,9.5" fill="rgba(0,212,255,0.08)" stroke="rgba(0,212,255,0.3)" stroke-width="0.5"/>
-          <line x1="13" y1="2" x2="13" y2="24" stroke="rgba(0,212,255,0.15)" stroke-width="0.5"/>
-          <line x1="4" y1="7" x2="22" y2="19" stroke="rgba(0,212,255,0.15)" stroke-width="0.5"/>
-          <line x1="22" y1="7" x2="4" y2="19" stroke="rgba(0,212,255,0.15)" stroke-width="0.5"/>
-          <circle cx="13" cy="13" r="2" fill="#00d4ff" opacity="0.9"/>
-          <defs>
-            <linearGradient id="gemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#00fff0"/>
-              <stop offset="50%" stop-color="#0088ff"/>
-              <stop offset="100%" stop-color="#6600ff"/>
-            </linearGradient>
-          </defs>
-        </svg>
-        <!-- PORTFOLIO text with glitch effect -->
-        <span id="logo-text" style="font-family:'Courier New',monospace;font-size:18px;font-weight:700;letter-spacing:4px;background:linear-gradient(90deg,#e0f0ff,#00d4ff,#ffffff,#00d4ff,#e0f0ff);background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:portfolioShimmer 4s linear infinite">PORTFOLIO</span>
-        <!-- X with energy burst -->
-        <span id="logo-x" style="font-family:'Courier New',monospace;display:inline-block;font-size:22px;font-weight:900;font-style:normal;background:linear-gradient(135deg,#ffe566,#ff9900,#ff4400);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:xPulse 2s ease-in-out infinite;filter:drop-shadow(0 0 4px rgba(255,140,0,0.8))">_X</span>
+  <div style="display:flex;align-items:center;width:100%;min-height:60px;flex-wrap:nowrap">
+    <!-- Logo row: icon + PORTFOLIO_X + equalizer + date/time all in one line -->
+    <div style="display:flex;align-items:center;flex:1;gap:8px;padding:0 2px;overflow:hidden">
+      <!-- Hexagon gem icon -->
+      <svg width="26" height="26" viewBox="0 0 26 26" style="flex-shrink:0;animation:gemSpin 6s linear infinite;filter:drop-shadow(0 0 6px #00d4ff)">
+        <polygon points="13,2 22,7 22,19 13,24 4,19 4,7" fill="none" stroke="url(#gemGrad)" stroke-width="1.5"/>
+        <polygon points="13,6 19,9.5 19,16.5 13,20 7,16.5 7,9.5" fill="rgba(0,212,255,0.08)" stroke="rgba(0,212,255,0.3)" stroke-width="0.5"/>
+        <circle cx="13" cy="13" r="2" fill="#00d4ff" opacity="0.9"/>
+        <defs>
+          <linearGradient id="gemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#00fff0"/><stop offset="50%" stop-color="#0088ff"/><stop offset="100%" stop-color="#6600ff"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <!-- PORTFOLIO_X text -->
+      <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
+        <span id="logo-text" style="font-family:'Courier New',monospace;font-size:16px;font-weight:700;letter-spacing:3px;background:linear-gradient(90deg,#e0f0ff,#00d4ff,#ffffff,#00d4ff,#e0f0ff);background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:portfolioShimmer 4s linear infinite">PORTFOLIO</span>
+        <span id="logo-x" style="font-family:'Courier New',monospace;display:inline-block;font-size:18px;font-weight:900;background:linear-gradient(135deg,#ffe566,#ff9900,#ff4400);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:xPulse 2s ease-in-out infinite;filter:drop-shadow(0 0 4px rgba(255,140,0,0.8))">_X</span>
       </div>
-      <div id="scan-line-wrap" style="display:inline-flex;align-items:center;gap:3px;margin-top:6px;justify-content:center">
-        <span id="eq-date" style="font-family:'Courier New',monospace;font-size:10px;color:rgba(220,235,255,0.75);letter-spacing:1px;margin-right:5px;font-weight:700"></span>
-        <div style="width:3px;height:10px;background:#00d4ff;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0s;box-shadow:0 0 5px #00d4ff"></div>
-        <div style="width:3px;height:18px;background:#00d4ff;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0.1s;box-shadow:0 0 5px #00d4ff"></div>
-        <div style="width:3px;height:8px;background:#00aaff;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0.2s"></div>
-        <div style="width:3px;height:22px;background:#00d4ff;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0.3s;box-shadow:0 0 8px #00d4ff"></div>
-        <div style="width:3px;height:12px;background:#00aaff;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0.4s"></div>
-        <div style="width:3px;height:20px;background:#00d4ff;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0.5s;box-shadow:0 0 5px #00d4ff"></div>
-        <div style="width:3px;height:10px;background:#ff9900;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0.6s;box-shadow:0 0 5px #ff9900"></div>
-        <div style="width:3px;height:24px;background:#ff9900;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0.7s;box-shadow:0 0 8px #ff9900"></div>
-        <div style="width:3px;height:14px;background:#ff6600;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0.8s;box-shadow:0 0 5px #ff6600"></div>
-        <div style="width:3px;height:9px;background:#ff4400;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0.9s"></div>
-        <span id="eq-time" style="font-family:'Courier New',monospace;font-size:10px;color:rgba(220,235,255,0.75);letter-spacing:1px;margin-left:5px;font-weight:700"></span>
+      <!-- Equalizer bars center, date/time far right -->
+      <div id="scan-line-wrap" style="display:inline-flex;align-items:center;gap:2px;flex:1;justify-content:flex-end">
+        <div style="width:2px;height:8px;background:#00d4ff;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0s;box-shadow:0 0 5px #00d4ff"></div>
+        <div style="width:2px;height:14px;background:#00d4ff;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0.1s;box-shadow:0 0 5px #00d4ff"></div>
+        <div style="width:2px;height:7px;background:#00aaff;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0.2s"></div>
+        <div style="width:2px;height:18px;background:#00d4ff;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0.3s;box-shadow:0 0 8px #00d4ff"></div>
+        <div style="width:2px;height:10px;background:#00aaff;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0.4s"></div>
+        <div style="width:2px;height:16px;background:#00d4ff;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0.5s;box-shadow:0 0 5px #00d4ff"></div>
+        <div style="width:2px;height:8px;background:#ff9900;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0.6s;box-shadow:0 0 5px #ff9900"></div>
+        <div style="width:2px;height:20px;background:#ff9900;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0.7s;box-shadow:0 0 8px #ff9900"></div>
+        <div style="width:2px;height:12px;background:#ff6600;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0.8s;box-shadow:0 0 5px #ff6600"></div>
+        <div style="width:2px;height:7px;background:#ff4400;border-radius:1px;animation:barPulse 1.2s ease-in-out infinite;animation-delay:0.9s"></div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;margin-left:8px;flex-shrink:0">
+          <span id="eq-date" style="font-family:'Courier New',monospace;font-size:8.5px;color:rgba(220,235,255,0.75);letter-spacing:1px;font-weight:700;white-space:nowrap;line-height:1.2"></span>
+          <span id="eq-time" style="font-family:'Courier New',monospace;font-size:8.5px;color:rgba(220,235,255,0.75);letter-spacing:1px;font-weight:700;white-space:nowrap;line-height:1.2"></span>
+        </div>
       </div>
     </div>
     <!-- Right: hidden buttons only -->
@@ -514,7 +595,13 @@ body.privacy-on #mn span[style*="color:#f060"]{
   </div>
 </div>
 <div id="tb-wrap" style="display:none"></div>
-<div id="date-bar" style="display:none;position:fixed;left:0;right:0;z-index:98;background:rgba(255,255,255,0.03);border-bottom:1px solid var(--b1);padding:.4rem .75rem;font-size:12px;text-align:center;"></div>
+<div id="date-bar" style="display:none;position:fixed;left:0;right:0;z-index:98;
+  background:rgba(4,4,12,0.95);
+  border-bottom:1px solid rgba(255,255,255,0.07);
+  box-shadow:0 1px 0 rgba(200,148,0,0.08),0 4px 20px rgba(0,0,0,0.5);
+  padding:.4rem .75rem;font-size:12px;text-align:center;
+  -webkit-font-smoothing:antialiased;
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)"></div>
 <div id="grand-wrap" style="display:none;position:fixed;left:0;right:0;z-index:9;padding:0 16px"></div>
 <div id="mn">
   <div id="grand-spacer" style="display:none"></div>
@@ -802,7 +889,7 @@ function triggerPieImg(pfId,ccy){const inp=document.createElement('input');inp.t
 function removePieImg(pfId,ccy){delete S.pieImages[pfId+'_'+ccy];save();renderContent();}
 
 // ── Portfolio tabs with drag-to-reorder ────────────────────────────────────────
-const TAB_LABELS={dashboard:'Dashboard',overview:'Overview',transactions:'Transactions',options:'Transactions',deposits:'Cash Flow',journey:'Journey'};
+const TAB_LABELS={dashboard:'Dashboard',overview:'Overview',transactions:'Transactions',options:'Options',deposits:'Cash Flow',journey:'Journey'};
 const TAB_ICONS={dashboard:'',overview:'',transactions:'',options:'',deposits:'',journey:''};
 function renderTabMenu(){
   const dd=document.getElementById('tab-menu-dropdown');
@@ -1118,225 +1205,514 @@ function movePf(idx,dir){
 
 
 function renderDashboard(){
+  if(!S||!S.portfolios||!S.portfolios.length)return '<div style="text-align:center;padding:2rem;color:rgba(180,140,50,0.4)">No portfolios yet.</div>';
+
+  const allCcysSet=new Set();const gT={};
+  S.portfolios.forEach(function(pf0){
+    const sum=getSummary(pf0);
+    [...Object.keys(sum.mktVal),...Object.keys(sum.divs)].forEach(c=>allCcysSet.add(c));
+    [...allCcysSet].forEach(function(ccy){
+      if(!gT[ccy])gT[ccy]={mv:0,co:0,u:0,d:0,r:0,pf:0,cash:0};
+      gT[ccy].mv+=(sum.mktVal[ccy]||0);gT[ccy].co+=(sum.cost[ccy]||0);
+      gT[ccy].u+=(sum.unreal[ccy]||0);gT[ccy].d+=(sum.divs[ccy]||0);
+      gT[ccy].r+=(sum.realized[ccy]||0);gT[ccy].pf+=(sum.platformFees[ccy]||0);
+      gT[ccy].cash+=((pf0.cashBalances&&pf0.cashBalances[ccy])||0);
+    });
+  });
   const CCY_ORDER=['MYR','SGD','USD'];
-  const grandTotals={};
-
-  S.portfolios.forEach(function(pf0){
-    const sum=getSummary(pf0);
-    const rawCcys=[...new Set([...Object.keys(sum.mktVal),...Object.keys(sum.divs)])].filter(Boolean);
-    rawCcys.forEach(function(ccy){
-      if(!grandTotals[ccy])grandTotals[ccy]={mv:0,co:0,u:0,d:0,r:0,pf:0};
-      grandTotals[ccy].mv+=(sum.mktVal[ccy]||0);
-      grandTotals[ccy].co+=(sum.cost[ccy]||0);
-      grandTotals[ccy].u+=(sum.unreal[ccy]||0);
-      grandTotals[ccy].d+=(sum.divs[ccy]||0);
-      grandTotals[ccy].r+=(sum.realized[ccy]||0);
-      grandTotals[ccy].pf+=(sum.platformFees[ccy]||0);
-    });
-  });
-
-  // Add cash balances per CCY to grand totals
-  S.portfolios.forEach(function(pf0){
-    Object.entries(pf0.cashBalances||{}).forEach(function([ccy,v]){
-      if(!grandTotals[ccy])grandTotals[ccy]={mv:0,co:0,u:0,d:0,r:0,cash:0};
-      grandTotals[ccy].cash=(grandTotals[ccy].cash||0)+(+v||0);
-    });
-  });
-  // Also ensure cash key exists on all
-  Object.keys(grandTotals).forEach(function(ccy){if(!grandTotals[ccy].cash)grandTotals[ccy].cash=0;});
-
-  const allCcys=[...CCY_ORDER.filter(function(c){return grandTotals[c];}),...Object.keys(grandTotals).filter(function(c){return!CCY_ORDER.includes(c);})];
-
-  // Pre-compute grandMYR for allocation %
-  let grandMYR=0;
-  allCcys.forEach(function(ccy){const g=grandTotals[ccy];grandMYR+=toMYR((g.mv||0)+(g.cash||0),ccy);});
-
-  const summaryCcyCards=S.portfolios.map(function(pf0){
-    const sum=getSummary(pf0);
-    const col=pf0.color||'#00d4ff';
-
-    // Compute MYR totals across all CCYs for this portfolio
-    let pfMYR=0,pfInvested=0,pfPnl=0;
-    const pfCcys=[...new Set([...Object.keys(sum.mktVal),...Object.keys(sum.divs)])].filter(Boolean);
-    pfCcys.forEach(function(ccy){
-      const mv=sum.mktVal[ccy]||0;
-      const cash=(pf0.cashBalances&&pf0.cashBalances[ccy])||0;
-      const co=sum.cost[ccy]||0;
-      const u=sum.unreal[ccy]||0,d=sum.divs[ccy]||0,r=sum.realized[ccy]||0,pfee=sum.platformFees[ccy]||0;
-      pfMYR+=toMYR(mv+cash,ccy);
-      pfInvested+=toMYR(co,ccy);
-      pfPnl+=toMYR(Math.round((u+d+r-pfee)*100)/100,ccy);
-    });
-
-    const pfPnlPct=pfInvested>0?pfPnl/pfInvested*100:null;
-    const pfPnlColor=pfPnl>=0?'var(--green)':'var(--red)';
-    const barW=pfInvested>0?Math.min(Math.abs(pfMYR/pfInvested)*100,100):0;
-    const allocPct=grandMYR>0?pfMYR/grandMYR*100:0;
-
-    return '<div onclick="goPortfolio(\''+pf0.id+'\')" style="cursor:pointer;position:relative;overflow:hidden;'
-      +'background:linear-gradient(160deg,#06040f 0%,#080614 30%,#04080f 60%,#080610 100%);'
-      +'border-radius:16px;padding:.9rem 1rem .85rem;margin-bottom:1rem;margin-left:-16px;margin-right:-16px;'
-      +'border:1.5px solid rgba(255,255,255,0.15);'
-      +'box-shadow:0 0 0 1px rgba(255,255,255,0.15),0 1px 0 rgba(255,255,255,0.18) inset,0 8px 32px rgba(0,0,0,0.7);">'
-      +'<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6),rgba(255,255,255,0.9),rgba(255,255,255,0.6),transparent);box-shadow:0 0 10px rgba(255,255,255,0.4);pointer-events:none"></div>'
-      +'<div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 40% at 50% -10%,rgba(255,255,255,0.04),transparent 60%);pointer-events:none"></div>'
-      +'<div style="position:absolute;inset:0;background:linear-gradient(105deg,rgba(255,255,255,0.02) 0%,transparent 30%,rgba(255,255,255,0.02) 50%,transparent 70%,rgba(255,255,255,0.02) 100%);animation:holoBG 8s ease-in-out infinite alternate;pointer-events:none"></div>'
-      +'<div style="position:absolute;top:8px;left:0;bottom:8px;width:3px;background:linear-gradient(180deg,transparent,rgba(255,255,255,0.6) 20%,#fff 50%,rgba(255,255,255,0.6) 80%,transparent);border-radius:0 2px 2px 0;box-shadow:0 0 8px rgba(255,255,255,0.7),0 0 20px rgba(255,255,255,0.3);animation:rodPulse 3s ease-in-out infinite;pointer-events:none"></div>'
-      +'<div style="position:absolute;left:0;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 6px #fff,0 0 12px rgba(255,255,255,0.6);animation:particleDrift 3s ease-in-out infinite;pointer-events:none"></div>'
-      +'<div style="position:absolute;top:0;left:0;width:16px;height:16px;border-top:2px solid rgba(255,255,255,0.8);border-left:2px solid rgba(255,255,255,0.8);border-radius:14px 0 0 0;pointer-events:none;animation:cornerPulse 3s ease-in-out infinite"></div>'
-      +'<div style="position:absolute;top:0;right:0;width:12px;height:12px;border-top:1.5px solid rgba(255,255,255,0.5);border-right:1.5px solid rgba(255,255,255,0.5);pointer-events:none"></div>'
-      +'<div style="position:absolute;bottom:0;left:0;width:12px;height:12px;border-bottom:1.5px solid rgba(255,255,255,0.3);border-left:1.5px solid rgba(255,255,255,0.3);border-radius:0 0 0 14px;pointer-events:none"></div>'
-      +'<div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-bottom:1.5px solid rgba(255,255,255,0.25);border-right:1.5px solid rgba(255,255,255,0.25);border-radius:0 0 14px 0;pointer-events:none"></div>'
-      +'<div style="position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6),rgba(255,255,255,0.9),rgba(255,255,255,0.6),transparent);animation:scanLine 5s ease-in-out infinite;pointer-events:none;box-shadow:0 0 6px rgba(255,255,255,0.5)"></div>'
-      +'<div style="position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);animation:scanLine2 5s ease-in-out infinite;pointer-events:none"></div>'
-      +'<div style="position:absolute;top:0;left:-120%;width:70%;height:100%;background:linear-gradient(108deg,transparent 42%,rgba(255,255,255,0.05) 50%,transparent 58%);animation:shimmerSweep 7s ease-in-out infinite;pointer-events:none;transform:skewX(-6deg)"></div>'
-      +'<div style="position:absolute;bottom:0;left:25%;right:25%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);box-shadow:0 0 8px rgba(255,255,255,0.2);animation:borderPulse 4s ease-in-out infinite;pointer-events:none"></div>'
-      +'<div style="position:relative;z-index:1;padding-left:10px">'
-      // Header: portfolio name + dot + MYR value
-      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.75rem">'
-      +'<div style="display:flex;align-items:center;gap:8px">'
-      +'<span style="display:inline-flex;width:10px;height:10px;border-radius:50%;background:'+col+';box-shadow:0 0 8px '+col+';flex-shrink:0"></span>'
-      +'<div>'
-      +'<div style="font-size:9px;letter-spacing:1px;font-weight:700;color:rgba(255,255,255,0.55);font-family:Courier New,monospace;text-transform:uppercase">'+pf0.name+' PORTFOLIO VALUE</div>'
-      +'<div style="font-size:8px;color:rgba(255,255,255,0.25)">'+allocPct.toFixed(1)+'% of total · MYR equivalent</div>'
-      +'</div>'
-      +'</div>'
-      +'<div style="text-align:right">'
-      +'<span class="pv-val" style="font-size:20px;font-weight:900;color:#fff;letter-spacing:-0.5px;white-space:nowrap;text-shadow:0 0 20px rgba(255,255,255,0.4),0 0 40px '+col+'66">RM '+pfMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})+'</span>'
-      +'<span class="pv-hide" style="font-size:20px;font-weight:800;color:#fff;letter-spacing:2px">••••</span>'
-      +'</div>'
-      +'</div>'
-      // Progress bar
-      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:.75rem">'
-      +'<div style="flex:1;height:3px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden">'
-      +'<div style="height:100%;width:'+barW.toFixed(1)+'%;background:linear-gradient(90deg,'+col+',#fff,'+col+');background-size:200% 100%;border-radius:2px;box-shadow:0 0 8px '+col+'88;animation:barShimmer 2s linear infinite"></div>'
-      +'</div>'
-      +'<div style="font-size:7px;color:rgba(255,255,255,0.2);letter-spacing:1px;white-space:nowrap;font-family:Courier New,monospace">MYR EQUIVALENT</div>'
-      +'</div>'
-      // Invested + P&L
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
-      +'<div><div style="font-size:8px;color:rgba(255,255,255,0.35);margin-bottom:2px">Total Invested</div>'
-      +'<div class="pv-val pv-num" style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.85)">RM '+pfInvested.toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0})+'</div>'
-      +'<div class="pv-hide" style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.85)">••••••</div>'
-      +'</div>'
-      +'<div style="text-align:right">'
-      +'<div style="font-size:8px;color:rgba(255,255,255,0.4);margin-bottom:2px">Total P&L / % <span style="font-size:7px;opacity:.7">(Unreal+Real+Div-Fee)</span></div>'
-      +'<div class="pv-val pv-num" style="font-size:13px;font-weight:700;color:'+pfPnlColor+';text-shadow:0 0 12px '+pfPnlColor+'66">'+(pfPnl>=0?'+':'')+'RM '+Math.abs(pfPnl).toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0})+(pfPnlPct!==null?' ('+(pfPnlPct>=0?'+':'')+pfPnlPct.toFixed(1)+'%)':'')+'</div>'
-      +'<div class="pv-hide" style="font-size:13px;font-weight:700;color:'+pfPnlColor+'">•••••• (•••%)</div>'
-      +'</div>'
-      +'</div>'
-      +'</div>'
-      +'</div>';
-  }).join('');
-
-  if(!allCcys.length)return '<div class="card m" style="text-align:center;padding:2rem">No transactions yet.</div>';
-  // Grand Total MYR card
-  let grandMYRInvested=0,grandMYRPnl=0;
+  const allCcys=[...CCY_ORDER.filter(c=>allCcysSet.has(c)),...[...allCcysSet].filter(c=>!CCY_ORDER.includes(c))];
+  let grandMYR=0,grandInv=0,grandPnl=0,grandCash=0;
   allCcys.forEach(function(ccy){
-    const g=grandTotals[ccy];
-    const cashTotal=g.cash||0;
-    const mvWithCash=g.mv+cashTotal;
-    grandMYRInvested+=toMYR(g.co,ccy);
-    const tot=Math.round((Math.round(g.u*100)/100+Math.round(g.d*100)/100+Math.round(g.r*100)/100-Math.round((g.pf||0)*100)/100)*100)/100;
-    grandMYRPnl+=toMYR(tot,ccy);
+    const g=gT[ccy]||{};
+    grandMYR+=toMYR((g.mv||0)+(g.cash||0),ccy);
+    grandInv+=toMYR(g.co||0,ccy);
+    grandCash+=toMYR(g.cash||0,ccy);
+    grandPnl+=toMYR(Math.round(((g.u||0)+(g.d||0)+(g.r||0)-(g.pf||0))*100)/100,ccy);
   });
-  const grandPnlPct=grandMYRInvested>0?grandMYRPnl/grandMYRInvested*100:null;
-  const fxNote=Object.entries(_fx).filter(([c])=>allCcys.includes(c)&&c!=='MYR').map(([c,r])=>c+': RM '+r.toFixed(4)).join(' · ');
-  // ── Arc gauge chart ──────────────────────────────────────────────────────
-  const gaugeInvested=grandMYRInvested||0;
-  const gaugeValue=grandMYR||0;
-  const gaugePct=gaugeInvested>0?Math.min(Math.max(gaugeValue/gaugeInvested,0),2):0;
-  const gaugeAngle=Math.min(gaugePct,1)*270; // max 270 degrees arc
-  const gaugeLoss=gaugeValue<gaugeInvested;
-  const gaugeColor=gaugeLoss?'#ff4d6d':'#00e676';
-  const gaugeColorStart=gaugeLoss?'#ff9a3c':'#00b4d8';
-  const gaugeColorMid=gaugeLoss?'#ff4d6d':'#00e676';
+  const grandPct=grandInv>0?grandPnl/grandInv*100:null;
+  const isLoss=grandPnl<0;
+  const pnlCol=isLoss?'#c05858':'#4a9e72';
+  const pctStr=grandPct!==null?(grandPct>=0?'+':'')+grandPct.toFixed(2)+'%':'--';
+  const totalHoldings=S.portfolios.reduce((s,p)=>s+getHoldings(p,true).length,0);
 
-  const pnlColor=grandMYRPnl>=0?'#00e676':'#ff4d6d';
-  const pnlBar=grandMYRInvested>0?Math.min(Math.abs(grandMYR/grandMYRInvested)*100,100):0;
-  const barColor=grandMYRPnl>=0?'#00e676':'#ff4d6d';
-  const gaugeChart=
-    '<div id="grand-card" style="cursor:pointer;position:relative;overflow:hidden;'
-    +'background:linear-gradient(160deg,#06040f 0%,#080614 30%,#04080f 60%,#080610 100%);'
-    +'border-radius:16px;padding:.9rem 1rem .85rem 0;'
-    +'border:1.5px solid rgba(255,255,255,0.15);'
-    +'box-shadow:0 0 0 1px rgba(120,80,255,0.3),0 0 30px rgba(120,80,255,0.15),0 0 60px rgba(0,180,255,0.08),0 1px 0 rgba(255,255,255,0.18) inset,0 8px 32px rgba(0,0,0,0.7);">'
-    +'<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#7b61ff,#00b4d8,#00e676,#ffaa00,#ff4d6d,#bf5af2);box-shadow:0 0 12px rgba(120,80,255,0.8),0 0 24px rgba(0,180,255,0.4);pointer-events:none"></div>'
-    +'<div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 40% at 50% -10%,rgba(120,80,255,0.12),transparent 60%);pointer-events:none"></div>'
-    +'<div style="position:absolute;inset:0;background:linear-gradient(105deg,rgba(0,200,255,0.04) 0%,transparent 30%,rgba(255,255,255,0.02) 50%,transparent 70%,rgba(180,100,255,0.04) 100%);animation:holoBG 8s ease-in-out infinite alternate;pointer-events:none"></div>'
-    +'<div style="position:absolute;top:8px;left:0;bottom:8px;width:3px;background:linear-gradient(180deg,transparent,#7b61ff 20%,#00b4d8 50%,#7b61ff 80%,transparent);border-radius:0 2px 2px 0;box-shadow:0 0 8px rgba(120,80,255,0.9),0 0 20px rgba(120,80,255,0.4);animation:rodPulse 3s ease-in-out infinite;pointer-events:none"></div>'
-    +'<div style="position:absolute;left:0;width:3px;height:3px;border-radius:50%;background:#7b61ff;box-shadow:0 0 6px #7b61ff,0 0 12px rgba(120,80,255,0.8);animation:particleDrift 3s ease-in-out infinite;pointer-events:none"></div>'
-    +'<div style="position:absolute;left:0;width:2px;height:2px;border-radius:50%;background:#00b4d8;box-shadow:0 0 4px #00b4d8;animation:particleDrift 3s ease-in-out infinite 1s;pointer-events:none"></div>'
-    +'<div style="position:absolute;top:0;left:0;width:18px;height:18px;border-top:2px solid #7b61ff;border-left:2px solid #7b61ff;border-radius:14px 0 0 0;pointer-events:none;box-shadow:0 0 8px rgba(120,80,255,0.6);animation:cornerPulse 3s ease-in-out infinite"></div>'
-    +'<div style="position:absolute;top:0;right:0;width:14px;height:14px;border-top:1.5px solid #00b4d8;border-right:1.5px solid #00b4d8;pointer-events:none;box-shadow:0 0 6px rgba(0,180,216,0.5)"></div>'
-    +'<div style="position:absolute;bottom:0;left:0;width:14px;height:14px;border-bottom:1.5px solid rgba(120,80,255,0.5);border-left:1.5px solid rgba(120,80,255,0.5);border-radius:0 0 0 14px;pointer-events:none"></div>'
-    +'<div style="position:absolute;bottom:0;right:0;width:14px;height:14px;border-bottom:1.5px solid rgba(0,180,216,0.4);border-right:1.5px solid rgba(0,180,216,0.4);border-radius:0 0 14px 0;pointer-events:none"></div>'
-    +'<div style="position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(120,80,255,0.8),rgba(0,180,255,0.8),transparent);animation:scanLine 5s ease-in-out infinite;pointer-events:none;box-shadow:0 0 6px rgba(120,80,255,0.5)"></div>'
-    +'<div style="position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,180,255,0.3),transparent);animation:scanLine2 5s ease-in-out infinite;pointer-events:none"></div>'
-    +'<div style="position:absolute;top:0;left:-120%;width:70%;height:100%;background:linear-gradient(108deg,transparent 42%,rgba(255,255,255,0.05) 50%,transparent 58%);animation:shimmerSweep 7s ease-in-out infinite;pointer-events:none;transform:skewX(-6deg)"></div>'
-    +'<div style="position:absolute;bottom:0;left:25%;right:25%;height:1px;background:linear-gradient(90deg,transparent,rgba(120,80,255,0.6),rgba(0,180,255,0.6),transparent);box-shadow:0 0 8px rgba(120,80,255,0.3);animation:borderPulse 4s ease-in-out infinite;pointer-events:none"></div>'
-    +'<div style="position:absolute;top:0;right:0;width:0;height:0;border-style:solid;border-width:0 22px 22px 0;border-color:transparent var(--bg) transparent transparent;z-index:2"></div>'
-    +'<div style="position:absolute;top:0;right:0;width:22px;height:22px;background:linear-gradient(225deg,rgba(120,80,255,0.2),transparent 60%);pointer-events:none;z-index:1"></div>'
-    +'<div style="position:absolute;top:5px;right:5px;width:3px;height:3px;border-radius:50%;background:#7b61ff;box-shadow:0 0 6px #7b61ff,0 0 12px rgba(120,80,255,0.8);animation:cornerPulse 3s ease-in-out infinite;pointer-events:none;z-index:3"></div>'
-    +'<div style="position:relative;z-index:1;padding-left:0">'
-    +'<div style="position:relative;z-index:1;padding-left:12px">'
-    +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
-    +'<div>'
-    +'<div style="font-size:9px;letter-spacing:1.5px;font-weight:700;color:rgba(255,255,255,0.5);margin-bottom:1px;font-family:Courier New,monospace;text-align:center">TOTAL PORTFOLIO VALUE <span style="opacity:.5">('+(S.portfolios.length)+')</span></div>'
-    +'<div style="font-size:8px;color:rgba(255,255,255,0.25);letter-spacing:.3px">(Cash + Holdings only)</div>'
-    +'</div>'
-    +'<div class="pv-val" style="font-size:20px;font-weight:900;color:#fff;letter-spacing:-0.5px;line-height:1;white-space:nowrap;text-shadow:0 0 20px rgba(255,255,255,0.4),0 0 60px rgba(120,80,255,0.3),0 2px 4px rgba(0,0,0,0.8)">RM '+grandMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})+'</div>'
-    +'<div class="pv-hide" style="font-size:20px;font-weight:800;color:#fff;letter-spacing:3px;white-space:nowrap">••••••</div>'
-    +'</div>'
-    +'<div style="display:flex;align-items:center;gap:8px;margin:6px 0 8px">'
-    +'<div style="flex:1;height:2px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden">'
-    +'<div style="height:100%;width:'+pnlBar+'%;background:linear-gradient(90deg,#7b61ff,#00b4d8,#00e676);background-size:200% 100%;border-radius:2px;box-shadow:0 0 8px rgba(120,80,255,0.6);animation:barShimmer 2s linear infinite"></div>'
-    +'</div>'
-    +'<div style="font-size:7px;color:rgba(255,255,255,0.2);letter-spacing:1px;white-space:nowrap;font-family:Courier New,monospace">MYR EQUIVALENT</div>'
-    +'</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
-    +'<div>'
-    +'<div style="font-size:8px;color:rgba(255,255,255,0.35);margin-bottom:2px">Total Invested</div>'
-    +'<div class="pv-val pv-num" style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.85)">RM '+gaugeInvested.toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0})+'</div>'
-    +'<div class="pv-hide" style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.85)">••••••</div>'
-    +'</div>'
-    +'<div style="text-align:right">'
-    +'<div style="font-size:8px;color:rgba(255,255,255,0.4);margin-bottom:2px">Total P&L / % <span style="font-size:7px;opacity:.7">(Unreal + Real + Div - Fee)</span></div>'
-    +'<div class="pv-val pv-num" style="font-size:13px;font-weight:700;color:'+pnlColor+';text-shadow:0 0 12px '+pnlColor+'60">'+(grandMYRPnl>=0?'+':'')+'RM '+Math.abs(grandMYRPnl).toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0})+(grandPnlPct!==null?' ('+(grandPnlPct>=0?'+':'')+grandPnlPct.toFixed(1)+'%)':'')+'</div>'
-    +'<div class="pv-hide" style="font-size:13px;font-weight:700;color:'+pnlColor+'">•••••• (•••%)</div>'
-    +'</div>'
-    +'</div>'
-    +'</div>'
-    +'</div>';
-  const grandCard='';
+  const pfData=S.portfolios.map(function(pf0){
+    const sum=getSummary(pf0);
+    let pfMYR=0;
+    allCcys.forEach(function(ccy){
+      pfMYR+=toMYR((sum.mktVal[ccy]||0)+((pf0.cashBalances&&pf0.cashBalances[ccy])||0),ccy);
+    });
+    return {pf0,pfMYR,alloc:grandMYR>0?pfMYR/grandMYR*100:0};
+  }).sort((a,b)=>b.pfMYR-a.pfMYR);
+
   setTimeout(function(){
-    const gw=document.getElementById('grand-wrap');
-    const gs=document.getElementById('grand-spacer');
-    if(gw){
-      // Set top immediately before rendering
-      const hd=document.getElementById('hd');
-      const tb=document.getElementById('tb-wrap');
-      const db=document.getElementById('date-bar');
-      const hdH=hd?hd.getBoundingClientRect().height:0;
-      const tbH=tb?tb.getBoundingClientRect().height:0;
-      const dbH=db&&db.style.display!=='none'?db.getBoundingClientRect().height:0;
-      gw.style.top=(hdH+tbH+dbH)+'px';
-      gw.innerHTML='<div onclick="togglePrivacy()" style="cursor:pointer">'+gaugeChart+'</div>';
-      gw.style.display='block';
-      const h=gw.getBoundingClientRect().height;
-      if(gs){gs.style.display='block';gs.style.height=h+'px';}
-      fixLayout();
-    }
+    ['grand-wrap','grand-spacer'].forEach(function(id){const e=document.getElementById(id);if(e)e.style.display='none';});
+    fixLayout();
   },0);
-  return grandCard+summaryCcyCards;
+
+  /*
+    MATERIAL SYSTEM — Smoked Crystal / Architectural Glass
+    ────────────────────────────────────────────────────────
+    Core principle: dense, dark, heavy, physical.
+    Light comes from ONE subtle source at top-left edge only.
+    No bubble, no toy marble, no cartoon gloss.
+    Inspired by: Bentley interior veneer, Bang & Olufsen surfaces,
+    Apple Vision Pro spatial materials, high-end architectural stone.
+  */
+
+  /*
+    PREMIUM SPHERE MATERIAL SYSTEM v3
+    ─────────────────────────────────
+    Inspired by: high-end watch dials, Bentley Mulliner paint,
+    Bang & Olufsen anodised aluminium, Apple Vision Pro spatial glass.
+
+    Key technique: THREE distinct lighting zones per sphere
+    1. Top-left specular catch (bright, focused, realistic)
+    2. Mid equatorial colour band (the sphere's true identity colour)
+    3. Bottom-right deep shadow (gives weight and 3D gravity)
+    + Thin rim catch-light all around the edge
+    + Subtle concentric inner rings (lens / depth effect)
+  */
+  /*
+    FUTURISTIC HOLOGRAPHIC SPHERE SYSTEM
+    ─────────────────────────────────────
+    Direction: Apple Vision Pro + James Webb telescope imagery +
+    luxury automotive HUD + plasma energy orb.
+    
+    Each sphere = energy core inside dark glass shell.
+    Light emanates FROM INSIDE, not just reflected off surface.
+    Holographic interference rings. Chromatic aberration edge.
+    Deep space atmosphere.
+  */
+  /* ═══════════════════════════════════════════════════════
+     HOLOGRAPHIC PLASMA SPHERE SYSTEM v6
+     ═══════════════════════════════════════════════════════
+     Inspired by: Mass Effect UI · Blade Runner 2049 holograms
+     Apple Vision Pro spatial compute · James Webb deep field
+     Fusion reactor containment · Quantum computing visualisations
+
+     Each sphere = a contained plasma star viewed through
+     ultra-dark polarised glass. Energy radiates outward.
+     Data readout overlaid like a HUD element.
+  */
+  /*
+    SPHERE SYSTEM v7 — Quantum Lens Design
+    Direction: Not a glowing ball. Instead:
+    A dark optical lens with deep internal structure.
+    Like looking through telescope glass at a nebula.
+    Premium, modern, unique. No HUD brackets (too 2010).
+    No spiral rings. No scan lines.
+    
+    NEW: Liquid metal topology + depth field photography
+    bokeh effect + chromatic ring diffraction.
+  */
+  const THEMES=[
+    { // Champagne gold — max contrast, near-white peak to void black
+      bg:'#020100',
+      g:['#fffce8','#ffd020','#e08800','#803800','#2e1400','#0c0400','#020100'],
+      spec:'rgba(255,252,220,1.0)',spec2:'rgba(255,195,30,0.6)',
+      rim:'rgba(255,210,40,0.85)',rim2:'rgba(200,100,0,0.35)',
+      shadow:'rgba(0,0,0,0.95)',shadow2:'rgba(0,0,0,0.6)',
+      gRgb:'210,148,0',gHex:'#d29400',accent:'#e8a800',
+    },
+    { // Emerald — deep black core, vivid green peak
+      bg:'#000300',
+      g:['#e0ffee','#00f070','#00b048','#004e20','#001a08','#000602','#000200'],
+      spec:'rgba(200,255,225,1.0)',spec2:'rgba(0,240,120,0.58)',
+      rim:'rgba(50,255,150,0.82)',rim2:'rgba(0,165,65,0.3)',
+      shadow:'rgba(0,0,0,0.95)',shadow2:'rgba(0,0,0,0.58)',
+      gRgb:'0,205,90',gHex:'#00cd5a',accent:'#00d864',
+    },
+    { // Graphite — cold silver, near-white to absolute black
+      bg:'#010102',
+      g:['#f8f8ff','#c0c0f0','#6868b0','#282850','#0e0e20','#060610','#010105'],
+      spec:'rgba(245,245,255,1.0)',spec2:'rgba(160,160,248,0.55)',
+      rim:'rgba(200,200,255,0.8)',rim2:'rgba(110,110,200,0.32)',
+      shadow:'rgba(0,0,0,0.96)',shadow2:'rgba(0,0,0,0.6)',
+      gRgb:'110,110,230',gHex:'#6e6ee6',accent:'#9090e0',
+    },
+    { // Crimson — intense red, near-white specular to black void
+      bg:'#020001',
+      g:['#ffe8e8','#ff2848','#d80018','#700008','#280003','#0c0001','#020001'],
+      spec:'rgba(255,225,228,1.0)',spec2:'rgba(255,60,90,0.58)',
+      rim:'rgba(255,110,130,0.82)',rim2:'rgba(218,12,40,0.32)',
+      shadow:'rgba(0,0,0,0.95)',shadow2:'rgba(0,0,0,0.58)',
+      gRgb:'205,10,40',gHex:'#cd0a28',accent:'#e01830',
+    },
+  ];
+
+  function makeOrb(d,idx,sz){
+    const t=THEMES[idx%THEMES.length];
+    const fPct=sz>=200?46:sz>=145?31:23;
+    const fName=sz>=200?10:9;
+    const fRm=sz>=200?11:sz>=145?10:9;
+    const uid=`o${idx}${sz}`;
+    const pct=[0,11,24,40,58,76,100];
+    const stops=t.g.map((c,i)=>`<stop offset="${pct[i]}%" stop-color="${c}"/>`).join('');
+
+    const gnd=`
+      <div style="position:absolute;bottom:-${Math.round(sz*.04)}px;left:50%;transform:translateX(-50%);
+        width:${Math.round(sz*.5)}px;height:${Math.round(sz*.03)}px;
+        background:radial-gradient(ellipse,rgba(0,0,0,0.9) 0%,transparent 70%);
+        pointer-events:none"></div>
+      <div style="position:absolute;bottom:-${Math.round(sz*.2)}px;left:50%;transform:translateX(-50%);
+        width:${Math.round(sz*1.1)}px;height:${Math.round(sz*.16)}px;
+        background:radial-gradient(ellipse,rgba(${t.gRgb},0.4) 0%,transparent 60%);
+        pointer-events:none"></div>`;
+
+    // SVG sphere with maximum contrast — brightest spec, deepest shadow
+    const svg=`<svg xmlns="http://www.w3.org/2000/svg"
+      width="${sz}" height="${sz}" viewBox="0 0 100 100"
+      style="position:absolute;inset:0;display:block;border-radius:50%">
+      <defs>
+        <!-- Main body: extreme contrast, bright top-left to near-black -->
+        <radialGradient id="b${uid}" cx="32%" cy="26%" r="82%">${stops}</radialGradient>
+        <!-- Shadow: deep black bottom-right hemisphere -->
+        <radialGradient id="s${uid}" cx="70%" cy="72%" r="66%">
+          <stop offset="0%"  stop-color="${t.shadow}"/>
+          <stop offset="22%" stop-color="rgba(0,0,0,0.8)"/>
+          <stop offset="45%" stop-color="${t.shadow2}"/>
+          <stop offset="72%" stop-color="rgba(0,0,0,0.08)"/>
+          <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+        </radialGradient>
+        <!-- Specular: pure white pinpoint top-left -->
+        <radialGradient id="h${uid}" cx="27%" cy="21%" r="22%">
+          <stop offset="0%"  stop-color="${t.spec}"/>
+          <stop offset="25%" stop-color="${t.spec}"/>
+          <stop offset="55%" stop-color="${t.spec2}"/>
+          <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+        </radialGradient>
+        <!-- Secondary fill light left edge -->
+        <radialGradient id="f${uid}" cx="12%" cy="54%" r="30%">
+          <stop offset="0%"  stop-color="rgba(${t.gRgb},0.28)"/>
+          <stop offset="60%" stop-color="rgba(${t.gRgb},0.06)"/>
+          <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+        </radialGradient>
+        <!-- Rim: bright thin edge all around -->
+        <radialGradient id="r${uid}" cx="50%" cy="50%" r="50%">
+          <stop offset="70%" stop-color="rgba(0,0,0,0)"/>
+          <stop offset="86%" stop-color="${t.rim2}"/>
+          <stop offset="94%" stop-color="${t.rim}"/>
+          <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+        </radialGradient>
+        <clipPath id="c${uid}"><circle cx="50" cy="50" r="49.5"/></clipPath>
+      </defs>
+      <g clip-path="url(#c${uid})">
+        <circle cx="50" cy="50" r="50" fill="url(#b${uid})"/>
+        <circle cx="50" cy="50" r="50" fill="url(#s${uid})"/>
+        <circle cx="50" cy="50" r="50" fill="url(#f${uid})"/>
+        <circle cx="50" cy="50" r="50" fill="url(#h${uid})"/>
+        <circle cx="50" cy="50" r="50" fill="url(#r${uid})"/>
+      </g>
+      <!-- Outer precision bevel -->
+      <circle cx="50" cy="50" r="49.3" fill="none" stroke="${t.rim}" stroke-width="0.7" opacity="0.75"/>
+      <circle cx="50" cy="50" r="48.4" fill="none" stroke="rgba(0,0,0,0.6)" stroke-width="0.5"/>
+    </svg>`;
+
+    // Icon: pixel-sharp filled shapes
+    const iSz=sz>=200?24:sz>=145?18:15;
+    const icon=`<svg width="${iSz}" height="${iSz}" viewBox="0 0 24 24"
+      style="display:block;margin:0 auto ${sz>=200?7:4}px;flex-shrink:0;
+        filter:drop-shadow(0 1px 2px rgba(0,0,0,1))">
+      <circle cx="12" cy="8" r="4" fill="#fff"/>
+      <path d="M4 21 C4 15.5 7.6 12.5 12 12.5 C16.4 12.5 20 15.5 20 21 Z" fill="#fff"/>
+    </svg>`;
+
+    return `<div class="orb-float-${idx%3}" style="position:relative;flex-shrink:0">
+      ${gnd}
+      <div onclick="goPortfolio('${d.pf0.id}')"
+        style="cursor:pointer;width:${sz}px;height:${sz}px;border-radius:50%;
+          position:relative;overflow:visible;
+          display:flex;flex-direction:column;align-items:center;justify-content:center;
+          -webkit-tap-highlight-color:transparent;
+          background:${t.bg};
+          box-shadow:
+            0 0 ${Math.round(sz*.2)}px rgba(${t.gRgb},0.5),
+            0 0 ${Math.round(sz*.45)}px rgba(${t.gRgb},0.22),
+            0 ${Math.round(sz*.05)}px ${Math.round(sz*.12)}px rgba(0,0,0,1),
+            0 ${Math.round(sz*.12)}px ${Math.round(sz*.28)}px rgba(0,0,0,0.85),
+            0 ${Math.round(sz*.22)}px ${Math.round(sz*.45)}px rgba(0,0,0,0.55),
+            inset 0 0 ${Math.round(sz*.3)}px rgba(0,0,0,0.7);"
+        onmousedown="this.style.transform='scale(0.95)';this.style.transition='transform 0.1s ease'"
+        ontouchstart="this.style.transform='scale(0.95)';this.style.transition='transform 0.1s ease'"
+        onmouseup="this.style.transform='scale(1)';this.style.transition='transform 0.45s cubic-bezier(0.34,1.4,0.64,1)'"
+        ontouchend="this.style.transform='scale(1)';this.style.transition='transform 0.45s cubic-bezier(0.34,1.4,0.64,1)'">
+        ${svg}
+        <div style="position:relative;z-index:10;text-align:center;width:80%;box-sizing:border-box">
+          ${icon}
+          <div style="font-size:${fName}px;font-weight:600;
+            color:rgba(255,255,255,0.95);
+            letter-spacing:2.5px;text-transform:uppercase;
+            font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;
+            margin-bottom:${sz>=200?3:2}px;
+            text-shadow:0 1px 0 rgba(0,0,0,1),0 2px 12px rgba(0,0,0,1)">${d.pf0.name}</div>
+          <div class="pv-val orb-num" style="
+            font-size:${fPct}px;font-weight:200;color:#fff;
+            line-height:1;letter-spacing:-1.5px;
+            font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;
+            text-shadow:0 2px 0 rgba(0,0,0,1),0 4px 16px rgba(0,0,0,0.9)">${d.alloc.toFixed(1)}%</div>
+          <div class="pv-hide orb-num" style="font-size:${fPct}px;color:#fff;font-weight:200;letter-spacing:-1.5px">••••</div>
+          <div style="width:${sz>=200?22:15}px;height:1px;margin:${sz>=200?7:4}px auto;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent);
+            box-shadow:0 0 8px rgba(255,255,255,0.4)"></div>
+          <div class="pv-val orb-num" style="
+            font-size:${fRm}px;font-weight:500;
+            color:rgba(255,255,255,0.88);
+            font-family:-apple-system,'Helvetica Neue',monospace;
+            letter-spacing:0.2px;
+            text-shadow:0 1px 0 rgba(0,0,0,1)">
+            RM ${d.pfMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}
+          </div>
+          <div class="pv-hide orb-num" style="font-size:${fRm}px;color:rgba(255,255,255,0.88)">••••••</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+
+  const bigOrb = pfData[0] ? makeOrb(pfData[0],0,210) : '';
+  const orb2   = pfData[1] ? makeOrb(pfData[1],1,152) : '';
+  const orb3   = pfData[2] ? makeOrb(pfData[2],2,132) : '';
+  const extras = pfData.slice(3).map((d,i)=>makeOrb(d,i+3,105)).join('<div style="height:10px"></div>');
+
+
+  const icoW=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M16 3l-4 4-4-4"/><circle cx="17" cy="13" r="1.5" fill="currentColor" stroke="none"/></svg>`;
+  const icoS=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 12l10 5 10-5"/><path d="M2 17l10 5 10-5"/></svg>`;
+  const icoP=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>`;
+  const icoT=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>`;
+  function fs2(v){return 'RM '+Math.abs(v).toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0});}
+  const cashStr='RM '+grandCash.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const invStr='RM '+grandInv.toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0});
+
+  // Orb accent colors for ball bearing — matches THEMES order
+  const orbColors=pfData.slice(0,3+extras.length).map((_,i)=>['#e8a800','#00d864','#8888e0','#e02040'][i%4]);
+
+  const orbSection=`<div id="orb-scene" data-orb-colors="${orbColors.join(',')}" style="position:relative;flex:1;display:flex;align-items:flex-start;justify-content:center;gap:16px;margin:0 -16px 0;padding:16px 16px 0;overflow:hidden">
+    <div style="flex-shrink:0">${bigOrb}</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:14px">
+      ${orb2}${orb3}${extras?`<div style="height:2px"></div>${extras}`:''}
+    </div>
+  </div>`;
+
+  // PORTFOLIO HEALTH — same card style as overview
+  const hp=Math.max(15,Math.min(100,50+(grandPct||0)*0.4));
+  const hlbl=hp>72?'Strong':hp>52?'Balanced':hp>36?'Moderate':'Weak';
+  const hcol=hp>72?'#4a9e72':hp>52?'#a89040':hp>36?'#8a6030':'#905050';
+
+  // Health pill — exactly same as overview, no label
+  const healthCard=`<div style="
+    flex-shrink:0;
+    background:rgba(12,10,8,0.85);
+    border:1px solid rgba(255,255,255,0.08);
+    border-left:2px solid ${hcol};
+    border-radius:12px;
+    padding:10px 12px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    min-width:80px;text-align:center">
+    <svg width="30" height="11" viewBox="0 0 30 11" style="display:block">
+      <polyline points="0,8 4,8 6,2 8,10 10,1 12,8 15,8 18,8 20,5 22,8 30,8"
+        fill="none" stroke="${hcol}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div style="font-size:18px;font-weight:200;color:${hcol};line-height:1;letter-spacing:-0.5px">${Math.round(hp)}%</div>
+    <div style="font-size:8px;font-weight:600;color:${hcol};letter-spacing:1px;text-transform:uppercase">${hlbl}</div>
+  </div>`;
+
+  // HERO — net worth LEFT, health card RIGHT, minicards below
+  const heroSection=`<div style="margin-bottom:12px">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:8.5px;font-weight:400;color:rgba(180,140,50,0.5);letter-spacing:2px;text-transform:uppercase;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;margin-bottom:8px">Total Net Worth</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <div>
+          <div class="pv-networth-wrap">
+            <div class="pv-val" style="font-size:34px;font-weight:200;color:rgba(255,255,255,0.92);letter-spacing:-1px;line-height:1.05;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;white-space:nowrap">RM ${grandMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+            <div class="pv-hide" style="font-size:34px;color:rgba(255,255,255,0.92);font-weight:200;line-height:1.05;white-space:nowrap">••••••••</div>
+          </div>
+          </div>
+          <button onclick="togglePrivacy()" style="background:none;border:none;cursor:pointer;padding:4px;opacity:0.38;line-height:0;flex-shrink:0">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(200,160,60,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <div style="width:24px;height:1px;background:rgba(180,140,50,0.35)"></div>
+      </div>
+      ${healthCard}
+    </div>
+    <!-- 4 minicards below net worth -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:4px">
+      ${[
+        {icon:icoW,lbl:'Cash',val:cashStr,sub:pctStr,col:'#b08830',priv:true},
+        {icon:icoS,lbl:'Holdings',val:String(totalHoldings),sub:'Positions',col:'#28906a',priv:false},
+        {icon:icoP,lbl:'Invested',val:invStr,sub:'100%',col:'#607090',priv:true,subPriv:false},
+        {icon:icoT,lbl:'Return',val:isLoss?'−'+fs2(Math.abs(grandPnl)):'+'+fs2(grandPnl),sub:pctStr,col:isLoss?'#ff4d6d':'#00e676',priv:true},
+      ].map(m=>`<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-top:2px solid ${m.col}88;border-radius:10px;padding:9px 6px;text-align:center">
+        <div style="color:${m.col};opacity:0.7;display:flex;justify-content:center;margin-bottom:5px">${m.icon}</div>
+        <div style="font-size:6.5px;color:rgba(255,255,255,0.25);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif">${m.lbl}</div>
+        ${m.priv
+          ?`<div class="pv-val" style="font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.val}</div><div class="pv-hide" style="font-size:10px;color:#fff">••••</div>`
+          :`<div style="font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden">${m.val}</div>`}
+        ${m.priv
+          ?`<div class="pv-val" style="font-size:8px;color:${m.col};margin-top:2px;opacity:0.75;font-weight:500">${m.sub}</div><div class="pv-hide" style="font-size:8px;color:${m.col};margin-top:2px;font-weight:500">—</div>`
+          :`<div style="font-size:8px;color:${m.col};margin-top:2px;opacity:0.75;font-weight:500">${m.sub}</div>`}
+      </div>`).join('')}
+    </div>
+  </div>`;
+
+  return `<div style="padding:14px 16px 0;display:flex;flex-direction:column;min-height:calc(100vh - 120px);overflow:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    background:radial-gradient(ellipse at 25% 58%,rgba(120,80,10,0.06) 0%,transparent 42%),
+    radial-gradient(ellipse at 72% 42%,rgba(8,80,40,0.04) 0%,transparent 38%),#020202;">
+    ${heroSection}
+    ${orbSection}
+  </div>`;
 }
 
 function drawDashboardCharts(){}
+
+function initOrbEffects(){
+  const scene=document.getElementById('orb-scene');
+  if(!scene)return;
+  const orbEls=[...scene.querySelectorAll('.orb-float-0 > div,.orb-float-1 > div,.orb-float-2 > div')];
+  if(!orbEls.length)return;
+  const colorStr=scene.getAttribute('data-orb-colors')||'#e8a800,#00d864,#8888e0';
+  const orbColors=colorStr.split(',');
+
+  let canvas=document.getElementById('orb-canvas');
+  if(!canvas){
+    canvas=document.createElement('canvas');
+    canvas.id='orb-canvas';
+    canvas.style.cssText='position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;';
+    scene.appendChild(canvas);
+  }
+  scene.style.overflow='hidden';
+  const dpr=window.devicePixelRatio||1;
+  function resize(){
+    const r=scene.getBoundingClientRect();
+    canvas.width=r.width*dpr;canvas.height=r.height*dpr;
+    canvas.style.width=r.width+'px';canvas.style.height=r.height+'px';
+  }
+  resize();
+  const ctx=canvas.getContext('2d');
+
+  function hex2rgb(hex){
+    return[parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)];
+  }
+  function orbInfo(el,i){
+    const sr=scene.getBoundingClientRect(),er=el.getBoundingClientRect();
+    const col=orbColors[i%orbColors.length]||'#e8a800';
+    return{x:(er.left+er.width/2-sr.left)*dpr,y:(er.top+er.height/2-sr.top)*dpr,r:er.width/2*dpr,col,rgb:hex2rgb(col)};
+  }
+
+  const LAYERS=[
+    {n:20,rMin:0.60,rMax:0.82,sMin:0.25,sMax:0.55,szMin:1.0,szMax:2.2,opMin:0.08,opMax:0.28},
+    {n:16,rMin:0.72,rMax:0.94,sMin:0.5,sMax:1.1,szMin:0.8,szMax:1.6,opMin:0.10,opMax:0.38},
+    {n:8, rMin:0.88,rMax:0.99,sMin:1.2,sMax:2.2,szMin:0.5,szMax:1.0,opMin:0.15,opMax:0.55},
+  ];
+
+  let orbs=[],particles=[];
+  function initParticles(){
+    orbs=orbEls.map(orbInfo);
+    particles=[];
+    orbs.forEach(function(o,oi){
+      LAYERS.forEach(function(lay){
+        for(let i=0;i<lay.n;i++){
+          const spd=(lay.sMin+Math.random()*(lay.sMax-lay.sMin))*(Math.random()<0.5?1:-1);
+          particles.push({oi,angle:Math.random()*Math.PI*2,speed:spd,
+            dist:o.r*(lay.rMin+Math.random()*(lay.rMax-lay.rMin)),
+            size:(lay.szMin+Math.random()*(lay.szMax-lay.szMin))*dpr,
+            opacity:lay.opMin+Math.random()*(lay.opMax-lay.opMin),
+            phase:Math.random()*Math.PI*2,pulseSpeed:0.4+Math.random()*1.2});
+        }
+      });
+    });
+  }
+  initParticles();
+
+  // Equator shimmer angle per orb — a bright arc rotating slowly around the rim
+  let shimmerAngles=orbs.map(function(_,i){return i*Math.PI*0.6;});
+
+  let last=performance.now();
+  function step(now){
+    const dt=Math.min(now-last,50);last=now;
+    const t=now*0.001;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    orbs.forEach(function(o,oi){
+      const [r,g,b]=o.rgb;
+
+      // Inner breathing glow — stronger pulse
+      const breath=Math.sin(t*0.7+oi*1.4)*0.5+0.5;
+      ctx.save();
+      ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,Math.PI*2);ctx.clip();
+      const gGrad=ctx.createRadialGradient(o.x,o.y,0,o.x,o.y,o.r*0.8);
+      gGrad.addColorStop(0,'rgba('+r+','+g+','+b+','+(0.06+breath*0.12).toFixed(3)+')');
+      gGrad.addColorStop(0.5,'rgba('+r+','+g+','+b+','+(0.01+breath*0.04).toFixed(3)+')');
+      gGrad.addColorStop(1,'transparent');
+      ctx.fillStyle=gGrad;ctx.fillRect(o.x-o.r,o.y-o.r,o.r*2,o.r*2);
+      ctx.restore();
+
+      // Outer ambient halo — breathes slower
+      const hPulse=Math.sin(t*0.4+oi*2.0)*0.4+0.6;
+      const hGrad=ctx.createRadialGradient(o.x,o.y,o.r*0.8,o.x,o.y,o.r*1.5);
+      hGrad.addColorStop(0,'rgba('+r+','+g+','+b+',0)');
+      hGrad.addColorStop(0.45,'rgba('+r+','+g+','+b+','+(0.07*hPulse).toFixed(3)+')');
+      hGrad.addColorStop(1,'transparent');
+      ctx.fillStyle=hGrad;
+      ctx.beginPath();ctx.arc(o.x,o.y,o.r*1.5,0,Math.PI*2);ctx.fill();
+
+      // Rotating equator shimmer — bright arc on the rim
+      shimmerAngles[oi]+=dt*0.0006*(oi%2===0?1:-1);
+      const sa=shimmerAngles[oi];
+      const arcLen=Math.PI*0.55;
+      ctx.save();
+      ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,Math.PI*2);ctx.clip();
+      ctx.beginPath();
+      ctx.arc(o.x,o.y,o.r*0.97,sa,sa+arcLen);
+      const shimGrad=ctx.createLinearGradient(
+        o.x+Math.cos(sa)*o.r, o.y+Math.sin(sa)*o.r,
+        o.x+Math.cos(sa+arcLen)*o.r, o.y+Math.sin(sa+arcLen)*o.r
+      );
+      shimGrad.addColorStop(0,'rgba('+r+','+g+','+b+',0)');
+      shimGrad.addColorStop(0.3,'rgba('+r+','+g+','+b+',0.45)');
+      shimGrad.addColorStop(0.7,'rgba(255,255,255,0.35)');
+      shimGrad.addColorStop(1,'rgba('+r+','+g+','+b+',0)');
+      ctx.strokeStyle=shimGrad;
+      ctx.lineWidth=1.4*dpr;
+      ctx.stroke();
+      ctx.restore();
+    });
+
+    // Orbiting particles
+    particles.forEach(function(p){
+      const o=orbs[p.oi];const [r,g,b]=o.rgb;
+      p.angle+=p.speed*dt*0.001;
+      const pulse=Math.sin(t*p.pulseSpeed+p.phase)*0.4+0.6;
+      const x=o.x+Math.cos(p.angle)*p.dist;
+      const y=o.y+Math.sin(p.angle)*p.dist;
+      ctx.beginPath();ctx.arc(x,y,p.size,0,Math.PI*2);
+      ctx.fillStyle='rgba('+r+','+g+','+b+','+(p.opacity*pulse).toFixed(3)+')';
+      ctx.fill();
+    });
+
+    window._orbRaf=requestAnimationFrame(step);
+  }
+
+  if(window._orbRaf)cancelAnimationFrame(window._orbRaf);
+  last=performance.now();
+  window._orbRaf=requestAnimationFrame(step);
+}
 
 function goPortfolio(id){
   S.activeId=id;
   TAB='overview';
   VIEW=null;
+  save();
+  render();
+}
+
+function goPortfolioCcy(id,ccy){
+  S.activeId=id;
+  TAB='overview';
+  VIEW={type:'ccy',ccy:ccy};
   save();
   render();
 }
@@ -1381,22 +1757,28 @@ function setDateBar(label){
 }
 function renderContent(){
   Object.values(charts).forEach(c=>{try{c.destroy();}catch(e){}});charts={};
+  if(window._orbRaf){cancelAnimationFrame(window._orbRaf);window._orbRaf=null;}
   const p=pf();
   if(VIEW&&VIEW.type==='stock'){
     const db=document.getElementById('date-bar');if(db)db.style.display='none';
     $('ct').innerHTML=renderStockDetail(p,VIEW.stock,VIEW.ccy);fixLayout();return;
   }
-  if(TAB==='dashboard'){setDateBar('Dashboard');$('ct').innerHTML=renderDashboard();setTimeout(drawDashboardCharts,50);}
+  if(VIEW&&VIEW.type==='ccy'&&TAB==='overview'){
+    setDateBar((p?p.name:'')+'  — '+VIEW.ccy+' Holdings');
+    $('ct').innerHTML=renderCcyDetail(p,VIEW.ccy);fixLayout();return;
+  }
+  if(TAB==='dashboard'){$('ct').style.padding='0';$('ct').style.overflow='hidden';$('ct').style.height='calc(100vh - 120px)';document.body.style.overflow='hidden';setDateBar('Dashboard &nbsp;<span style="color:rgba(180,140,50,0.55);font-size:10px;letter-spacing:1px">· All Portfolios</span>');$('ct').innerHTML=renderDashboard();setTimeout(drawDashboardCharts,50);setTimeout(initOrbEffects,150);}
   else if(TAB==='overview'){
+    $('ct').style.padding='0';$('ct').style.overflow='';$('ct').style.height='';
     setDateBar((p?p.name:'')+'  — Overview');
     const content=renderOverview(p);
     $('ct').innerHTML=content;
   }
-  else if(TAB==='holdings'){setDateBar((p?p.name:'')+'  — Holdings');$('ct').innerHTML=renderHoldings(p);}
-  else if(TAB==='transactions'){setDateBar((p?p.name:'')+'  — Transactions');$('ct').innerHTML=renderTransactions(p);}
-  else if(TAB==='options'){window.txSubTab='option';TAB='transactions';setDateBar((p?p.name:'')+'  — Transactions');$('ct').innerHTML=renderTransactions(p);}
-  else if(TAB==='journey'){setDateBar((p?p.name:'')+'  — Journey');$('ct').innerHTML=renderJourney(p);}
-  else if(TAB==='deposits'){window.jSubTab='cashflow';TAB='journey';setDateBar((p?p.name:'')+'  — Cash Flow');$('ct').innerHTML=renderJourney(p);}
+  else if(TAB==='holdings'){document.body.style.overflow='';$('ct').style.overflow='';$('ct').style.height='';setDateBar((p?p.name:'')+'  — Holdings');$('ct').style.padding='14px 16px 0';$('ct').style.background='#020202';$('ct').innerHTML=renderHoldings(p);}
+  else if(TAB==='transactions'){document.body.style.overflow='';$('ct').style.overflow='';$('ct').style.height='';setDateBar((p?p.name:'')+'  — Transactions');$('ct').style.padding='14px 16px 0';$('ct').style.background='#020202';$('ct').innerHTML=renderTransactions(p);fixLayout();}
+  else if(TAB==='options'){$('ct').style.overflow='';$('ct').style.height='';$('ct').style.background='#020202';setDateBar((p?p.name:'')+'  — Options');$('ct').style.padding='14px 16px 0';$('ct').innerHTML=`<div style="background:radial-gradient(ellipse at 25% 58%,rgba(120,80,10,0.06) 0%,transparent 42%),radial-gradient(ellipse at 72% 42%,rgba(8,80,40,0.04) 0%,transparent 38%),#020202;min-height:100vh">${renderOptions()}</div>`;}
+  else if(TAB==='journey'){document.body.style.overflow='';$('ct').style.overflow='';$('ct').style.height='';const jLabel={'dividend':'Dividend','pnl':'PnL','cashflow':'Cash Flow'}[window.jSubTab||'dividend']||'Journey';setDateBar((p?p.name:'')+'  — '+jLabel);$('ct').style.padding='14px 16px 0';$('ct').style.background='#020202';$('ct').innerHTML=renderJourney(p);}
+  else if(TAB==='deposits'){window.jSubTab='cashflow';TAB='journey';setDateBar((p?p.name:'')+'  — Cash Flow');$('ct').style.padding='14px 16px 0';$('ct').style.background='#020202';$('ct').innerHTML=renderJourney(p);}
 }
 
 // ── Overview ────────────────────────────────────────────────────────────────────
@@ -1405,268 +1787,201 @@ function renderOverview(p){
   const CCY_ORDER=['MYR','SGD','USD'];
   const rawCcys=[...new Set([...Object.keys(sum.mktVal),...Object.keys(sum.divs)])].filter(Boolean);
   const allCcys=[...CCY_ORDER.filter(c=>rawCcys.includes(c)),...rawCcys.filter(c=>!CCY_ORDER.includes(c))];
-
   if(!allCcys.length)return '<div class="card m" style="text-align:center;padding:2rem">No transactions yet.</div>';
 
-  // ── Person's total portfolio value in MYR ─────────────────────
-  let personMYR=0;
+  // Portfolio totals in MYR
+  let personMYR=0,personInvested=0,personPnl=0,personCash=0;
   allCcys.forEach(function(ccy){
-    const mv=sum.mktVal[ccy]||0;
-    const cashBal=(p.cashBalances&&p.cashBalances[ccy])||0;
-    personMYR+=toMYR(mv+cashBal,ccy);
-  });
-  const usedFxCcys=allCcys.filter(function(c){return c!=='MYR';});
-  const fxNoteOv=usedFxCcys.map(function(c){return c+': RM '+(_fx[c]||1).toFixed(2);}).join(' · ');
-  // Calculate P&L for this portfolio
-  let personInvested=0,personPnl=0;
-  allCcys.forEach(function(ccy){
-    const co=sum.cost[ccy]||0;
-    const u=sum.unreal[ccy]||0,d=sum.divs[ccy]||0,r=sum.realized[ccy]||0,pf=sum.platformFees[ccy]||0;
+    const mv=sum.mktVal[ccy]||0,cb=(p.cashBalances&&p.cashBalances[ccy])||0;
+    const co=sum.cost[ccy]||0,u=sum.unreal[ccy]||0,d=sum.divs[ccy]||0,r=sum.realized[ccy]||0,pf=sum.platformFees[ccy]||0;
+    personMYR+=toMYR(mv+cb,ccy);
     personInvested+=toMYR(co,ccy);
     personPnl+=toMYR(Math.round((u+d+r-pf)*100)/100,ccy);
+    personCash+=toMYR(cb,ccy);
   });
   const personPnlPct=personInvested>0?personPnl/personInvested*100:null;
-  const personPnlColor=personPnl>=0?'#00e676':'#ff4d6d';
-  const personBar=personInvested>0?Math.min(Math.abs(personMYR/personInvested)*100,100):0;
+  const pnlCol=personPnl>=0?'#00e676':'#ff4d6d';
+  const pnlSign=personPnl>=0?'+':'-';
 
-  const personCard=
-    '<div id="grand-card-ov" style="cursor:pointer;position:relative;overflow:hidden;'
-    +'background:linear-gradient(160deg,#06040f 0%,#080614 30%,#04080f 60%,#080610 100%);'
-    +'border-radius:16px;padding:.9rem .5rem .85rem .5rem;'
-    +'border:1.5px solid rgba(255,255,255,0.15);'
-    +'box-shadow:0 0 0 1px rgba(120,80,255,0.3),0 0 30px rgba(120,80,255,0.15),0 0 60px rgba(0,180,255,0.08),0 1px 0 rgba(255,255,255,0.18) inset,0 8px 32px rgba(0,0,0,0.7);">'
-    +'<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#7b61ff,#00b4d8,#00e676,#ffaa00,#ff4d6d,#bf5af2);box-shadow:0 0 12px rgba(120,80,255,0.8),0 0 24px rgba(0,180,255,0.4);pointer-events:none"></div>'
-    +'<div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 40% at 50% -10%,rgba(120,80,255,0.12),transparent 60%);pointer-events:none"></div>'
-    +'<div style="position:absolute;inset:0;background:linear-gradient(105deg,rgba(0,200,255,0.04) 0%,transparent 30%,rgba(255,255,255,0.02) 50%,transparent 70%,rgba(180,100,255,0.04) 100%);animation:holoBG 8s ease-in-out infinite alternate;pointer-events:none"></div>'
-    +'<div style="position:absolute;top:8px;left:0;bottom:8px;width:3px;background:linear-gradient(180deg,transparent,#7b61ff 20%,#00b4d8 50%,#7b61ff 80%,transparent);border-radius:0 2px 2px 0;box-shadow:0 0 8px rgba(120,80,255,0.9),0 0 20px rgba(120,80,255,0.4);animation:rodPulse 3s ease-in-out infinite;pointer-events:none"></div>'
-    +'<div style="position:absolute;left:0;width:3px;height:3px;border-radius:50%;background:#7b61ff;box-shadow:0 0 6px #7b61ff,0 0 12px rgba(120,80,255,0.8);animation:particleDrift 3s ease-in-out infinite;pointer-events:none"></div>'
-    +'<div style="position:absolute;left:0;width:2px;height:2px;border-radius:50%;background:#00b4d8;box-shadow:0 0 4px #00b4d8;animation:particleDrift 3s ease-in-out infinite 1s;pointer-events:none"></div>'
-    +'<div style="position:absolute;top:0;left:0;width:18px;height:18px;border-top:2px solid #7b61ff;border-left:2px solid #7b61ff;border-radius:14px 0 0 0;pointer-events:none;box-shadow:0 0 8px rgba(120,80,255,0.6);animation:cornerPulse 3s ease-in-out infinite"></div>'
-    +'<div style="position:absolute;top:0;right:0;width:14px;height:14px;border-top:1.5px solid #00b4d8;border-right:1.5px solid #00b4d8;pointer-events:none;box-shadow:0 0 6px rgba(0,180,216,0.5)"></div>'
-    +'<div style="position:absolute;bottom:0;left:0;width:14px;height:14px;border-bottom:1.5px solid rgba(120,80,255,0.5);border-left:1.5px solid rgba(120,80,255,0.5);border-radius:0 0 0 14px;pointer-events:none"></div>'
-    +'<div style="position:absolute;bottom:0;right:0;width:14px;height:14px;border-bottom:1.5px solid rgba(0,180,216,0.4);border-right:1.5px solid rgba(0,180,216,0.4);border-radius:0 0 14px 0;pointer-events:none"></div>'
-    +'<div style="position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(120,80,255,0.8),rgba(0,180,255,0.8),transparent);animation:scanLine 5s ease-in-out infinite;pointer-events:none;box-shadow:0 0 6px rgba(120,80,255,0.5)"></div>'
-    +'<div style="position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,180,255,0.3),transparent);animation:scanLine2 5s ease-in-out infinite;pointer-events:none"></div>'
-    +'<div style="position:absolute;top:0;left:-120%;width:70%;height:100%;background:linear-gradient(108deg,transparent 42%,rgba(255,255,255,0.05) 50%,transparent 58%);animation:shimmerSweep 7s ease-in-out infinite;pointer-events:none;transform:skewX(-6deg)"></div>'
-    +'<div style="position:absolute;bottom:0;left:25%;right:25%;height:1px;background:linear-gradient(90deg,transparent,rgba(120,80,255,0.6),rgba(0,180,255,0.6),transparent);box-shadow:0 0 8px rgba(120,80,255,0.3);animation:borderPulse 4s ease-in-out infinite;pointer-events:none"></div>'
-    +'<div style="position:absolute;top:0;right:0;width:0;height:0;border-style:solid;border-width:0 22px 22px 0;border-color:transparent var(--bg) transparent transparent;z-index:2"></div>'
-    +'<div style="position:absolute;top:0;right:0;width:22px;height:22px;background:linear-gradient(225deg,rgba(120,80,255,0.2),transparent 60%);pointer-events:none;z-index:1"></div>'
-    +'<div style="position:absolute;top:5px;right:5px;width:3px;height:3px;border-radius:50%;background:#7b61ff;box-shadow:0 0 6px #7b61ff,0 0 12px rgba(120,80,255,0.8);animation:cornerPulse 3s ease-in-out infinite;pointer-events:none;z-index:3"></div>'
-    +'<div style="position:relative;z-index:1;padding-left:4px">'
-    +'<div style="display:flex;align-items:flex-start;justify-content:space-between">'
-    +'<div>'
-    +'<div style="font-size:9px;letter-spacing:1.5px;font-weight:700;color:rgba(255,255,255,0.5);margin-bottom:1px;font-family:Courier New,monospace;text-transform:uppercase">'+p.name.toUpperCase()+' PORTFOLIO VALUE</div>'
-    +'<div style="font-size:8px;color:rgba(255,255,255,0.25);letter-spacing:.3px">(Cash + Holdings only)</div>'
-    +'</div>'
-    +'<div class="pv-val" style="font-size:20px;font-weight:900;color:#fff;letter-spacing:-0.5px;line-height:1;white-space:nowrap;text-shadow:0 0 20px rgba(255,255,255,0.4),0 0 60px rgba(120,80,255,0.3),0 2px 4px rgba(0,0,0,0.8)">RM '+personMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})+'</div>'
-    +'<div class="pv-hide" style="font-size:20px;font-weight:800;color:#fff;letter-spacing:3px;white-space:nowrap">••••••</div>'
-    +'</div>'
-    +'<div style="display:flex;align-items:center;gap:8px;margin:6px 0 8px">'
-    +'<div style="flex:1;height:3px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden">'
-    +'<div style="height:100%;width:'+personBar+'%;background:linear-gradient(90deg,#7b61ff,#00b4d8,#00e676);background-size:200% 100%;border-radius:2px;box-shadow:0 0 8px rgba(120,80,255,0.6);animation:barShimmer 2s linear infinite"></div>'
-    +'</div>'
-    +'<div style="font-size:7px;color:rgba(255,255,255,0.2);letter-spacing:1px;white-space:nowrap;font-family:Courier New,monospace">MYR EQUIVALENT</div>'
-    +'</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
-    +'<div>'
-    +'<div style="font-size:8px;color:rgba(255,255,255,0.35);margin-bottom:2px">Total Invested</div>'
-    +'<div class="pv-val pv-num" style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.85)">RM '+personInvested.toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0})+'</div>'
-    +'<div class="pv-hide" style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.85)">••••••</div>'
-    +'</div>'
-    +'<div style="text-align:right">'
-    +'<div style="font-size:8px;color:rgba(255,255,255,0.4);margin-bottom:2px">Total P&L / % <span style="font-size:7px;opacity:.7">(Unreal+Real+Div-Fee)</span></div>'
-    +'<div class="pv-val pv-num" style="font-size:13px;font-weight:700;color:'+personPnlColor+';text-shadow:0 0 12px '+personPnlColor+'60">'+(personPnl>=0?'+':'')+'RM '+Math.abs(personPnl).toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0})+(personPnlPct!==null?' ('+(personPnlPct>=0?'+':'')+personPnlPct.toFixed(1)+'%)':'')+'</div>'
-    +'<div class="pv-hide" style="font-size:13px;font-weight:700;color:'+personPnlColor+'">•••••• (•••%)</div>'
-    +'</div>'
-    +'</div>'
-    +'</div>'
-    +'</div>';
-  const summaryCcyCards=allCcys.map((ccy,ci)=>{
-    const rows=holdings.filter(h=>h.ccy===ccy);
-    const u=sum.unreal[ccy]||0,d=sum.divs[ccy]||0,r=sum.realized[ccy]||0,pf=sum.platformFees[ccy]||0;
-    const mv=sum.mktVal[ccy]||0,co=sum.cost[ccy]||0,tot=Math.round((Math.round(u*100)/100+Math.round(d*100)/100+Math.round(r*100)/100-Math.round(pf*100)/100)*100)/100;
-    const cashBal=(p.cashBalances&&p.cashBalances[ccy])||0;
-    const pct=co>0?(mv-co)/co*100:null;
-    const totPct=co>0?tot/co*100:null;
-    const totalMV=rows.reduce((s,h)=>s+h.mktVal,0)||1;
-
-    // Fix 4: Sort rows by mkt value descending (highest allocation first)
-    const sortedRows=[...rows].sort((a,b)=>b.mktVal-a.mktVal);
-    const sumMkt=sortedRows.reduce((s,h)=>s+h.mktVal,0);
-    const mvWithCash=sumMkt+cashBal;
-
-    // Mini-cards — row 1: Invested / Unrealized / Realized, row 2: Dividends / Cash
-    const miniCards=
-      // Row 1: Total Invested | Total Holdings Value
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">'
-      +'<div style="'+ccyMiniCardStyle(ccy)+';padding:8px 10px;border-radius:var(--r)">'
-      +'<div style="font-size:10px;color:var(--t2);margin-bottom:3px;letter-spacing:.3px">Total Invested</div>'
-      +'<div style="font-size:12px;font-weight:600;white-space:nowrap;color:var(--t1)">'+fc(co,ccy)+'</div>'
-      +'</div>'
-      +'<div style="'+ccyMiniCardStyle(ccy)+';padding:8px 10px;border-radius:var(--r)">'
-      +'<div style="font-size:10px;color:var(--t2);margin-bottom:3px;letter-spacing:.3px">Total Holdings Value</div>'
-      +'<div style="font-size:12px;font-weight:600;white-space:nowrap;color:var(--t1)">'+fc(sumMkt,ccy)+'</div>'
-      +'</div>'
-      +'</div>'
-      // Row 2: Unrealized P&L | Realized P&L
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">'
-      +'<div style="'+ccyMiniCardStyle(ccy)+';padding:8px 10px;border-radius:var(--r)">'
-      +'<div style="font-size:10px;color:var(--t2);margin-bottom:3px;letter-spacing:.3px">Unrealized P&L</div>'
-      +'<div style="font-size:12px;font-weight:600;white-space:nowrap" class="'+sc(u)+'">'+sgn(u,ccy)+'</div>'
-      +'</div>'
-      +'<div style="'+ccyMiniCardStyle(ccy)+';padding:8px 10px;border-radius:var(--r)">'
-      +'<div style="font-size:10px;color:var(--t2);margin-bottom:3px;letter-spacing:.3px">Realized P&L</div>'
-      +'<div style="font-size:12px;font-weight:600;white-space:nowrap" class="'+sc(r)+'">'+sgn(r,ccy)+'</div>'
-      +'</div>'
-      +'</div>'
-      // Row 3: Dividends | Platform Fees
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px">'
-      +'<div style="'+ccyMiniCardStyle(ccy)+';padding:8px 10px;border-radius:var(--r)">'
-      +'<div style="font-size:10px;color:var(--t2);margin-bottom:3px;letter-spacing:.3px">Dividends</div>'
-      +'<div style="font-size:12px;font-weight:600;white-space:nowrap;color:var(--t1)">'+(d>0?'+'+fc(d,ccy):'—')+'</div>'
-      +'</div>'
-      +'<div style="'+ccyMiniCardStyle(ccy)+';padding:8px 10px;border-radius:var(--r)">'
-      +'<div style="font-size:10px;color:var(--t2);margin-bottom:3px;letter-spacing:.3px">Platform Fees</div>'
-      +'<div style="font-size:12px;font-weight:600;white-space:nowrap;color:'+(pf>0?'var(--red)':'var(--t2)')+'">'+(pf>0?'-'+fc(pf,ccy):'—')+'</div>'
-      +'</div>'
-      +'</div>'
-      // Row 4: Cash Balance left side only
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:.875rem">'
-      +'<div style="padding:8px 10px;'+ccyMiniCardStyleDashed(ccy)+';border-radius:var(--r);cursor:pointer" onclick="openCashModal(\''+p.id+'\',\''+ccy+'\')" title="Click to edit cash balance">'
-      +'<div style="font-size:10px;color:var(--t2);margin-bottom:3px;letter-spacing:.3px">Cash Balance</div>'
-      +'<div style="font-size:12px;font-weight:600;white-space:nowrap;color:var(--t1)">'+(cashBal>0?fc(cashBal,ccy):'+ Add')+'</div>'
-      +'</div>'
-      +'<div></div>'
-      +'</div>';
-
-    // Colour bar (sorted)
-    const colourBar='';
-
-    let tbody='';
-    let cumPct=0;
-    sortedRows.forEach((hh,i)=>{
-      const pfee2=hh.platformFees||0;
-      const tot2=Math.round((hh.unreal+hh.divs+hh.realized-pfee2)*100)/100;
-      const pct2=hh.cost>0?tot2/hh.cost*100:null;
-      const barW=(hh.mktVal/totalMV*100).toFixed(1);
-      const startPct=cumPct;
-      cumPct+=parseFloat(barW);
-      tbody+=`<tr class="ck hld-row" data-s="${hh.stock.toLowerCase()} ${hh.ccy.toLowerCase()}" onclick="drillStock('${hh.stock.replace(/'/g,"\\'")}','${hh.ccy}')">` 
-        +`<td style="white-space:nowrap"><div style="display:flex;align-items:center;gap:6px">${stockLogo(hh.stock,PAL[i%PAL.length],parseFloat(barW),32,startPct)}<div><div style="font-weight:700;font-size:12px">${hh.stock}</div><div style="font-size:9px;color:var(--t3)">${barW}%</div></div></div></td>`
-        +`<td class="r" style="font-weight:600">${hh.mktVal>0?fc(hh.mktVal,hh.mktCcy):'—'}</td>`
-        +`<td class="r" style="font-weight:700;white-space:nowrap">${pct2!==null
-          ?`<div style="color:${tot2>=0?'var(--green)':'var(--red)'};font-weight:700">${sgn(tot2,ccy)}</div><div style="font-size:10px;color:${pct2>=0?'var(--green)':'var(--red)'};opacity:.85">${pct2>=0?'+':''}${pct2.toFixed(1)}%</div>`
-          :'—'}</td>`
-        +'<td style="color:var(--t3);font-size:11px;width:12px">›</td>'
-        +'</tr>';
-    });
-
-    // Fix 3: Footer with Cost Basis sum
-    const sumCost=sortedRows.reduce((s,h)=>s+h.cost,0);
-    const sumU=sortedRows.reduce((s,h)=>s+h.unreal,0);
-    const sumD=sortedRows.reduce((s,h)=>s+h.divs,0);
-    const sumT=sortedRows.reduce((s,h)=>s+h.unreal+h.divs+h.realized,0);
-    const sumC=sortedRows.reduce((s,h)=>s+h.cost,0);
-    const fp2=sumC>0?sumT/sumC*100:null;
-    const holdingsTable=rows.length
-      ?'<div style="overflow-x:auto"><table class="tbl" id="hld-tbl-'+ccy+'" style="border-top:2px solid '+ccyAccent(ccy)+'">'
-        +'<thead><tr>'
-        +'<th style="text-align:left">Stock</th>'
-        +'<th class="r">Holding Value</th>'
-        +'<th class="r">P&L / %<br><span style="font-size:8px;font-weight:400;opacity:.6">(Unreal+Real+Div-Fee)</span></th>'
-        +'<th style="width:12px"></th>'
-        +'</tr></thead><tbody>'+tbody+'</tbody>'
-        +'</table></div>'
-      :'<p class="m" style="font-size:12px;padding:.5rem 0">No active holdings in '+ccy+'.</p>';
-
-    const miniId='mini-'+ccy+'-'+ci;
-    const miniRow='<div id="'+miniId+'" style="display:none;margin-bottom:.875rem">'+miniCards+'</div>';
-    const accent=ccyAccent(ccy);
-
-    return '<div style="position:relative;overflow:hidden;'
-      +'background:linear-gradient(160deg,#06040f 0%,#080614 30%,#04080f 60%,#080610 100%);'
-      +'border-radius:16px;padding:.9rem 1rem .85rem;margin-bottom:1rem;margin-left:-16px;margin-right:-16px;'
-      +'border:1.5px solid rgba(255,255,255,0.15);'
-      +'box-shadow:0 0 0 1px '+accent+'44,0 0 30px '+accent+'22,0 1px 0 rgba(255,255,255,0.18) inset,0 8px 32px rgba(0,0,0,0.7);">'
-      +'<div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,'+accent+','+accent+'99,rgba(255,255,255,0.6),'+accent+'99,'+accent+');box-shadow:0 0 12px '+accent+',0 0 24px '+accent+'88;pointer-events:none"></div>'
-      +'<div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 40% at 50% -10%,'+accent+'18,transparent 60%);pointer-events:none"></div>'
-      +'<div style="position:absolute;inset:0;background:linear-gradient(105deg,'+accent+'08 0%,transparent 30%,rgba(255,255,255,0.02) 50%,transparent 70%,'+accent+'08 100%);animation:holoBG 8s ease-in-out infinite alternate;pointer-events:none"></div>'
-      +'<div style="position:absolute;top:8px;left:0;bottom:8px;width:3px;background:linear-gradient(180deg,transparent,'+accent+' 20%,#fff 50%,'+accent+' 80%,transparent);border-radius:0 2px 2px 0;box-shadow:0 0 8px '+accent+',0 0 20px '+accent+'88;animation:rodPulse 3s ease-in-out infinite;pointer-events:none"></div>'
-      +'<div style="position:absolute;left:0;width:3px;height:3px;border-radius:50%;background:'+accent+';box-shadow:0 0 6px '+accent+',0 0 12px '+accent+'88;animation:particleDrift 3s ease-in-out infinite;pointer-events:none"></div>'
-      +'<div style="position:absolute;top:0;left:0;width:16px;height:16px;border-top:2px solid '+accent+';border-left:2px solid '+accent+';border-radius:14px 0 0 0;pointer-events:none;box-shadow:0 0 8px '+accent+'88;animation:cornerPulse 3s ease-in-out infinite"></div>'
-      +'<div style="position:absolute;top:0;right:0;width:12px;height:12px;border-top:1.5px solid rgba(255,255,255,0.5);border-right:1.5px solid rgba(255,255,255,0.5);pointer-events:none"></div>'
-      +'<div style="position:absolute;bottom:0;left:0;width:12px;height:12px;border-bottom:1.5px solid '+accent+'66;border-left:1.5px solid '+accent+'66;border-radius:0 0 0 14px;pointer-events:none"></div>'
-      +'<div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-bottom:1.5px solid rgba(255,255,255,0.25);border-right:1.5px solid rgba(255,255,255,0.25);border-radius:0 0 14px 0;pointer-events:none"></div>'
-      +'<div style="position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,'+accent+',rgba(255,255,255,0.8),'+accent+',transparent);animation:scanLine 5s ease-in-out infinite;pointer-events:none;box-shadow:0 0 6px '+accent+'"></div>'
-      +'<div style="position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,'+accent+'44,transparent);animation:scanLine2 5s ease-in-out infinite;pointer-events:none"></div>'
-      +'<div style="position:absolute;top:0;left:-120%;width:70%;height:100%;background:linear-gradient(108deg,transparent 42%,rgba(255,255,255,0.05) 50%,transparent 58%);animation:shimmerSweep 7s ease-in-out infinite;pointer-events:none;transform:skewX(-6deg)"></div>'
-      +'<div style="position:absolute;bottom:0;left:25%;right:25%;height:1px;background:linear-gradient(90deg,transparent,'+accent+'88,transparent);box-shadow:0 0 8px '+accent+'44;animation:borderPulse 4s ease-in-out infinite;pointer-events:none"></div>'
-      +'<div style="position:relative;z-index:1;padding-left:10px">'
-      // Header: CCY tag + market value
-      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.75rem">'
-      +'<div style="display:flex;align-items:center;gap:8px">'+ccyTag(ccy,'')
-      +'<div><div style="font-size:9px;letter-spacing:1px;font-weight:700;color:rgba(255,255,255,0.5);font-family:Courier New,monospace">TOTAL MARKET VALUE</div>'
-      +'<div style="font-size:8px;color:rgba(255,255,255,0.25)">(Cash + Holdings only)</div></div>'
-      +'</div>'
-      +'<div style="text-align:right">'
-      +'<span class="pv-val" style="font-size:20px;font-weight:900;color:#fff;letter-spacing:-0.5px;white-space:nowrap;text-shadow:0 0 20px rgba(255,255,255,0.4),0 0 40px '+accent+'66">'+fc(mvWithCash,ccy)+'</span>'
-      +'<span class="pv-hide" style="font-size:20px;font-weight:800;color:#fff;letter-spacing:2px">••••</span>'
-      +'</div>'
-      +'</div>'
-      // Progress bar
-      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:.75rem">'
-      +'<div style="flex:1;height:3px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden">'
-      +'<div style="height:100%;width:'+(co>0?Math.min(Math.abs(mvWithCash/co)*100,100):0).toFixed(1)+'%;background:linear-gradient(90deg,'+accent+',#fff,'+accent+');background-size:200% 100%;border-radius:2px;box-shadow:0 0 8px '+accent+'88;animation:barShimmer 2s linear infinite"></div>'
-      +'</div>'
-      +'<div style="font-size:7px;color:rgba(255,255,255,0.2);letter-spacing:1px;white-space:nowrap;font-family:Courier New,monospace">'+ccy+' PORTFOLIO</div>'
-      +'</div>'
-      // Invested + P&L row
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:.875rem">'
-      +'<div><div style="font-size:8px;color:rgba(255,255,255,0.35);margin-bottom:2px">Total Invested</div>'
-      +'<div class="pv-val pv-num" style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.85)">'+fc(co,ccy)+'</div>'
-      +'<div class="pv-hide" style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.85)">••••••</div>'
-      +'</div>'
-      +'<div style="text-align:right">'
-      +'<div style="font-size:8px;color:rgba(255,255,255,0.4);margin-bottom:2px">Total P&L / % <span style="font-size:7px;opacity:.7">(Unreal+Real+Div-Fee)</span></div>'
-      +'<div class="pv-val pv-num" style="font-size:13px;font-weight:700;color:'+scColor(tot)+';text-shadow:0 0 12px '+scColor(tot)+'66;cursor:pointer" onclick="toggleMini(\''+miniId+'\')">'+sgn(tot,ccy)+(totPct!==null?' ('+(totPct>=0?'+':'')+totPct.toFixed(1)+'%)':'')+'</div>'
-      +'<div class="pv-hide" style="font-size:13px;font-weight:700;color:'+scColor(tot)+'">•••••• (•••%)</div>'
-      +'</div>'
-      +'</div>'
-      // Mini cards (expandable)
-      +miniRow
-      // Holdings divider
-      +'<div style="display:flex;align-items:center;gap:8px;margin:4px 0 8px">'
-      +'<div style="flex:1;height:1px;background:linear-gradient(90deg,'+accent+',transparent)"></div>'
-      +'<span style="font-size:8px;color:rgba(255,255,255,0.35);font-family:Courier New,monospace;letter-spacing:1px">HOLDINGS</span>'
-      +'<div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,'+accent+')"></div>'
-      +'</div>'
-      +holdingsTable
-      +'</div>'
-      +'</div>';
-  }).join('');
-  // Inject personCard into grand-wrap (same fixed position as dashboard grand card)
+  // Hide grand-wrap for overview
   setTimeout(function(){
     const gw=document.getElementById('grand-wrap');
     const gs=document.getElementById('grand-spacer');
-    if(gw){
-      const hd=document.getElementById('hd');
-      const tb=document.getElementById('tb-wrap');
-      const db=document.getElementById('date-bar');
-      const hdH=hd?hd.getBoundingClientRect().height:0;
-      const tbH=tb?tb.getBoundingClientRect().height:0;
-      const dbH=db&&db.style.display!=='none'?db.getBoundingClientRect().height:0;
-      gw.style.top=(hdH+tbH+dbH)+'px';
-      gw.innerHTML='<div onclick="togglePrivacy()" style="cursor:pointer">'+personCard+'</div>';
-      gw.style.display='block';
-      setTimeout(function(){
-        const h=gw.getBoundingClientRect().height;
-        if(gs){gs.style.display='block';gs.style.height=h+'px';}
-        fixLayout();
-      },50);
-    }
+    if(gw){gw.style.display='none';gw.innerHTML='';}
+    if(gs){gs.style.display='none';gs.style.height='0';}
+    fixLayout();
   },0);
-  return summaryCcyCards;
+
+  // ── PALETTE for ccy dots/bars ─────────────────────────
+  const CCY_COLORS={'MYR':'#3b82f6','SGD':'#f59e0b','USD':'#22c55e','GBP':'#a78bfa','HKD':'#f43f5e','JPY':'#06b6d4'};
+  const ccyColor=(c)=>CCY_COLORS[c]||'#888';
+
+  // Build per-ccy data
+  const ccyData=allCcys.map(function(ccy){
+    const rows=holdings.filter(h=>h.ccy===ccy);
+    const mv=sum.mktVal[ccy]||0,co=sum.cost[ccy]||0;
+    const u=sum.unreal[ccy]||0,d=sum.divs[ccy]||0,r=sum.realized[ccy]||0,pf2=sum.platformFees[ccy]||0;
+    const cb=(p.cashBalances&&p.cashBalances[ccy])||0;
+    const tot=Math.round((u+d+r-pf2)*100)/100;
+    const totPct=co>0?tot/co*100:null;
+    const mvWithCash=mv+cb;
+    const mvMYR=toMYR(mvWithCash,ccy);
+    return {ccy,rows,mv,co,u,d,r,pf:pf2,cb,tot,totPct,mvWithCash,mvMYR};
+  });
+
+  const totalMYR2=ccyData.reduce((s,c)=>s+c.mvMYR,0)||1;
+
+  // Health score for this portfolio
+  const ovHp=Math.max(15,Math.min(100,50+(personPnlPct||0)*0.4));
+  const ovHlbl=ovHp>72?'Strong':ovHp>52?'Balanced':ovHp>36?'Moderate':'Weak';
+  const ovHcol=ovHp>72?'#4a9e72':ovHp>52?'#a89040':ovHp>36?'#8a6030':'#905050';
+
+  const healthPill=`<div style="
+    flex-shrink:0;
+    background:rgba(12,10,8,0.85);
+    border:1px solid rgba(255,255,255,0.08);
+    border-left:2px solid ${ovHcol};
+    border-radius:12px;
+    padding:10px 12px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+    min-width:80px;text-align:center">
+    <svg width="30" height="11" viewBox="0 0 30 11" style="display:block">
+      <polyline points="0,8 4,8 6,2 8,10 10,1 12,8 15,8 18,8 20,5 22,8 30,8"
+        fill="none" stroke="${ovHcol}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div style="font-size:18px;font-weight:200;color:${ovHcol};line-height:1;letter-spacing:-0.5px">${Math.round(ovHp)}%</div>
+    <div style="font-size:8px;font-weight:600;color:${ovHcol};letter-spacing:1px;text-transform:uppercase">${ovHlbl}</div>
+  </div>`;
+
+  const topCard=`<div style="margin:0 0 0;padding:0 0 12px">
+    <!-- Same structure as dashboard heroSection -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:8.5px;font-weight:400;color:rgba(180,140,50,0.5);letter-spacing:2px;text-transform:uppercase;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;margin-bottom:8px">${p.name} · Total Net Worth</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <div>
+          <div class="pv-networth-wrap">
+            <div class="pv-val" style="font-size:34px;font-weight:200;color:rgba(255,255,255,0.92);letter-spacing:-1px;line-height:1.05;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;white-space:nowrap">RM ${personMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+            <div class="pv-hide" style="font-size:34px;color:rgba(255,255,255,0.92);font-weight:200;line-height:1.05;white-space:nowrap">••••••••</div>
+          </div>
+          </div>
+          <button onclick="togglePrivacy()" style="background:none;border:none;cursor:pointer;padding:4px;opacity:0.38;line-height:0;flex-shrink:0">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(200,160,60,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <div style="width:24px;height:1px;background:rgba(180,140,50,0.35)"></div>
+      </div>
+      ${healthPill}
+    </div>
+    <!-- 4 minicards below net worth -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:4px">
+      ${[
+        {icon:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M16 3l-4 4-4-4"/><circle cx="17" cy="13" r="1.5" fill="currentColor" stroke="none"/></svg>',
+          lbl:'Cash',val:'RM '+personCash.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2}),sub:personPnlPct!==null?(personPnlPct>=0?'+':'')+personPnlPct.toFixed(2)+'%':'—',col:'#b08830',priv:true},
+        {icon:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 12l10 5 10-5"/><path d="M2 17l10 5 10-5"/></svg>',
+          lbl:'Holdings',val:String(getHoldings(p,true).length),sub:'Positions',col:'#28906a',priv:false},
+        {icon:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>',
+          lbl:'Invested',val:'RM '+personInvested.toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0}),sub:'100%',col:'#607090',priv:true,subPriv:false},
+        {icon:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>',
+          lbl:'Return',val:(personPnl>=0?'+':'-')+'RM '+Math.abs(personPnl).toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0}),sub:personPnlPct!==null?(personPnlPct>=0?'+':'')+personPnlPct.toFixed(1)+'%':'—',col:pnlCol,priv:true},
+      ].map(m=>`<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-top:2px solid ${m.col}88;border-radius:10px;padding:9px 6px;text-align:center">
+        <div style="color:${m.col};opacity:0.7;display:flex;justify-content:center;margin-bottom:5px">${m.icon}</div>
+        <div style="font-size:6.5px;color:rgba(255,255,255,0.25);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif">${m.lbl}</div>
+        ${m.priv
+          ?`<div class="pv-val" style="font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.val}</div><div class="pv-hide" style="font-size:10px;color:#fff">••••</div>`
+          :`<div style="font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden">${m.val}</div>`}
+        ${m.priv
+          ?`<div class="pv-val" style="font-size:8px;color:${m.col};margin-top:2px;opacity:0.75;font-weight:500">${m.sub}</div><div class="pv-hide" style="font-size:8px;color:${m.col};margin-top:2px;font-weight:500">—</div>`
+          :`<div style="font-size:8px;color:${m.col};margin-top:2px;opacity:0.75;font-weight:500">${m.sub}</div>`}
+      </div>`).join('')}
+    </div>
+  </div>`;
+
+  // ── ASSET SUMMARY — allocation % + P&L in each row ───
+  let assetRows='';
+  ccyData.forEach(function(c){
+    const col=ccyColor(c.ccy);
+    const allocPct=(c.mvMYR/totalMYR2*100).toFixed(1);
+    const barW=Math.min(parseFloat(allocPct),100);
+    const totPctStr=c.totPct!==null?` (${c.totPct.toFixed(1)}%)` :'';
+    const totCol=c.tot>=0?'#00e676':'#ff4d6d';
+    assetRows+=`<div onclick="goPortfolioCcy('${p.id}','${c.ccy}')" style="display:flex;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;gap:10px">
+      <div style="width:36px;height:36px;border-radius:10px;background:${col}20;border:1.5px solid ${col}55;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span style="font-size:10px;font-weight:700;color:${col}">${c.ccy}</span>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:2px">
+          <span style="font-size:13px;font-weight:700;color:#fff">${allocPct}%</span>
+          <span style="font-size:10px;color:rgba(255,255,255,0.35)">of portfolio</span>
+        </div>
+        <div class="pv-val" style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:5px">${fc(c.mvWithCash,c.ccy)}</div>
+        <div class="pv-hide" style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:5px">••••</div>
+        <div style="height:2px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden">
+          <div style="height:100%;width:${barW}%;background:linear-gradient(90deg,${col}cc,${col});border-radius:2px;box-shadow:0 0 6px ${col}88"></div>
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;min-width:0">
+        <div class="pv-val" style="font-size:12px;font-weight:600;color:${totCol};white-space:nowrap">${c.tot>=0?'+':'-'}${fc(Math.abs(c.tot),c.ccy)}</div>
+        <div class="pv-hide" style="font-size:12px;color:${totCol}">••••</div>
+        <div class="pv-val" style="font-size:10px;color:${totCol};margin-top:2px;opacity:0.75">${c.totPct!==null?(c.tot>=0?'+':'')+c.totPct.toFixed(1)+'%':'—'}</div>
+        <div class="pv-hide" style="font-size:10px;color:${totCol}">••••</div>
+      </div>
+      <div style="color:rgba(255,255,255,0.2);font-size:14px;flex-shrink:0">›</div>
+    </div>`;
+  });
+
+  const assetSummary=`<div style="margin:0;padding:0 0 4px">
+    <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:2px;margin-bottom:10px;text-transform:uppercase;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06)">Asset Summary</div>
+    <div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:2px">
+      <span style="font-size:9px;color:rgba(255,255,255,0.22);font-weight:600;letter-spacing:1px">ASSET</span>
+      <span style="font-size:9px;color:rgba(255,255,255,0.22);font-weight:600;letter-spacing:1px">NET P&L</span>
+    </div>
+    ${assetRows}
+  </div>`;
+
+  // ── ALL HOLDINGS TABLE ────────────────────────────────
+  const allHoldings=[...holdings].sort((a,b)=>toMYR(b.mktVal,b.ccy)-toMYR(a.mktVal,a.ccy));
+  const LOGO_COLORS=['#3b82f6','#22c55e','#a78bfa','#f59e0b','#f43f5e','#06b6d4','#8b5cf6','#ec4899'];
+  let holdingRows='';
+  allHoldings.slice(0,10).forEach(function(h,i){
+    const col=LOGO_COLORS[i%LOGO_COLORS.length];
+    const myrVal=toMYR(h.mktVal,h.ccy);
+    const tot2=h.unreal+h.divs+h.realized-(h.platformFees||0);
+    const pct2=h.cost>0?tot2/h.cost*100:null;
+    const tCol=tot2>=0?'#00e676':'#ff4d6d';
+    holdingRows+=`<div onclick="drillStock('${h.stock.replace(/'/g,"\\'")}','${h.ccy}')" style="display:flex;align-items:center;padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;gap:10px">
+      <div style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.3);width:16px;flex-shrink:0">${i+1}</div>
+      <div style="width:34px;height:34px;border-radius:50%;background:${col}18;border:1.5px solid ${col}55;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span style="font-size:11px;font-weight:700;color:${col}">${h.stock.charAt(0).toUpperCase()}</span>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;color:#fff">${h.stock}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div class="pv-val" style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap">${fc(h.mktVal,h.mktCcy||h.ccy)}</div>
+        <div class="pv-hide" style="font-size:13px;color:#fff">••••</div>
+        ${h.ccy!=='MYR'?`<div class="pv-val" style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;white-space:nowrap">RM ${myrVal.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div><div class="pv-hide" style="font-size:10px;color:rgba(255,255,255,0.35)">••••</div>`:''}
+      </div>
+    </div>`;
+  });
+
+  const viewAll=allHoldings.length>10?`<div onclick="drillStock('','MYR')" style="text-align:right;padding:10px 0;font-size:12px;font-weight:600;color:#3b82f6;cursor:pointer">View All Holdings ›</div>`:'';
+
+  const holdingsCard=`<div style="margin:0;padding:0 0 4px">
+    <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:2px;margin-bottom:12px;text-transform:uppercase;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06)">Holdings (by Market Value — MYR Equivalent)</div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.07)">
+      <span style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.25);letter-spacing:1px">#&nbsp;&nbsp;STOCK</span>
+      <span style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.25);letter-spacing:1px">HOLDING VALUE</span>
+    </div>
+    ${holdingRows}
+    ${viewAll}
+  </div>`;
+
+  return `<div style="padding:14px 16px 0;min-height:100vh;background:radial-gradient(ellipse at 25% 58%,rgba(120,80,10,0.06) 0%,transparent 42%),radial-gradient(ellipse at 72% 42%,rgba(8,80,40,0.04) 0%,transparent 38%),#020202">${topCard}${assetSummary}${holdingsCard}</div>`;
 }
+
 function drawOverviewCharts(p){
   const h=getHoldings(p,true);
   [...new Set(h.map(x=>x.ccy))].forEach(ccy=>{
@@ -1677,6 +1992,107 @@ function drawOverviewCharts(p){
 }
 
 // ── Holdings tab ────────────────────────────────────────────────────────────────
+function renderCcyDetail(p,ccy){
+  const sum=getSummary(p);
+  const mv=sum.mktVal[ccy]||0,co=sum.cost[ccy]||0;
+  const u=sum.unreal[ccy]||0,d=sum.divs[ccy]||0,r=sum.realized[ccy]||0,pf2=sum.platformFees[ccy]||0;
+  const cb=(p.cashBalances&&p.cashBalances[ccy])||0;
+  const tot=Math.round((u+d+r-pf2)*100)/100;
+  const totPct=co>0?tot/co*100:null;
+  const mvWithCash=mv+cb;
+  const col=({'MYR':'#3b82f6','SGD':'#f59e0b','USD':'#22c55e','GBP':'#a78bfa','HKD':'#f43f5e','JPY':'#06b6d4'})[ccy]||'#888';
+  const holdings=getHoldings(p,true).filter(h=>h.ccy===ccy).sort((a,b)=>toMYR(b.mktVal,b.ccy)-toMYR(a.mktVal,a.ccy));
+  const COLORS=['#3b82f6','#22c55e','#a78bfa','#f59e0b','#f43f5e','#06b6d4','#8b5cf6','#ec4899'];
+
+  // Metric card helper — matching Image 1 style
+  function mkCard(label,val,valCol,sub,subCol,dashed){
+    return `<div style="
+      background:rgba(255,255,255,0.03);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:12px;padding:12px 14px;
+      ${dashed?'border-style:dashed;':''}">
+      <div style="font-size:11px;color:rgba(255,255,255,0.38);margin-bottom:6px;font-weight:500">${label}</div>
+      <div class="pv-val" style="font-size:16px;font-weight:700;color:${valCol||'#fff'};line-height:1">${val}</div>
+      <div class="pv-hide" style="font-size:16px;font-weight:700;color:${valCol||'#fff'}">••••</div>
+      ${sub?`<div class="pv-val" style="font-size:11px;color:${subCol||'rgba(255,255,255,0.4)'};margin-top:4px">${sub}</div>
+      <div class="pv-hide" style="font-size:11px;color:${subCol||'rgba(255,255,255,0.4)'}">••••</div>`:''}
+    </div>`;
+  }
+
+  // back
+  const back=`<div onclick="VIEW=null;render()" style="display:flex;align-items:center;gap:6px;margin-bottom:14px;cursor:pointer;padding:2px 0">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    <span style="font-size:13px;color:rgba(255,255,255,0.45)">Overview</span>
+  </div>`;
+
+  // Header
+  const header=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+    <div style="width:42px;height:42px;border-radius:12px;background:${col}20;border:1.5px solid ${col}66;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <span style="font-size:13px;font-weight:700;color:${col}">${ccy}</span>
+    </div>
+    <div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px">${p.name} · ${ccy} Portfolio</div>
+      <div class="pv-val" style="font-size:22px;font-weight:700;color:#fff;line-height:1;letter-spacing:-0.3px">${fc(mvWithCash,ccy)}</div>
+      <div class="pv-hide" style="font-size:22px;font-weight:700;color:#fff">••••••</div>
+    </div>
+  </div>`;
+
+  // 2-col grid of metric cards matching Image 1
+  const unrealCol=u>=0?'#00e676':'#ff4d6d';
+  const realCol=r>=0?'#00e676':'rgba(255,255,255,0.85)';
+  const totCol=tot>=0?'#00e676':'#ff4d6d';
+  const grid=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+    ${mkCard('Total Invested',fc(co,ccy),'rgba(255,255,255,0.88)')}
+    ${mkCard('Total Holdings Value',fc(mv,ccy),'rgba(255,255,255,0.88)')}
+    ${mkCard('Unrealized P&L',
+      (u>=0?'+':'')+fc(u,ccy), unrealCol,
+      totPct!==null?(u>=0?'+':'')+totPct.toFixed(1)+'%':null, unrealCol)}
+    ${mkCard('Realized P&L',(r>=0?'+':'')+fc(r,ccy),realCol)}
+    ${mkCard('Dividends',d>0?fc(d,ccy):'—','rgba(255,255,255,0.55)')}
+    ${mkCard('Platform Fees',pf2>0?fc(pf2,ccy):'—','rgba(255,255,255,0.55)')}
+    ${cb>0
+      ? `<div onclick="openCashModal('${p.id}','${ccy}')" style="cursor:pointer">
+           ${mkCard('Cash Balance',fc(cb,ccy),'rgba(255,255,255,0.88)',null,null,false)}
+         </div>`
+      : `<div onclick="openCashModal('${p.id}','${ccy}')" style="cursor:pointer">
+           ${mkCard('Cash Balance','+ Add','rgba(255,255,255,0.4)',null,null,true)}
+         </div>`}
+  </div>`;
+
+  // Holdings list — no shares shown (visible in drill-down)
+  let rows='';
+  holdings.forEach(function(h,i){
+    const hCol=COLORS[i%COLORS.length];
+    const hTot=h.unreal+h.divs+h.realized-(h.platformFees||0);
+    const hPct=h.cost>0?hTot/h.cost*100:null;
+    const hCol2=hTot>=0?'#00e676':'#ff4d6d';
+    rows+=`<div onclick="drillStock('${h.stock.replace(/'/g,"\\'")}','${h.ccy}')"
+      style="display:flex;align-items:center;padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer;gap:10px">
+      <div style="width:36px;height:36px;border-radius:50%;background:${hCol}20;border:1.5px solid ${hCol}55;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span style="font-size:13px;font-weight:700;color:${hCol}">${h.stock.charAt(0)}</span>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:600;color:#fff">${h.stock}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.32);margin-top:1px">${h.qty&&h.qty>0?h.qty.toLocaleString('en',{maximumFractionDigits:4})+' shares':'—'}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div class="pv-val" style="font-size:14px;font-weight:600;color:#fff;white-space:nowrap">${fc(h.mktVal,h.mktCcy||h.ccy)}</div>
+        <div class="pv-hide" style="font-size:14px;color:#fff">••••</div>
+        <div class="pv-val" style="font-size:11px;color:${hCol2};margin-top:2px;white-space:nowrap">${hTot>=0?'+':''}${fc(hTot,ccy)}${hPct!==null?' ('+hPct.toFixed(1)+'%)':''}</div>
+        <div class="pv-hide" style="font-size:11px;color:${hCol2}">••••</div>
+      </div>
+      <div style="color:rgba(255,255,255,0.2);font-size:14px;flex-shrink:0">›</div>
+    </div>`;
+  });
+
+  const holdCard=`<div style="margin:0 0 10px;padding:14px 16px 4px">
+    <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:2px;margin-bottom:10px;text-transform:uppercase">Holdings · ${ccy}</div>
+    ${rows||'<div style="padding:20px 0;text-align:center;color:rgba(255,255,255,0.3);font-size:13px">No holdings</div>'}
+  </div>`;
+
+  return `<div style="padding:14px 14px 8px">${back}${header}${grid}${holdCard}</div>`;
+}
+
 function renderHoldings(p){
   const h=getHoldings(p,true);
   if(!h.length)return'<div class="card m" style="text-align:center;padding:2rem">No active holdings.</div>';
@@ -1836,16 +2252,7 @@ function renderStockDetail(p,stock,ccy){
 
 // ── Transactions tab with search ─────────────────────────────────────────────────
 function renderTransactions(p){
-  if(window.txSubTab===undefined)window.txSubTab='trade';
-  function tabBtn(key,label){
-    const on=window.txSubTab===key;
-    return`<button onclick="window.txSubTab='${key}';renderContent()" style="padding:6px 20px;font-size:12px;font-weight:${on?700:500};border-radius:20px;border:1px solid ${on?'rgba(255,255,255,0.4)':'rgba(255,255,255,0.1)'};color:${on?'#fff':'rgba(255,255,255,0.35)'};background:${on?'rgba(255,255,255,0.08)':'transparent'};cursor:pointer;transition:all .2s;box-shadow:${on?'0 0 12px rgba(255,255,255,0.12),inset 0 1px 0 rgba(255,255,255,0.15)':'none'}">${label}</button>`;
-  }
-  const subTabs=`<div style="display:flex;gap:8px;margin-bottom:1.25rem;justify-content:center">${tabBtn('trade','Trade')}${tabBtn('option','Option')}</div>`;
-  if(window.txSubTab==='option'){
-    return`<div>${subTabs}${renderOptions()}</div>`;
-  }
-  return`<div>${subTabs}${renderTx(p)}</div>`;
+  return`<div style="background:radial-gradient(ellipse at 25% 58%,rgba(120,80,10,0.06) 0%,transparent 42%),radial-gradient(ellipse at 72% 42%,rgba(8,80,40,0.04) 0%,transparent 38%),#020202;min-height:100vh">${renderTx(p)}</div>`;
 }
 
 function renderTx(p,filterYrCcy){
@@ -1854,6 +2261,7 @@ function renderTx(p,filterYrCcy){
   txs.sort((a,b)=>b.date.localeCompare(a.date));
   const isFiltered=!!filterYrCcy;
   let html='';
+
   if(isFiltered){
     html+='<div class="bb" onclick="TAB=\'journey\';journeyFilter=null;renderContent()">← Back to Journey</div>';
     html+='<div style="margin-bottom:.75rem;padding:.5rem .75rem;background:var(--bd);border-radius:var(--r);font-size:12px;color:var(--blue)">Dividends for '+filterYrCcy.ccy+' in '+filterYrCcy.yr+'</div>';
@@ -1864,31 +2272,24 @@ function renderTx(p,filterYrCcy){
       +'<select id="tx-type-filter" onchange="filterTxTable()" style="flex:1">'+typeFilterOpts+'</select>'
       +'<button class="pri sm" id="bat" onclick="omm(\'at\')" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;padding:0;font-size:18px;line-height:1;border-radius:50%;flex-shrink:0">+</button>'
       +'</div>'
-      +'<div style="font-size:10px;color:rgba(255,255,255,0.25);margin-bottom:.5rem;letter-spacing:.5px;font-family:Courier New,monospace" id="tx-count">'+txs.length+' TRANSACTIONS</div>'
-      +'<script>setTimeout(function(){var l=document.getElementById("tx-table-count-label");if(l)l.textContent="('+txs.length+')";},0);</scr'+'ipt>';
+      +'<div style="font-size:10px;color:rgba(255,255,255,0.25);margin-bottom:.75rem;letter-spacing:.5px;font-family:Courier New,monospace" id="tx-count">'+txs.length+' TRANSACTIONS</div>';
   }
-  // Build closed trades view (hidden by default)
+
+  // Closed trades view (unchanged, hidden by default)
   const _closedAll=getHoldings(p,false).filter(h=>(h.realized!==0||h.divs!==0));
-  // Deduct fees from closed summary
-  const _pfByCcy={};
-  p.transactions.filter(t=>t.type==='Platform Fee').forEach(t=>{_pfByCcy[t.ccy]=(_pfByCcy[t.ccy]||0)+(+t.amount||0);});
   const _closedByCcy={};
   _closedAll.forEach(h=>{
     if(!_closedByCcy[h.ccy])_closedByCcy[h.ccy]={r:0,d:0};
     _closedByCcy[h.ccy].r+=Math.round(h.realized*100)/100;
     _closedByCcy[h.ccy].d+=Math.round(h.divs*100)/100;
   });
-  Object.keys(_closedByCcy).forEach(ccy=>{
-    _closedByCcy[ccy].r=Math.round(_closedByCcy[ccy].r*100)/100;
-    _closedByCcy[ccy].d=Math.round(_closedByCcy[ccy].d*100)/100;
-  });
   const _closedSummary=Object.entries(_closedByCcy).map(([ccy,v])=>
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:.75rem">'
-    +'<div style="padding:10px 12px;background:linear-gradient(135deg,#090910,#0c0c18);border:1px solid rgba(255,255,255,0.06);border-radius:8px">'
-    +'<div style="font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:.3px;margin-bottom:3px">P&L Realized ('+ccy+')</div>'
+    +'<div style="padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px">'
+    +'<div style="font-size:9px;color:rgba(255,255,255,0.3);margin-bottom:3px">P&L Realized ('+ccy+')</div>'
     +'<div style="font-size:13px;font-weight:700" class="'+sc(v.r)+'">'+sgn(v.r,ccy)+'</div></div>'
-    +'<div style="padding:10px 12px;background:linear-gradient(135deg,#090910,#0c0c18);border:1px solid rgba(255,255,255,0.06);border-radius:8px">'
-    +'<div style="font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:.3px;margin-bottom:3px">Dividends ('+ccy+')</div>'
+    +'<div style="padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px">'
+    +'<div style="font-size:9px;color:rgba(255,255,255,0.3);margin-bottom:3px">Dividends ('+ccy+')</div>'
     +'<div style="font-size:13px;font-weight:700;color:'+(v.d>0?'var(--green)':'var(--t3)')+'">'+( v.d>0?fc(v.d,ccy):'—')+'</div></div>'
     +'</div>'
   ).join('');
@@ -1910,45 +2311,146 @@ function renderTx(p,filterYrCcy){
   }).join('');
   html+='<div id="tx-closed-view" style="display:none">'
     +_closedSummary
-    +'<div style="font-size:10px;color:rgba(255,255,255,0.25);margin-bottom:.5rem;letter-spacing:.5px;font-family:Courier New,monospace" id="tx-closed-count">'+_closedAll.length+' POSITION'+(_closedAll.length!==1?'S':'')+'</div>'
-    +'<div style="overflow-x:auto"><table class="tbl" id="tx-closed-table"><thead><tr>'
+    +'<div style="font-size:10px;color:rgba(255,255,255,0.25);margin-bottom:.5rem;letter-spacing:.5px;font-family:Courier New,monospace">'+_closedAll.length+' POSITION'+(_closedAll.length!==1?'S':'')+'</div>'
+    +'<div style="overflow-x:auto"><table class="tbl"><thead><tr>'
     +'<th>Stock</th><th>CCY</th><th class="r">Realized P&L</th><th class="r">Dividends</th><th class="r">Net P&L</th><th class="r">P&L %</th><th>First Buy</th>'
     +'</tr></thead><tbody>'+_closedRows+'</tbody></table></div>'
     +(_closedAll.length===0?'<div class="m" style="text-align:center;padding:2rem;font-size:12px">No realized P&L yet.</div>':'')
     +'</div>';
-  html+='<div id="tx-table-wrap">'
-    +'<div onclick="toggleTxRows(this)" style="cursor:pointer;position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(0,212,255,0.04),rgba(0,212,255,0.01));border:1px solid rgba(0,212,255,0.12);border-left:3px solid rgba(0,212,255,0.5);border-radius:var(--r);padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px;box-shadow:inset 0 1px 0 rgba(0,212,255,0.08)">'
-    +'<span class="tx-toggle-arrow" style="font-size:10px;color:rgba(0,212,255,0.5)">▶</span>'
-    +'<span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.7)">Trades</span>'
-    +'<span style="margin-left:auto;font-size:11px;background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);border-radius:10px;padding:1px 8px;color:var(--blue)" id="tx-table-count-label">'+txs.length+'</span>'
-    +'</div>'
-    +'<div class="tx-rows-body" style="display:none;overflow-x:auto"><table class="tbl" id="tx-table"><thead><tr>'
-    +'<th>Date</th><th>Type</th><th>Stock</th><th class="r">Qty</th><th class="r">Price</th>'
-    +'<th class="r">Fee</th><th class="r">Amount</th><th>Note</th>'
-    +(isFiltered?'':'<th style="width:52px"></th>')
-    +'</tr></thead><tbody>';
+
+  // ── Clean card list — Date · Type · Stock · Amount ──
+  const TYPE_COL={'Buy':'#3b82f6','Sell':'#00e676','Dividend':'#f59e0b','Platform Fee':'#888'};
+  html+='<div id="tx-table-wrap">';
   txs.forEach(tx=>{
     const amt=tx.amount!=null?+tx.amount:tx.type==='Sell'?(+tx.qty)*(+tx.price)-(+tx.fee||0):(+tx.qty)*(+tx.price)+(+tx.fee||0);
+    const amtStr=amt>0?fc(amt,tx.ccy):'—';
+    const col=TYPE_COL[tx.type]||'#888';
     const ds=((tx.stock||'').toLowerCase()+' '+tx.type.toLowerCase()+' '+(tx.note||'').toLowerCase()+' '+tx.date).replace(/"/g,'');
-    html+='<tr data-search="'+ds+'">'
-      +'<td class="m">'+tx.date+'</td>'
-      +'<td>'+bdg(tx.type)+'</td>'
-      +'<td style="font-weight:600">'+(tx.stock||'—')+'</td>'
-      +'<td class="r m">'+(tx.qty>0?(+tx.qty).toLocaleString():'—')+'</td>'
-      +'<td class="r">'+(tx.price>0?fc(+tx.price,tx.ccy,4):'—')+'</td>'
-      +'<td class="r m">'+(tx.fee>0?fc(+tx.fee,tx.ccy):'—')+'</td>'
-      +'<td class="r" style="font-weight:600">'+(amt>0?fc(amt,tx.ccy):'—')+'</td>'
-      +'<td class="m">'+(tx.note||'—')+'</td>';
-    if(!isFiltered){
-      html+='<td style="white-space:nowrap">'
-        +'<button class="ib" onclick="oet(\''+tx.id+'\')">✎</button>'
-        +'<button class="ib" onclick="odt(\''+tx.id+'\')" style="color:var(--red)">✕</button>'
-        +'</td>';
-    }
-    html+='</tr>';
+    const safeId=tx.id.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    html+=`<div data-search="${ds}" onclick="openTxDetail('${safeId}')"
+      style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;gap:8px">
+      <div style="width:6px;height:6px;border-radius:50%;background:${col};flex-shrink:0;margin-top:1px"></div>
+      <div style="min-width:0;flex:1">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:1px">
+          <span style="font-size:13px;font-weight:600;color:#fff">${tx.stock||'—'}</span>
+          <span style="font-size:9px;font-weight:600;color:${col};background:${col}18;padding:1px 5px;border-radius:6px;border:1px solid ${col}33">${tx.type}</span>
+        </div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.3)">${tx.date}${tx.note?' · '+tx.note:''}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:12px;font-weight:600;color:#fff;white-space:nowrap">${amtStr}</div>
+        ${tx.qty>0?`<div style="font-size:9px;color:rgba(255,255,255,0.28)">${(+tx.qty).toLocaleString()} shares</div>`:''}
+      </div>
+      <div style="color:rgba(255,255,255,0.15);font-size:12px;flex-shrink:0">›</div>
+    </div>`;
   });
-  html+='</tbody></table></div></div>';
-  if(txs.length===0)html+='<div class="m" style="text-align:center;padding:2rem;font-size:12px">No transactions found.</div>';  return html;
+  html+='</div>';
+
+  if(txs.length===0)html+='<div class="m" style="text-align:center;padding:2rem;font-size:12px">No transactions found.</div>';
+  return html;
+}
+
+function openTxDetail(txId){
+  const p=pf();
+  const tx=p.transactions.find(t=>t.id===txId);
+  if(!tx)return;
+  _renderTxModal(tx,false);
+}
+
+function _renderTxModal(tx,editing){
+  const TYPE_COL={'Buy':'#3b82f6','Sell':'#00e676','Dividend':'#f59e0b','Platform Fee':'#888'};
+  const col=TYPE_COL[tx.type]||'#888';
+  const amt=tx.amount!=null?+tx.amount:tx.type==='Sell'?(+tx.qty)*(+tx.price)-(+tx.fee||0):(+tx.qty)*(+tx.price)+(+tx.fee||0);
+  const isF=tx.type==='Dividend'||tx.type==='Platform Fee';
+  const safeId=tx.id;
+
+  let html=`<div id="txd-wrap">`;
+
+  // Header — no edit button here, moves to bottom
+  html+=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.08)">
+    <div style="width:38px;height:38px;border-radius:11px;background:${col}20;border:1.5px solid ${col}55;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <span style="font-size:11px;font-weight:700;color:${col}">${tx.type==='Buy'?'B':tx.type==='Sell'?'S':tx.type==='Dividend'?'D':'$'}</span>
+    </div>
+    <div style="flex:1;min-width:0">
+      <div style="font-size:15px;font-weight:700;color:#fff">${tx.stock||tx.type}</div>
+      <div style="font-size:11px;color:${col};margin-top:1px">${tx.type} · ${tx.date}</div>
+    </div>
+  </div>`;
+
+  // Always open in edit mode — same as option modal
+  const CCYS2=['MYR','SGD','USD','HKD','GBP','EUR'];
+    const TYPES2=['Buy','Sell','Dividend','Platform Fee'];
+    const ccyOpts=CCYS2.map(c=>`<option${tx.ccy===c?' selected':''}>${c}</option>`).join('');
+    const typeOpts=TYPES2.map(t=>`<option${tx.type===t?' selected':''}>${t}</option>`).join('');
+    const inp=(id,type,val,placeholder='')=>`<input id="${id}" type="${type}" value="${val}" placeholder="${placeholder}" style="text-align:center;font-size:16px;font-weight:500;padding:7px 10px;width:160px;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;-webkit-appearance:none;appearance:none">`;
+    const sel=(id,opts)=>`<select id="${id}" style="text-align:center;text-align-last:center;font-size:16px;font-weight:500;padding:7px 10px;width:160px;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;cursor:pointer">${opts}</select>`;
+
+    function fld(label,hint,input){
+      return`<div style="padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.07)">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;color:rgba(220,235,255,0.9);font-weight:600">${label}</div>
+            ${hint?`<div style="font-size:9px;color:rgba(160,185,255,0.45);margin-top:2px">${hint}</div>`:''}
+          </div>
+          ${input}
+        </div>
+      </div>`;
+    }
+
+    const onTypeChangeStr=`(function(){var v=this.value;var isF=v==='Dividend'||v==='Platform Fee';['etq-row','etp-row'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display=isF?'none':'';});var ar=document.getElementById('eta-row');if(ar)ar.style.display=isF?'':'none';})`;
+
+    html+=fld('Date','',inp('etd','date',tx.date));
+    html+=fld('Type','',`<select id="ett" onchange="${onTypeChangeStr}.call(this)" style="text-align:center;text-align-last:center;font-size:16px;font-weight:500;padding:7px 10px;width:160px;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;cursor:pointer">${typeOpts}</select>`);
+    html+=fld('Currency','',sel('etc',ccyOpts));
+    html+=`<div id="etq-row"${isF?' style="display:none"':''}>`;
+    html+=fld('Quantity','',inp('etq','number',tx.qty||'','0'));
+    html+=`</div>`;
+    html+=`<div id="etp-row"${isF?' style="display:none"':''}>`;
+    html+=fld('Price per unit','',inp('etp','number',tx.price||'','0.0000'));
+    html+=`</div>`;
+    html+=fld('Fee','',inp('etf','number',tx.fee||'','0.00'));
+    html+=`<div id="eta-row"${!isF?' style="display:none"':''}>`;
+    html+=fld('Amount','',inp('eta','number',tx.amount||'','0.00'));
+    html+=`</div>`;
+    html+=fld('Stock','',inp('ets','text',tx.stock||'','e.g. AAPL'));
+    html+=fld('Note','',inp('etn','text',tx.note||'','Optional'));
+
+    html+=`<div style="display:flex;gap:8px;margin-top:14px">
+      <button onclick="if(confirm('Delete?')){S.portfolios=S.portfolios.map(function(p){return p.id!==S.activeId?p:{...p,transactions:p.transactions.filter(function(t){return t.id!=='${safeId}';})}});cmm();save();render();}"
+        style="flex:1;padding:11px;border-radius:10px;background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.25);color:var(--red);font-size:13px;font-weight:600;cursor:pointer">Delete</button>
+      <button onclick="_saveTxInline('${safeId}')"
+        style="flex:2;padding:11px;border-radius:10px;background:rgba(0,212,255,0.12);border:1px solid rgba(0,212,255,0.35);color:#00d4ff;font-size:13px;font-weight:700;cursor:pointer">Save</button>
+    </div>`;
+
+  html+='</div>';
+  omm('_txd',html);
+}
+
+function _saveTxInline(txId){
+  const p=pf();
+  const tx=p.transactions.find(t=>t.id===txId);
+  if(!tx)return;
+  const type=(document.getElementById('ett')||{value:tx.type}).value;
+  const isF=type==='Dividend'||type==='Platform Fee';
+  const updated={
+    ...tx,
+    date:(document.getElementById('etd')||{value:tx.date}).value||tx.date,
+    type,
+    ccy:(document.getElementById('etc')||{value:tx.ccy}).value,
+    stock:type==='Platform Fee'?'':(document.getElementById('ets')||{value:tx.stock||''}).value.trim(),
+    qty:isF?0:+(document.getElementById('etq')||{value:0}).value||0,
+    price:isF?0:+(document.getElementById('etp')||{value:0}).value||0,
+    fee:+(document.getElementById('etf')||{value:0}).value||0,
+    amount:isF?+(document.getElementById('eta')||{value:0}).value||0:null,
+    note:(document.getElementById('etn')||{value:''}).value||'',
+  };
+  S.portfolios=S.portfolios.map(function(port){
+    if(port.id!==S.activeId)return port;
+    return{...port,transactions:port.transactions.map(function(t){return t.id===txId?updated:t;})};
+  });
+  save();
+  cmm();
+  render();
 }
 function filterSdTx(){
   const q=(document.getElementById('sd-tx-search')||{value:''}).value.toLowerCase();
@@ -1968,38 +2470,29 @@ function filterSdTx(){
 
 function filterTxTable(){
   const type=(document.getElementById('tx-type-filter')||{value:''}).value;
-  // Special case: Closed Trades view
+  const ct=document.getElementById('tx-closed-view');
+  const tt=document.getElementById('tx-table-wrap');
   if(type==='Closed Trades'){
-    const ct=document.getElementById('tx-closed-view');
-    const tt=document.getElementById('tx-table-wrap');
     if(ct)ct.style.display='';
     if(tt)tt.style.display='none';
     const cnt=document.getElementById('tx-count');
     if(cnt)cnt.textContent='';
     return;
   }
-  const ct=document.getElementById('tx-closed-view');
-  const tt=document.getElementById('tx-table-wrap');
   if(ct)ct.style.display='none';
   if(tt)tt.style.display='';
   const q=(document.getElementById('tx-search')||{value:''}).value.toLowerCase();
-  const rows=document.querySelectorAll('#tx-table tbody tr');
+  const rows=document.querySelectorAll('#tx-table-wrap [data-search]');
   let visible=0;
   rows.forEach(r=>{
     const matchSearch=!q||(r.dataset.search||'').includes(q);
     const matchType=!type||(r.dataset.search||'').includes(type.toLowerCase());
     const show=matchSearch&&matchType;
-    r.style.display=show?'':'none';
+    r.style.display=show?'flex':'none';
     if(show)visible++;
   });
-  // Auto-expand if filtering
-  if(q||type){
-    const body=document.querySelector('.tx-rows-body');
-    const arrow=document.querySelector('.tx-toggle-arrow');
-    if(body)body.style.display='';
-    if(arrow)arrow.textContent='▼';
-  }
-  const cnt=document.getElementById('tx-count');if(cnt)cnt.textContent=visible+' transactions';
+  const cnt=document.getElementById('tx-count');
+  if(cnt)cnt.textContent=visible+' TRANSACTIONS';
 }
 
 // ── Closed trades tab ────────────────────────────────────────────────────────────
@@ -2058,7 +2551,7 @@ function renderJourney(p){
 
   if(window.jSubTab==='cashflow'){
     const depContent=p?renderDeposits(p):'<p class="m" style="padding:1rem;font-size:12px">Select a portfolio to view cash flows.</p>';
-    return`<div>${subTabs}${depContent}</div>`;
+    return`<div style="background:radial-gradient(ellipse at 25% 58%,rgba(120,80,10,0.06) 0%,transparent 42%),radial-gradient(ellipse at 72% 42%,rgba(8,80,40,0.04) 0%,transparent 38%),#020202;min-height:100vh">${subTabs}${depContent}</div>`;
   }
 
   const sections=ccys.map(ccy=>{
@@ -2124,7 +2617,7 @@ function renderJourney(p){
     }
   }).join('');
 
-  return`<div>${subTabs}${sections}</div>`;
+  return`<div style="background:radial-gradient(ellipse at 25% 58%,rgba(120,80,10,0.06) 0%,transparent 42%),radial-gradient(ellipse at 72% 42%,rgba(8,80,40,0.04) 0%,transparent 38%),#020202;min-height:100vh">${subTabs}${sections}</div>`;
 }
 
 function jDrill(mode,ccy,yr){
@@ -2245,10 +2738,15 @@ function filterJdrillTable(){
 // ── Modal ──────────────────────────────────────────────────────────────────────
 function omm(mode,data){
   if(mode==='_cash'&&data){
-    // data is already-built HTML for cash modal
     $('mi').innerHTML=data;
     $('ov').classList.add('open');
     MM='_cash';
+    return;
+  }
+  if(mode==='_txd'&&data){
+    $('mi').innerHTML=data;
+    $('ov').classList.add('open');
+    MM='_txd';
     return;
   }
   MM=mode;if(data!==undefined)ETX=data||null;renderModal();$('ov').classList.add('open');
@@ -2258,6 +2756,17 @@ function cmm(){$('ov').classList.remove('open');MM=null;ETX=null;DTX=null;
   if(window._fromSettings){window._fromSettings=false;toggleSettings();}
 }
 $('ov').addEventListener('click',e=>{if(e.target===$('ov'))cmm();});
+
+// Swipe down to close modal
+(function(){
+  let _mty=0;
+  const mi=$('mi');
+  mi.addEventListener('touchstart',function(e){_mty=e.touches[0].clientY;},{passive:true});
+  mi.addEventListener('touchend',function(e){
+    const dy=e.changedTouches[0].clientY-_mty;
+    if(dy>80)cmm();
+  },{passive:true});
+})();
 function setupAC(){const inp=$('ts'),list=$('ac-list');if(!inp||!list)return;const dict=stockDict(),stocks=Object.keys(dict);inp.addEventListener('input',()=>{const q=inp.value.trim().toLowerCase();const m=stocks.filter(s=>s.toLowerCase().includes(q)&&q.length>0);if(!m.length){list.classList.remove('open');return;}list.innerHTML=m.map(s=>`<div class="ac-item" onclick="selStk('${s}','${dict[s]}')"><span>${s}</span><span class="ac-ccy">${dict[s]}</span></div>`).join('');list.classList.add('open');});inp.addEventListener('blur',()=>setTimeout(()=>list.classList.remove('open'),200));}
 function selStk(n,c){const i=$('ts'),cc=$('tc'),l=$('ac-list');if(i)i.value=n;if(cc)cc.value=c;if(l)l.classList.remove('open');}
 
@@ -2265,8 +2774,8 @@ function renderModal(){
   const p=pf();let h='';
   if(MM==='ap'||MM==='ep'){const ep=MM==='ep'?p:null;h=`<h3>${ep?'Edit portfolio':'New portfolio'}</h3><div style="margin-bottom:12px"><label class="lbl">Name</label><input id="pn" value="${ep?ep.name:''}" placeholder="e.g. My Bursa"></div><label class="lbl">Color</label><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem;align-items:center">${PFPAL.map(c=>`<div onclick="slc('${c}')" data-c="${c}" style="width:26px;height:26px;border-radius:4px;background:${c};cursor:pointer;border:2px solid ${ep&&ep.color===c?'#fff':c+'44'};box-shadow:${ep&&ep.color===c?'0 0 8px '+c+',0 0 16px '+c+'88':'none'};transition:all .15s"></div>`).join('')}<input type="color" id="pc" value="${ep?ep.color:PAL[0]}" style="width:30px;height:30px;padding:2px;border-radius:4px"></div><div style="display:flex;gap:8px;justify-content:flex-end"><button onclick="cmm()">Cancel</button><button class="pri" onclick="${ep?'dep()':'aap()'}">${ep?'Save':'Create'}</button></div>`;}
   else if(MM==='dp'){h=`<h3>Delete portfolio?</h3><p style="color:var(--t2);line-height:1.7;margin-bottom:1.25rem">Delete <strong style="color:var(--t1)">${p.name}</strong> and all ${p.transactions.length} transactions? Cannot be undone.</p><div style="display:flex;gap:8px;justify-content:flex-end"><button onclick="cmm()">Cancel</button><button class="dng" onclick="ddp()">Delete</button></div>`;}
-  else if(MM==='at'||MM==='et'){
-    const isEdit=MM==='et';
+  else if(MM==='at'){
+    const isEdit=false;
     const tx=ETX||{id:uid(),date:new Date().toISOString().split('T')[0],type:'Buy',stock:'',qty:'',price:'',fee:'',ccy:'USD',amount:'',note:''};
     const isF=tx.type==='Dividend'||tx.type==='Platform Fee';
 
@@ -2391,7 +2900,7 @@ function renderModal(){
       +'<button class="pri" onclick="spx()">Save all</button>'
       +'</div>';
   }  $('mi').innerHTML=h;
-  if(MM==='at'||MM==='et'){setTimeout(setupAC,50);setTimeout(ttc,20);}
+  if(MM==='at'){setTimeout(setupAC,50);setTimeout(ttc,20);}
   if(MM==='px'){setTimeout(initPxDrag,50);}
 }
 
@@ -2459,16 +2968,10 @@ function eet(){const d=gTx();S.portfolios=S.portfolios.map(p=>{if(p.id!==S.activ
 function oet(id){
   const p=pf();
   let tx=p.transactions.find(t=>t.id===id);
-  if(!tx){
-    // Fallback: id might actually be an index for older transactions
-    const idx=parseInt(id);
-    if(!isNaN(idx))tx=p.transactions[idx];
-  }
+  if(!tx){const idx=parseInt(id);if(!isNaN(idx))tx=p.transactions[idx];}
   if(!tx)return;
-  // Ensure tx has an id for saving
   if(!tx.id){tx.id=uid();save();}
-  ETX={...tx};
-  omm('et');
+  _renderTxModal({...tx},true);
 }
 function odt(id){DTX=id;omm('dxt');}
 function ddt(){S.portfolios=S.portfolios.map(p=>p.id!==S.activeId?p:{...p,transactions:p.transactions.filter(t=>t.id!==DTX)});cmm();save();render();}
@@ -2547,137 +3050,94 @@ function renderOptions(){
   const openT=trades.filter(isOpen);
   const closedT=trades.filter(t=>!isOpen(t));
   const fmtN=(v,dp=2)=>{const a=Math.abs(v).toLocaleString('en',{minimumFractionDigits:dp,maximumFractionDigits:dp});return(v>=0?'+':'-')+'US$ '+a;};
-  const fmtAbs=v=>{const a=Math.abs(v).toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});return(v<0?'-':'')+'US$ '+a;};
-  const pctBadge=(pnl,base)=>{if(!base)return'';const p=(pnl/Math.abs(base))*100;return` <span style="font-size:10px;color:${p>=0?'#4ade80':'#f87171'}">${p>=0?'+':''}${p.toFixed(1)}%</span>`;};
   const realPnl=closedT.reduce((s,t)=>s+(parseFloat(t.openValue)||0)+(parseFloat(t.closeValue)||0)-(parseFloat(t.openFee)||0)-(parseFloat(t.closeFee)||0),0);
   const unrPnl=openT.reduce((s,t)=>{const o=parseFloat(t.openValue)||0,of0=parseFloat(t.openFee)||0;return t.mktValue!=null&&t.mktValue!==''?s+o+(parseFloat(t.mktValue)||0)-of0:s;},0);
   const hasMktCount=openT.filter(t=>t.mktValue!=null&&t.mktValue!=='').length;
   const totalPnl=realPnl+(hasMktCount?unrPnl:0);
 
-  // ── Total P&L summary — row 1: Total, row 2: Realized | Unrealized ──
-  const summary=`<div style="margin-bottom:1.25rem">
-    <div style="position:relative;overflow:hidden;background:linear-gradient(135deg,#0a0a14,#0d0d1c);border:1px solid rgba(255,255,255,0.08);border-top:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:12px 14px;margin-bottom:6px;box-shadow:0 2px 0 rgba(255,255,255,0.06) inset,0 4px 16px rgba(0,0,0,0.4)">
-      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent)"></div>
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:nowrap">
-        <div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:.3px;margin-bottom:1px">Total P&L</div>
-          <div style="font-size:9px;color:rgba(255,255,255,0.2)">(realized + unrealized)</div>
-        </div>
-        <div style="flex:1"></div>
-        <div class="pv-val" style="font-size:18px;font-weight:700;white-space:nowrap;color:${totalPnl>=0?'var(--green)':'var(--red)'};">${fmtN(totalPnl)}</div>
-        <div class="pv-hide" style="font-size:18px;font-weight:700;color:${totalPnl>=0?'var(--green)':'var(--red)'}">••••</div>
-      </div>
+  // Summary minicards
+  const summary=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:14px">
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-top:1.5px solid rgba(0,212,255,0.4);border-radius:10px;padding:9px 8px;text-align:center">
+      <div style="font-size:8px;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Total P&L</div>
+      <div class="pv-val" style="font-size:12px;font-weight:700;color:${totalPnl>=0?'#4ade80':'#f87171'};white-space:nowrap">${fmtN(totalPnl)}</div>
+      <div class="pv-hide" style="font-size:12px;color:${totalPnl>=0?'#4ade80':'#f87171'}">••••</div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-      <div style="background:linear-gradient(135deg,#090910,#0c0c18);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:10px 12px">
-        <div style="font-size:9px;color:rgba(255,255,255,0.3);margin-bottom:3px">Realized P&L</div>
-        <div style="font-size:13px;font-weight:700;white-space:nowrap;color:${realPnl>=0?'var(--green)':'var(--red)'}">${fmtN(realPnl)}</div>
-      </div>
-      <div style="background:linear-gradient(135deg,#090910,#0c0c18);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:10px 12px">
-        <div style="font-size:9px;color:rgba(255,255,255,0.3);margin-bottom:3px">Unrealized P&L</div>
-        <div style="font-size:13px;font-weight:700;white-space:nowrap;color:${unrPnl>0?'var(--green)':unrPnl<0?'var(--red)':'var(--t2)'}">${hasMktCount?fmtN(unrPnl):'—'}</div>
-      </div>
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-top:1.5px solid #4ade8044;border-radius:10px;padding:9px 8px;text-align:center">
+      <div style="font-size:8px;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Realized</div>
+      <div class="pv-val" style="font-size:12px;font-weight:700;color:${realPnl>=0?'#4ade80':'#f87171'};white-space:nowrap">${fmtN(realPnl)}</div>
+      <div class="pv-hide" style="font-size:12px;color:${realPnl>=0?'#4ade80':'#f87171'}">••••</div>
+    </div>
+    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-top:1.5px solid rgba(255,165,0,0.4);border-radius:10px;padding:9px 8px;text-align:center">
+      <div style="font-size:8px;color:rgba(255,255,255,0.3);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Unrealized</div>
+      <div class="pv-val" style="font-size:12px;font-weight:700;color:${unrPnl>=0?'#4ade80':'#f87171'};white-space:nowrap">${hasMktCount?fmtN(unrPnl):'—'}</div>
+      <div class="pv-hide" style="font-size:12px;color:${unrPnl>=0?'#4ade80':'#f87171'}">••••</div>
     </div>
   </div>`;
 
-  const openThead=`<thead><tr>
-    <th style="text-align:left">Ticker</th>
-    <th class="r">P&L (Unreal)</th>
-  </tr></thead>`;
+  // Search + add button
+  const toolbar=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+    <input id="opt-all-search" placeholder="Search ticker, note…" oninput="filterOptsAll()" style="flex:1">
+    <button class="pri sm" onclick="addOpt()" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;padding:0;font-size:18px;line-height:1;border-radius:50%;flex-shrink:0">+</button>
+  </div>`;
 
-  const closedThead=`<thead><tr>
-    <th>Ticker</th><th>Open date</th><th class="r">Open value</th><th class="r">Open fee</th>
-    <th>Close date</th><th class="r">Close / Mkt value</th><th class="r">Close fee</th>
-    <th class="r">P&L (USD)</th><th>Note</th><th style="width:52px"></th>
-  </tr></thead>`;
-
-  function mkOpenRow(t,i){
-    const o=parseFloat(t.openValue)||0;
-    const hasMkt=t.mktValue!=null&&t.mktValue!=='';
-    const m=hasMkt?parseFloat(t.mktValue)||0:null;
-    const of0=parseFloat(t.openFee)||0;
-    const uPnl=hasMkt?(o+m-of0):null;
-    const pnlCls=uPnl===null?'m':uPnl>=0?'g':'rr';
-    const pct=uPnl!==null&&o?((uPnl/Math.abs(o))*100):null;
-    const pnlHtml=uPnl!==null
-      ?`<div style="font-weight:700;color:${pnlCls==='g'?'#4ade80':'#f87171'}">${fmtN(uPnl)}</div><div style="font-size:10px;color:${pnlCls==='g'?'#4ade80':'#f87171'};opacity:.8">${pct>=0?'+':''}${pct!==null?pct.toFixed(1)+'%':''}</div>`
-      :`<span style="font-size:11px;color:var(--t2)">No mkt val</span>`;
-    return`<tr data-opt-search="${(t.ticker||'').toLowerCase()}" onclick="showOptDetail(${i})" style="cursor:pointer;background:rgba(0,212,255,0.03)">
-      <td style="font-weight:700;font-family:'Courier New',monospace;letter-spacing:.3px;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.ticker||'—'}</td>
-      <td class="r">${pnlHtml}</td>
-    </tr>`;
+  if(!trades.length){
+    return`<div>${toolbar}${summary}<div style="text-align:center;padding:2rem;font-size:12px;color:rgba(255,255,255,0.3)">No option trades yet. Tap + to add one.</div></div>`;
   }
 
-  function mkClosedRow(t,i){
-    const bg='rgba(255,255,255,0.02)';
-    const o=parseFloat(t.openValue)||0;
-    const c=parseFloat(t.closeValue)||0;
-    const of0=parseFloat(t.openFee)||0,cf0=parseFloat(t.closeFee)||0;
-    const pnl=o+c-of0-cf0;
-    const pnlCls=pnl>=0?'g':'rr';
-    const pnlHtml=fmtN(pnl)+pctBadge(pnl,o);
-    const closeMktHtml=fmtAbs(c);
-    return`<tr data-opt-search="${(t.ticker||'').toLowerCase()} ${(t.note||'').toLowerCase()}" style="background:${bg}">
-      <td style="font-weight:600">${t.ticker||'—'}</td>
-      <td class="m">${t.openDate||'—'}</td>
-      <td class="r" style="color:${o>=0?'#4ade80':'#f87171'};font-weight:600">${fmtN(o)}</td>
-      <td class="r m">${of0>0?fmtAbs(of0):'—'}</td>
-      <td class="m">${t.closeDate||'—'}</td>
-      <td class="r">${closeMktHtml}</td>
-      <td class="r m">${cf0>0?fmtAbs(cf0):'—'}</td>
-      <td class="r" style="font-weight:600;color:${pnlCls==='g'?'#4ade80':'#f87171'}">${pnlHtml}</td>
-      <td class="m" style="font-size:11px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.note||'—'}</td>
-      <td style="white-space:nowrap">
-        <button class="ib" onclick="editOpt(${i})">✎</button>
-        <button class="ib" onclick="delOpt(${i})" style="color:var(--red)">✕</button>
-      </td>
-    </tr>`;
-  }
-
-  const openRows=trades.map((t,i)=>({t,i})).filter(x=>isOpen(x.t));
-  const closedRows=trades.map((t,i)=>({t,i})).filter(x=>!isOpen(x.t));
-  const openTotalUnr=openRows.reduce((s,x)=>{const t=x.t,o=parseFloat(t.openValue)||0,of0=parseFloat(t.openFee)||0,hasMkt=t.mktValue!=null&&t.mktValue!=='',m=hasMkt?parseFloat(t.mktValue)||0:null;return m!==null?s+(o+m-of0):s;},0);
-  const openTotalRow=openRows.length?`<tfoot><tr>
-    <td style="font-size:11px;color:var(--t2)">Total (${openRows.length} position${openRows.length!==1?'s':''})</td>
-    <td class="r" style="font-weight:700;color:${openTotalUnr>=0?'#4ade80':'#f87171'}">${hasMktCount?fmtN(openTotalUnr):'—'}</td>
-  </tr></tfoot>`:'';
-
-  const closedSumPnl=closedRows.reduce((s,x)=>s+(parseFloat(x.t.openValue)||0)+(parseFloat(x.t.closeValue)||0)-(parseFloat(x.t.openFee)||0)-(parseFloat(x.t.closeFee)||0),0);
-  const closedTotalRow=closedRows.length?`<tfoot><tr style="background:rgba(255,255,255,0.03)">
-    <td colspan="2" style="font-weight:600;color:var(--t2)">Total (${closedRows.length} trade${closedRows.length!==1?'s':''})</td>
-    <td colspan="5"></td>
-    <td class="r" style="font-weight:700;color:${closedSumPnl>=0?'#4ade80':'#f87171'}">${fmtN(closedSumPnl)}</td>
-    <td colspan="2"></td>
-  </tr></tfoot>`:'';
-
-  const allRows=[
-    ...openRows.map(x=>({...x,_open:true})),
-    ...closedRows.map(x=>({...x,_open:false}))
+  // All trades as card rows — open first then closed
+  const allSorted=[
+    ...trades.map((t,i)=>({t,i,open:isOpen(t)})).filter(x=>x.open),
+    ...trades.map((t,i)=>({t,i,open:isOpen(t)})).filter(x=>!x.open)
   ];
 
-  const openBar=openRows.length?`<div onclick="toggleOpenOpts(this)" style="cursor:pointer;position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(0,212,255,0.04),rgba(0,212,255,0.01));border:1px solid rgba(0,212,255,0.12);border-left:3px solid rgba(0,212,255,0.5);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;gap:10px;box-shadow:inset 0 1px 0 rgba(0,212,255,0.08)"><span class="open-opts-arrow" style="font-size:10px;color:rgba(0,212,255,0.5)">▶</span><span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.7)">Open positions</span><span style="margin-left:auto;font-size:11px;background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);border-radius:10px;padding:1px 8px;color:var(--blue)">${openRows.length}</span></div>`:''
+  let openRows='', closedRows='';
 
-  const closedBar=closedRows.length?`<div onclick="toggleClosedOpts(this)" style="cursor:pointer;position:relative;overflow:hidden;background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.06);border-left:3px solid rgba(255,255,255,0.2);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;gap:10px"><span class="closed-opts-arrow" style="font-size:10px;color:rgba(255,255,255,0.25)">▶</span><span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.4)">Closed trades</span><span style="margin-left:auto;font-size:11px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:1px 8px;color:rgba(255,255,255,0.3)">${closedRows.length}</span></div>`:''
+  allSorted.forEach(function({t,i,open}){
+    const o=parseFloat(t.openValue)||0;
+    const of0=parseFloat(t.openFee)||0;
+    let pnl=null,pnlPct=null;
+    if(open){
+      const hasMkt=t.mktValue!=null&&t.mktValue!=='';
+      if(hasMkt){pnl=o+(parseFloat(t.mktValue)||0)-of0;pnlPct=o?pnl/Math.abs(o)*100:null;}
+    } else {
+      const c=parseFloat(t.closeValue)||0,cf0=parseFloat(t.closeFee)||0;
+      pnl=o+c-of0-cf0;pnlPct=o?pnl/Math.abs(o)*100:null;
+    }
+    const pnlCol=pnl===null?'rgba(255,255,255,0.3)':pnl>=0?'#4ade80':'#f87171';
+    const dotCol=open?'#00d4ff':'rgba(255,255,255,0.3)';
+    const ds=((t.ticker||'').toLowerCase()+' '+(t.note||'').toLowerCase()+' '+(open?'open':'closed'));
 
-  const openTable=openRows.length?`<div class="open-opts-body" style="display:none;overflow-x:auto;margin-top:6px"><table class="tbl" id="opt-open-table">${openThead}<tbody>${openRows.map(x=>mkOpenRow(x.t,x.i)).join('')}</tbody>${openTotalRow}</table></div>`:'';
+    const row=`<div data-opt-search="${ds}" onclick="showOptDetail(${i})"
+      style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;gap:8px">
+      <div style="width:6px;height:6px;border-radius:50%;background:${dotCol};flex-shrink:0"></div>
+      <div style="min-width:0;flex:1;overflow:hidden">
+        <div style="font-size:12px;font-weight:700;color:#fff;font-family:'Courier New',monospace;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px">${t.ticker||'—'}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.openDate||'—'}${t.note?' · '+t.note:''}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;min-width:80px">
+        <div class="pv-val" style="font-size:12px;font-weight:600;color:${pnlCol};white-space:nowrap">${pnl!==null?fmtN(pnl):'No mkt val'}</div>
+        <div class="pv-hide" style="font-size:12px;color:${pnlCol}">••••</div>
+        ${pnlPct!==null?`<div class="pv-val" style="font-size:9px;color:${pnlCol};opacity:0.8">${pnlPct>=0?'+':''}${pnlPct.toFixed(1)}%</div>`:''}
+      </div>
+      <div style="color:rgba(255,255,255,0.15);font-size:12px;flex-shrink:0">›</div>
+    </div>`;
 
-  const closedTable=closedRows.length?`<div class="closed-opts-body" style="display:none;overflow-x:auto;margin-top:6px"><table class="tbl" id="opt-closed-table">${closedThead}<tbody>${closedRows.map(x=>mkClosedRow(x.t,x.i)).join('')}</tbody>${closedTotalRow}</table></div>`:'';
+    if(open) openRows+=row; else closedRows+=row;
+  });
 
-  const combinedTable=trades.length?`
-    <div style="margin-bottom:1.25rem">${openBar}${openTable}</div>
-    <div style="margin-bottom:1.25rem">${closedBar}${closedTable}</div>
-  `:'';
-  const empty=!trades.length?`<div class="card m" style="text-align:center;padding:2rem;font-size:12px">No option trades yet. Click <strong style="color:var(--blue)">+ Transaction</strong> to add one.</div>`:'';
+  const openSection=openT.length?`
+    <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;padding:10px 0 6px;border-top:1px solid rgba(255,255,255,0.06)">Open Positions · ${openT.length}</div>
+    ${openRows}`:'';
 
-  return`<div style="display:flex;align-items:center;gap:8px;margin-bottom:.75rem">
-    <input id="opt-all-search" placeholder="Search all trades…" oninput="filterOptsAll()" style="flex:1;box-sizing:border-box">
-    <button class="pri sm" onclick="addOpt()" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;padding:0;font-size:18px;line-height:1;border-radius:50%;flex-shrink:0">+</button>
-  </div>
-  <div style="margin-bottom:.75rem;padding:10px 14px;background:linear-gradient(135deg,rgba(0,212,255,0.04),rgba(0,212,255,0.01));border:1px solid rgba(0,212,255,0.12);border-left:3px solid rgba(0,212,255,0.5);border-radius:var(--r);box-shadow:inset 0 1px 0 rgba(0,212,255,0.06)">
-    <div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.8);margin-bottom:2px">Option P&L</div>
-    <div style="font-size:10px;color:rgba(255,255,255,0.25)">Standalone — not included in portfolio P&L</div>
-  </div>${summary}
-  ${combinedTable}${empty}`;
+  const closedSection=closedT.length?`
+    <div onclick="(function(el){var b=el.nextElementSibling;var a=el.querySelector('.caret');b.style.display=b.style.display==='none'?'':'none';a.textContent=b.style.display==='none'?'›':'⌄';})(this)"
+      style="display:flex;align-items:center;gap:8px;padding:10px 0 6px;border-top:1px solid rgba(255,255,255,0.06);cursor:pointer;user-select:none">
+      <span style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;flex:1">Closed Trades · ${closedT.length}</span>
+      <span class="caret" style="font-size:14px;color:rgba(255,255,255,0.25);transition:transform .2s">›</span>
+    </div>
+    <div style="display:none">${closedRows}</div>`:'';
+
+  return`${toolbar}${summary}<div id="opt-rows">${openSection}${closedSection}</div>`;
 }
 function toggleOpenOpts(bar){
   const body=bar.nextElementSibling;
@@ -2694,16 +3154,9 @@ function toggleClosedOpts(bar){
   if(arrow)arrow.textContent=isHidden?'▼':'▶';
 }
 function filterOptsAll(){
-  const input=document.getElementById('opt-all-search');
-  if(!input)return;
-  const q=input.value.toLowerCase();
-  ['opt-open-table','opt-closed-table'].forEach(function(id){
-    const table=document.getElementById(id);
-    if(!table)return;
-    table.querySelectorAll('tbody tr').forEach(r=>{
-      const s=r.getAttribute('data-opt-search')||'';
-      r.style.display=s.includes(q)?'':'none';
-    });
+  const q=(document.getElementById('opt-all-search')||{value:''}).value.toLowerCase();
+  document.querySelectorAll('#opt-rows [data-opt-search]').forEach(function(r){
+    r.style.display=(!q||(r.dataset.optSearch||'').includes(q))?'flex':'none';
   });
 }
 function filterOpts(section){
@@ -2728,12 +3181,12 @@ function showOptDetail(i){
     <div style="padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.07)">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
         <div style="flex-shrink:0;min-width:0;flex:1">
-          <div style="font-size:12px;color:rgba(220,235,255,0.9);font-family:'Courier New',monospace;font-weight:600">${label}</div>
-          ${hint?`<div style="font-size:9px;color:rgba(160,185,255,0.45);margin-top:2px;letter-spacing:.2px">${hint}</div>`:''}
+          <div style="font-size:12px;color:rgba(220,235,255,0.9);font-weight:600">${label}</div>
+          ${hint?`<div style="font-size:9px;color:rgba(160,185,255,0.45);margin-top:2px">${hint}</div>`:''}
         </div>
         ${readOnly
-          ?`<span style="font-size:12px;font-weight:700;text-align:right;flex-shrink:0">${val}</span>`
-          :`<input id="od-${id}" type="${type}" value="${val}" style="text-align:center;font-size:16px;font-weight:600;padding:7px 10px;width:160px;flex-shrink:0;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:8px;color:#eef2ff">`
+          ?`<span style="font-size:12px;font-weight:700;text-align:center;flex-shrink:0;width:160px;display:inline-block">${val}</span>`
+          :`<input id="od-${id}" type="${type}" value="${val}" style="text-align:center;font-size:16px;font-weight:500;padding:7px 10px;width:160px;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#eef2ff;-webkit-appearance:none;appearance:none">`
         }
       </div>
     </div>`;
@@ -2755,8 +3208,8 @@ function showOptDetail(i){
       ${fld('Note','Expiry date, strategy, memo','note',t.note||'')}
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <button class="pri" onclick="saveOptDetail(${i})">💾 Save</button>
       <button class="dng" onclick="cmm();delOpt(${i})">✕ Delete</button>
+      <button class="pri" onclick="saveOptDetail(${i})">💾 Save</button>
     </div>`;
 
   document.getElementById('mi').innerHTML=html;
@@ -3555,6 +4008,16 @@ let _privacyOn=false;
 function togglePrivacy(){
   _privacyOn=!_privacyOn;
   document.body.classList.toggle('privacy-on',_privacyOn);
+  // Also update eye icon stroke to show state
+  const eyeBtn=document.querySelector('button[title="Toggle privacy"] svg');
+  if(eyeBtn){
+    if(_privacyOn){
+      // Show eye-off (crossed out)
+      eyeBtn.innerHTML='<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+      eyeBtn.innerHTML='<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    }
+  }
 }
 // Privacy toggle - only on the 2 main cards (gauge + person)
 function toggleMini(id){
@@ -3657,7 +4120,7 @@ showWelcomeIfFirstLoad();
 
 // ── Swipe left/right to switch tabs ──────────────────────────────
 (function(){
-  const TAB_ORDER=['dashboard','overview','transactions','journey','settings'];
+  const TAB_ORDER=['dashboard','overview','transactions','options','journey','settings'];
   let _tx=0,_ty=0,_target=null;
   document.addEventListener('touchstart',function(e){
     _tx=e.touches[0].clientX;
@@ -3681,6 +4144,12 @@ showWelcomeIfFirstLoad();
       const ey=e.changedTouches[0].clientY;
       if(ey>=r.top)return;
     }
+    // ── Swipe right on detail page = go back ──
+    if(VIEW&&dx>0){
+      VIEW=null;
+      render();
+      return;
+    }
     // Check if touch started inside a horizontally scrollable container
     // and that container still has scroll room in the swipe direction
     let el=_target;
@@ -3700,18 +4169,6 @@ showWelcomeIfFirstLoad();
     const idx=TAB_ORDER.indexOf(curTab);
     if(idx===-1)return;
 
-    // Handle sub-tab swiping within transactions
-    if(TAB==='transactions'){
-      const TX_ORDER=['trade','option'];
-      const txi=TX_ORDER.indexOf(window.txSubTab||'trade');
-      if(dx<0&&txi<TX_ORDER.length-1){window.txSubTab=TX_ORDER[txi+1];renderContent();return;}
-      if(dx>0&&txi>0){window.txSubTab=TX_ORDER[txi-1];renderContent();return;}
-      // Edge: swipe left from option → go to journey
-      if(dx<0&&txi===TX_ORDER.length-1){swTab('journey');return;}
-      // Edge: swipe right from trade → go to overview
-      if(dx>0&&txi===0){swTab('overview');return;}
-    }
-
     // Handle sub-tab swiping within journey
     if(TAB==='journey'){
       const J_ORDER=['dividend','pnl','cashflow'];
@@ -3720,8 +4177,8 @@ showWelcomeIfFirstLoad();
       if(dx>0&&ji>0){window.jSubTab=J_ORDER[ji-1];renderContent();return;}
       // Edge: swipe left from cashflow → go to settings
       if(dx<0&&ji===J_ORDER.length-1){toggleSettings();return;}
-      // Edge: swipe right from dividend → go to transactions
-      if(dx>0&&ji===0){swTab('transactions');return;}
+      // Edge: swipe right from dividend → go to options
+      if(dx>0&&ji===0){swTab('options');return;}
     }
 
     if(dx<0&&idx<TAB_ORDER.length-1){
@@ -3786,7 +4243,17 @@ setTimeout(matchScanLine,300);
 </script>
 
 <!-- Bottom tab bar -->
-<div id="bottom-nav" style="position:fixed;bottom:0;left:0;right:0;z-index:250;background:linear-gradient(180deg,rgba(2,6,16,0.97),rgba(1,3,10,0.99));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(0,212,255,0.1);display:flex;align-items:center;justify-content:space-around;padding:5px 0 calc(5px + env(safe-area-inset-bottom));box-shadow:0 -1px 0 rgba(0,212,255,0.05),0 -8px 40px rgba(0,0,0,0.8)">
+<div id="bottom-nav" style="position:fixed;bottom:0;left:0;right:0;z-index:250;
+  background:rgba(4,4,10,0.96);
+  backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);
+  border-top:1px solid rgba(255,255,255,0.08);
+  display:flex;align-items:center;justify-content:space-around;
+  padding:6px 0 calc(8px + env(safe-area-inset-bottom));
+  box-shadow:
+    0 -1px 0 rgba(200,144,42,0.15),
+    0 -1px 0 rgba(255,255,255,0.04),
+    0 -20px 60px rgba(0,0,0,0.8),
+    inset 0 1px 0 rgba(255,255,255,0.06)">
   <button onclick="swTab('dashboard')" data-nav="dashboard" class="bnav-btn">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 8l10 6 10-6-10-6z"/><path d="M2 16l10 6 10-6"/><path d="M2 12l10 6 10-6"/></svg>
     <span>Dashboard</span>
@@ -3798,6 +4265,10 @@ setTimeout(matchScanLine,300);
   <button onclick="swTab('transactions')" data-nav="transactions" class="bnav-btn">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l-4-4 4-4"/><path d="M3 13h13"/><path d="M17 7l4 4-4 4"/><path d="M21 11H8"/></svg>
     <span>Transactions</span>
+  </button>
+  <button onclick="swTab('options')" data-nav="options" class="bnav-btn">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3h12z"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+    <span>Options</span>
   </button>
   <button onclick="swTab('journey')" data-nav="journey" class="bnav-btn">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18 L8 14 L13 17 L21 8"/><polyline points="15,8 21,8 21,14"/><circle cx="3" cy="18" r="1.5" fill="currentColor"/><circle cx="13" cy="17" r="1.5" fill="currentColor"/></svg>
