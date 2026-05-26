@@ -1504,19 +1504,20 @@ function renderDashboard(){
   // Health pill — exactly same as overview, no label
   const healthCard=`<div style="
     flex-shrink:0;
-    background:rgba(12,10,8,0.85);
-    border:1px solid rgba(255,255,255,0.08);
-    border-left:2px solid ${hcol};
+    background:rgba(0,180,220,0.08);
+    border:1px solid rgba(0,212,255,0.2);
+    border-left:2px solid #00d4ff;
     border-radius:12px;
     padding:10px 12px;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
-    min-width:80px;text-align:center">
+    min-width:80px;text-align:center;
+    box-shadow:0 0 12px rgba(0,212,255,0.12)">
     <svg width="30" height="11" viewBox="0 0 30 11" style="display:block">
       <polyline points="0,8 4,8 6,2 8,10 10,1 12,8 15,8 18,8 20,5 22,8 30,8"
-        fill="none" stroke="${hcol}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        fill="none" stroke="#00d4ff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
-    <div style="font-size:18px;font-weight:200;color:${hcol};line-height:1;letter-spacing:-0.5px">${Math.round(hp)}%</div>
-    <div style="font-size:8px;font-weight:700;color:${hcol};letter-spacing:1.5px;text-transform:uppercase">${hlbl}</div>
+    <div style="font-size:18px;font-weight:200;color:#fff;line-height:1;letter-spacing:-0.5px">${Math.round(hp)}%</div>
+    <div style="font-size:8px;font-weight:700;color:#00d4ff;letter-spacing:1.5px;text-transform:uppercase">${hlbl}</div>
   </div>`;
 
   // HERO — net worth LEFT, health card RIGHT, minicards below
@@ -1839,19 +1840,20 @@ function renderOverview(p){
 
   const healthPill=`<div style="
     flex-shrink:0;
-    background:rgba(12,10,8,0.85);
-    border:1px solid rgba(255,255,255,0.08);
-    border-left:2px solid ${ovHcol};
+    background:rgba(0,180,220,0.08);
+    border:1px solid rgba(0,212,255,0.2);
+    border-left:2px solid #00d4ff;
     border-radius:12px;
     padding:10px 12px;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
-    min-width:80px;text-align:center">
+    min-width:80px;text-align:center;
+    box-shadow:0 0 12px rgba(0,212,255,0.12)">
     <svg width="30" height="11" viewBox="0 0 30 11" style="display:block">
       <polyline points="0,8 4,8 6,2 8,10 10,1 12,8 15,8 18,8 20,5 22,8 30,8"
-        fill="none" stroke="${ovHcol}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        fill="none" stroke="#00d4ff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
-    <div style="font-size:18px;font-weight:200;color:${ovHcol};line-height:1;letter-spacing:-0.5px">${Math.round(ovHp)}%</div>
-    <div style="font-size:8px;font-weight:700;color:${ovHcol};letter-spacing:1.5px;text-transform:uppercase">${ovHlbl}</div>
+    <div style="font-size:18px;font-weight:200;color:#fff;line-height:1;letter-spacing:-0.5px">${Math.round(ovHp)}%</div>
+    <div style="font-size:8px;font-weight:700;color:#00d4ff;letter-spacing:1.5px;text-transform:uppercase">${ovHlbl}</div>
   </div>`;
 
   const topCard=`<div style="margin:0;padding:0 0 12px">
@@ -1952,12 +1954,15 @@ function renderOverview(p){
       </div>
       <div style="flex:1;min-width:0">
         <div style="font-size:13px;font-weight:600;color:#fff">${h.stock}</div>
+        <div class="pv-val" style="font-size:10px;color:${tCol};margin-top:1px;white-space:nowrap">${tot2>=0?'+':''}${fc(tot2,h.ccy)}${pct2!==null?' ('+pct2.toFixed(1)+'%)':''}</div>
+        <div class="pv-hide" style="font-size:10px;color:${tCol}">••••</div>
       </div>
       <div style="text-align:right;flex-shrink:0">
         <div class="pv-val" style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap">${fc(h.mktVal,h.mktCcy||h.ccy)}</div>
         <div class="pv-hide" style="font-size:13px;color:#fff">••••</div>
-        ${h.ccy!=='MYR'?`<div class="pv-val" style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:2px;white-space:nowrap">RM ${myrVal.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div><div class="pv-hide" style="font-size:10px;color:rgba(255,255,255,0.35)">••••</div>`:''}
+        ${h.ccy!=='MYR'?`<div class="pv-val" style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:1px;white-space:nowrap">RM ${myrVal.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div><div class="pv-hide" style="font-size:10px;color:rgba(255,255,255,0.35)">••••</div>`:''}
       </div>
+      <div style="color:rgba(255,255,255,0.2);font-size:14px;flex-shrink:0">›</div>
     </div>`;
   });
 
