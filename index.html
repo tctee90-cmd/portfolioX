@@ -1497,9 +1497,9 @@ function renderDashboard(){
   </div>`;
 
   // PORTFOLIO HEALTH — same card style as overview
-  const hp=Math.max(15,Math.min(100,50+(grandPct||0)*0.4));
-  const hlbl=hp>72?'Strong':hp>52?'Balanced':hp>36?'Moderate':'Weak';
-  const hcol=hp>72?'#4a9e72':hp>52?'#a89040':hp>36?'#8a6030':'#905050';
+  const hp=Math.max(5,Math.min(95,50+(grandPct||0)*2));
+  const hlbl=hp>75?'Strong':hp>55?'Balanced':hp>35?'Moderate':'Weak';
+  const hcol=hp>75?'#4a9e72':hp>55?'#a89040':hp>35?'#8a6030':'#905050';
 
   // Health pill — exactly same as overview, no label
   const healthCard=`<div style="
@@ -1516,30 +1516,28 @@ function renderDashboard(){
         fill="none" stroke="${hcol}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
     <div style="font-size:18px;font-weight:200;color:${hcol};line-height:1;letter-spacing:-0.5px">${Math.round(hp)}%</div>
-    <div style="font-size:8px;font-weight:600;color:${hcol};letter-spacing:1px;text-transform:uppercase">${hlbl}</div>
+    <div style="font-size:8px;font-weight:700;color:${hcol};letter-spacing:1.5px;text-transform:uppercase">${hlbl}</div>
   </div>`;
 
   // HERO — net worth LEFT, health card RIGHT, minicards below
   const heroSection=`<div style="margin-bottom:12px">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px">
-      <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-          <div style="font-size:8.5px;font-weight:700;color:rgba(180,140,50,0.7);letter-spacing:2px;text-transform:uppercase">Net Worth</div>
-          <button onclick="togglePrivacy()" style="background:none;border:none;cursor:pointer;padding:4px;opacity:0.38;line-height:0;flex-shrink:0">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(200,160,60,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
-        </div>
-        <div style="margin-bottom:10px">
+    <div style="margin-bottom:8px">
+      <div style="font-size:8.5px;font-weight:700;color:rgba(180,140,50,0.7);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Net Worth</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div style="flex:1;min-width:0">
           <div class="pv-networth-wrap">
-            <div class="pv-val" style="font-size:34px;font-weight:300;color:#fff;letter-spacing:-1px;line-height:1.05;white-space:nowrap">RM ${grandMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
-            <div class="pv-hide" style="font-size:34px;color:#fff;font-weight:300;line-height:1.05;white-space:nowrap">••••••••</div>
+            <div class="pv-val" style="font-size:34px;font-weight:300;color:#fff;letter-spacing:-1px;line-height:1;white-space:nowrap">RM ${grandMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+            <div class="pv-hide" style="font-size:34px;color:#fff;font-weight:300;line-height:1;white-space:nowrap">••••••••</div>
           </div>
+          <div style="width:24px;height:1px;background:rgba(180,140,50,0.35);margin-top:8px"></div>
         </div>
-        <div style="width:24px;height:1px;background:rgba(180,140,50,0.35)"></div>
+        <button onclick="togglePrivacy()" style="background:none;border:none;cursor:pointer;padding:4px;opacity:0.55;line-height:0;flex-shrink:0">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(200,160,60,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+        ${healthCard}
       </div>
-      ${healthCard}
     </div>
     <!-- 4 minicards below net worth -->
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:4px">
@@ -1835,9 +1833,9 @@ function renderOverview(p){
   const totalMYR2=ccyData.reduce((s,c)=>s+c.mvMYR,0)||1;
 
   // Health score for this portfolio
-  const ovHp=Math.max(15,Math.min(100,50+(personPnlPct||0)*0.4));
-  const ovHlbl=ovHp>72?'Strong':ovHp>52?'Balanced':ovHp>36?'Moderate':'Weak';
-  const ovHcol=ovHp>72?'#4a9e72':ovHp>52?'#a89040':ovHp>36?'#8a6030':'#905050';
+  const ovHp=Math.max(5,Math.min(95,50+(personPnlPct||0)*2));
+  const ovHlbl=ovHp>75?'Strong':ovHp>55?'Balanced':ovHp>35?'Moderate':'Weak';
+  const ovHcol=ovHp>75?'#4a9e72':ovHp>55?'#a89040':ovHp>35?'#8a6030':'#905050';
 
   const healthPill=`<div style="
     flex-shrink:0;
@@ -1853,29 +1851,24 @@ function renderOverview(p){
         fill="none" stroke="${ovHcol}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
     <div style="font-size:18px;font-weight:200;color:${ovHcol};line-height:1;letter-spacing:-0.5px">${Math.round(ovHp)}%</div>
-    <div style="font-size:8px;font-weight:600;color:${ovHcol};letter-spacing:1px;text-transform:uppercase">${ovHlbl}</div>
+    <div style="font-size:8px;font-weight:700;color:${ovHcol};letter-spacing:1.5px;text-transform:uppercase">${ovHlbl}</div>
   </div>`;
 
-  const topCard=`<div style="margin:0 0 0;padding:0 0 12px">
-    <!-- Same structure as dashboard heroSection -->
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px">
+  const topCard=`<div style="margin:0;padding:0 0 12px">
+    <div style="font-size:8.5px;font-weight:700;color:rgba(180,140,50,0.7);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">${p.name} · Net Worth</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
       <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-          <div style="font-size:8.5px;font-weight:700;color:rgba(180,140,50,0.7);letter-spacing:2px;text-transform:uppercase">${p.name} · Net Worth</div>
-          <button onclick="togglePrivacy()" style="background:none;border:none;cursor:pointer;padding:4px;opacity:0.38;line-height:0;flex-shrink:0">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(200,160,60,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
+        <div class="pv-networth-wrap">
+          <div class="pv-val" style="font-size:34px;font-weight:300;color:#fff;letter-spacing:-1px;line-height:1;white-space:nowrap">RM ${personMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+          <div class="pv-hide" style="font-size:34px;color:#fff;font-weight:300;line-height:1;white-space:nowrap">••••••••</div>
         </div>
-        <div style="margin-bottom:10px">
-          <div class="pv-networth-wrap">
-            <div class="pv-val" style="font-size:34px;font-weight:300;color:#fff;letter-spacing:-1px;line-height:1.05;white-space:nowrap">RM ${personMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
-            <div class="pv-hide" style="font-size:34px;color:#fff;font-weight:300;line-height:1.05;white-space:nowrap">••••••••</div>
-          </div>
-        </div>
-        <div style="width:24px;height:1px;background:rgba(180,140,50,0.35)"></div>
+        <div style="width:24px;height:1px;background:rgba(180,140,50,0.35);margin-top:8px"></div>
       </div>
+      <button onclick="togglePrivacy()" style="background:none;border:none;cursor:pointer;padding:4px;opacity:0.55;line-height:0;flex-shrink:0">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(200,160,60,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
       ${healthPill}
     </div>
     <!-- 4 minicards below net worth -->
@@ -1901,8 +1894,6 @@ function renderOverview(p){
       </div>`).join('')}
     </div>
   </div>`;
-
-  // ── ASSET SUMMARY — allocation % + P&L in each row ───
   let assetRows='';
   ccyData.forEach(function(c){
     const col=ccyColor(c.ccy);
