@@ -36,7 +36,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue'
 button,input,select,textarea{font-family:inherit}
 
 /* ── Inputs & selects ── */
-input,select{font-family:inherit;font-size:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-top:1px solid rgba(255,255,255,0.12);border-radius:var(--r);color:var(--t1);padding:7px 10px;outline:none;width:100%;transition:all .2s;box-shadow:inset 0 1px 0 rgba(0,0,0,0.3);text-align:center}
+input,select{font-family:inherit;font-size:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-top:1px solid rgba(255,255,255,0.12);border-radius:var(--r);color:var(--t1);padding:7px 10px;outline:none;width:100%;transition:all .2s;box-shadow:inset 0 1px 0 rgba(0,0,0,0.3);text-align:center;text-align-last:center}
 input[type="date"]{-webkit-appearance:none;appearance:none;min-height:36px;color:var(--t1)}
 input:focus,select:focus{border-color:rgba(0,212,255,0.5);box-shadow:0 0 0 1px rgba(0,212,255,0.15),inset 0 1px 0 rgba(0,0,0,0.3);background:rgba(0,212,255,0.03)}
 select option{background:#08080f}
@@ -155,7 +155,7 @@ button.ghost{border-color:rgba(255,255,255,0.06);color:var(--t2);background:tran
 #ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;align-items:flex-start;justify-content:center;padding-top:40px;overflow-y:auto;backdrop-filter:blur(8px)}
 #ov.open{display:flex}
 .modal{
-  position:relative;overflow:hidden;
+  position:relative;
   background:linear-gradient(160deg,#07070f,#05050c);
   border:1px solid rgba(255,255,255,0.08);
   border-top:1.5px solid rgba(255,255,255,0.35);
@@ -336,10 +336,8 @@ button.ghost{border-color:rgba(255,255,255,0.06);color:var(--t2);background:tran
 }
 .bnav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;background:transparent;border:none;cursor:pointer;padding:6px 6px;color:#2d3f5a;font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;font-family:'Courier New',monospace;transition:all .2s;position:relative;flex:1}
 .bnav-btn svg{transition:all .2s;opacity:0.45}
-.bnav-btn.active{color:#00d4ff}
-.bnav-btn.active svg{opacity:1;filter:drop-shadow(0 0 4px rgba(0,212,255,0.8));transform:translateY(-1px)}
-.bnav-btn.active::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:32px;height:2px;background:linear-gradient(90deg,transparent,#00d4ff,transparent);box-shadow:0 0 8px #00d4ff,0 0 16px rgba(0,212,255,0.4)}
 .bnav-btn:active svg{transform:scale(0.88)}
+
 .settings-btn{padding:8px 6px;background:rgba(255,255,255,0.03);border:1px solid var(--b1);border-radius:8px;color:var(--t1);font-size:11px;font-weight:500;cursor:pointer;font-family:inherit;text-align:center;min-height:34px}
 .bnav-btn:active svg{transform:scale(0.9)}
 #bottom-nav button[data-nav].active{color:var(--blue)}
@@ -614,12 +612,17 @@ body.privacy-on #mn div[style*="color:#ff4d6d"]{
 <script>
 const SK='pfx_v6';
 const CCYS=['MYR','SGD','USD','HKD','GBP','EUR'];
-const TYPES=['Buy','Sell','Dividend','Platform Fee'];
+const TYPES=['Buy','Sell','Dividend','Platform Fee','Deposit','Withdraw'];
 const PAL=['#4fc3f7','#66bb6a','#ffb74d','#ce93d8','#ef9a9a','#80deea','#f48fb1','#a5d6a7','#90caf9','#ffcc02'];
 const PFPAL=['#00d4ff','#00e676','#ff4d6d','#ffaa00','#bf5af2','#ff6b35','#00fff0','#ff2d78','#7b61ff','#39ff14','#ff007f','#00b4d8'];
 const SYM={MYR:'RM',SGD:'S$',USD:'US$',HKD:'HK$',GBP:'£',EUR:'€'};
 const uid=()=>Math.random().toString(36).slice(2,9);
 const $=id=>document.getElementById(id);
+const CCY_COLORS={
+  MYR:'#84cc16',SGD:'#f97316',USD:'#3b82f6',
+  HKD:'#ef4444',GBP:'#6366f1',EUR:'#10b981',JPY:'#06b6d4'
+};
+function getCcyColor(ccy){return CCY_COLORS[ccy]||'#888';}
 let charts={};
 
 function defData(){return{"activeId":"p2","pieImages":{},"portfolios":[{"id":"p2","name":"TTC","color":"#e57373","transactions":[{"id":"u1","date":"2024-02-20","type":"Buy","stock":"TSLA","qty":6,"price":195.5,"fee":2.18,"ccy":"USD","amount":null,"note":""},{"id":"u2","date":"2024-05-16","type":"Buy","stock":"TSLA","qty":2,"price":174.5,"fee":1.09,"ccy":"USD","amount":null,"note":""},{"id":"u3","date":"2025-06-25","type":"Buy","stock":"TSLA","qty":5,"price":339.3,"fee":1.1,"ccy":"USD","amount":null,"note":""},{"id":"u4","date":"2025-07-07","type":"Buy","stock":"TSLA","qty":7,"price":291.86,"fee":2.18,"ccy":"USD","amount":null,"note":""},{"id":"u5","date":"2025-07-17","type":"Buy","stock":"TSLA","qty":3,"price":321.66,"fee":3.24,"ccy":"USD","amount":null,"note":""},{"id":"u6","date":"2025-07-21","type":"Buy","stock":"TSLA","qty":2,"price":329.69,"fee":2.16,"ccy":"USD","amount":null,"note":""},{"id":"u7","date":"2025-07-24","type":"Buy","stock":"TSLA","qty":1,"price":332.4,"fee":1.08,"ccy":"USD","amount":null,"note":""},{"id":"u9","date":"2026-02-04","type":"Buy","stock":"CRM","qty":20,"price":197,"fee":6.3,"ccy":"USD","amount":null,"note":""},{"id":"u10","date":"2026-02-04","type":"Buy","stock":"ORCL","qty":20,"price":156,"fee":5.3,"ccy":"USD","amount":null,"note":""},{"id":"u11","date":"2026-02-04","type":"Buy","stock":"NOW","qty":10,"price":109,"fee":2.62,"ccy":"USD","amount":null,"note":""},{"id":"u12","date":"2026-01-29","type":"Buy","stock":"NOW","qty":10,"price":114,"fee":2.63,"ccy":"USD","amount":null,"note":""},{"id":"u13","date":"2026-01-28","type":"Buy","stock":"NOW","qty":20,"price":132,"fee":4.57,"ccy":"USD","amount":null,"note":""},{"id":"u14","date":"2026-02-04","type":"Buy","stock":"NVDA","qty":20,"price":180,"fee":5.95,"ccy":"USD","amount":null,"note":""},{"id":"u15","date":"2026-02-06","type":"Buy","stock":"IBIT","qty":50,"price":38,"fee":1.24,"ccy":"USD","amount":null,"note":""},{"id":"u16","date":"2026-02-02","type":"Buy","stock":"MSFT","qty":5,"price":430,"fee":1.1,"ccy":"USD","amount":null,"note":""},{"id":"u17","date":"2020-08-01","type":"Buy","stock":"Harta","qty":90200,"price":5.815,"fee":0,"ccy":"MYR","amount":null,"note":""},{"id":"u19","date":"2026-02-18","type":"Buy","stock":"MSFT","qty":5,"price":399.5,"fee":1.1,"ccy":"USD","amount":null,"note":""},{"id":"u20","date":"2026-03-13","type":"Dividend","stock":"MSFT","qty":0,"price":0,"fee":0,"ccy":"USD","amount":6.37,"note":""},{"id":"vbsiebm","date":"2026-03-21","type":"Sell","stock":"IBIT","ccy":"USD","qty":50,"price":39.555,"fee":1.25,"amount":null,"note":""},{"id":"etpbn1q","date":"2026-03-21","type":"Buy","stock":"MSFT","ccy":"USD","qty":5,"price":381.91,"fee":1.1,"amount":null,"note":""},{"id":"sr58z6t","date":"2025-11-08","type":"Buy","stock":"NVDA","ccy":"USD","qty":30,"price":185,"fee":8.48,"amount":null,"note":""},{"id":"h63nz82","date":"2025-11-06","type":"Sell","stock":"TSLA","ccy":"USD","qty":16,"price":452.5,"fee":1.14,"amount":null,"note":""},{"id":"8xupon6","date":"2025-11-13","type":"Sell","stock":"NVDA","ccy":"USD","qty":30,"price":187.68,"fee":8.6,"amount":null,"note":""},{"id":"ha2iiz2","date":"2025-11-25","type":"Buy","stock":"NVDA","ccy":"USD","qty":10,"price":178.5,"fee":3.48,"amount":null,"note":""},{"id":"lsi7nh9","date":"2025-12-29","type":"Dividend","stock":"NVDA","ccy":"USD","qty":0,"price":0,"fee":0,"amount":0.07,"note":""},{"id":"rfx6ddu","date":"2026-01-15","type":"Sell","stock":"NVDA","ccy":"USD","qty":10,"price":181.8113,"fee":3.82,"amount":null,"note":""},{"id":"6j792nn","date":"2026-04-02","type":"Dividend","stock":"NVDA","ccy":"USD","qty":0,"price":0,"fee":0,"amount":0.15,"note":""},{"id":"nqbuva1","date":"2026-04-10","type":"Sell","stock":"NVDA","ccy":"USD","qty":20,"price":183.51,"fee":6,"amount":null,"note":""},{"id":"aan68ve","date":"2026-04-01","type":"Platform Fee","stock":"","ccy":"MYR","qty":0,"price":0,"fee":0,"amount":161.39,"note":"MooMoo MY"},{"id":"12ioko3","date":"2026-04-24","type":"Dividend","stock":"CRM","ccy":"USD","qty":0,"price":0,"fee":0,"amount":6.16,"note":""},{"id":"0nwuyxz","date":"2026-04-01","type":"Platform Fee","stock":"","ccy":"USD","qty":0,"price":0,"fee":0,"amount":3.51,"note":"MooMoo SG"},{"id":"vp96go1","date":"2026-01-02","type":"Platform Fee","stock":"","ccy":"USD","qty":0,"price":0,"fee":0,"amount":5.88,"note":"MooMoo SG"},{"id":"59xlyas","date":"2026-03-02","type":"Platform Fee","stock":"","ccy":"MYR","qty":0,"price":0,"fee":0,"amount":117.89,"note":"MooMoo MY"},{"id":"rfki6pa","date":"2026-04-29","type":"Buy","stock":"MapleTree","ccy":"SGD","qty":5000,"price":1.98,"fee":13.79,"amount":null,"note":""},{"id":"81cql2c","date":"2026-04-27","type":"Dividend","stock":"ORCL","ccy":"USD","qty":0,"price":0,"fee":0,"amount":7,"note":""},{"id":"845i1dn","date":"2026-04-30","type":"Buy","stock":"MapleTree","ccy":"SGD","qty":1000,"price":1.95,"fee":3.01,"amount":null,"note":""},{"id":"t16drkm","date":"2026-05-01","type":"Platform Fee","stock":"","ccy":"MYR","qty":0,"price":0,"fee":0,"amount":165,"note":"MooMoo MY"},{"id":"9wygmug","date":"2026-05-01","type":"Platform Fee","stock":"","ccy":"USD","qty":0,"price":0,"fee":0,"amount":11.31,"note":"MooMoo SG"}],"prices":{"Harta":{"price":1.12,"ccy":"MYR"},"MapleTree":{"price":1.97,"ccy":"SGD"},"MSFT":{"price":414.44,"ccy":"USD"},"CRM":{"price":183.82,"ccy":"USD"},"TSLA":{"price":390.82,"ccy":"USD"},"ORCL":{"price":171.83,"ccy":"USD"},"NOW":{"price":91.16,"ccy":"USD"}},"optionTrades":[{"id":"ah8a8ab","ticker":"INTC C38/50 VERTICAL SPREAD","openDate":"2025-12-15","openValue":"-1815","openFee":"14.87","closeDate":"2026-04-29","closeValue":"5000","closeFee":"13.03","mktValue":null,"note":" exp 18/12/2026"},{"id":"mnjtcd8","ticker":"NVDA C175/250 VERTICAL SPREAD","openDate":"2026-03-21","openValue":"-2228","openFee":"6.69","closeDate":"","closeValue":null,"closeFee":null,"mktValue":"839.42","note":"exp 3/19/2027"},{"id":"uhnz8ut","ticker":"ONDS C12/30 VERTICAL SPREAD","openDate":"2026-01-22","openValue":"-924","openFee":"7.05","closeDate":"","closeValue":null,"closeFee":null,"mktValue":"-237.54","note":"exp 1/15/2027"},{"id":"9hhwbk0","ticker":"ONDS C10/20 VERTICAL SPREAD","openDate":"2026-03-21","openValue":"-555","openFee":"7.05","closeDate":"","closeValue":null,"closeFee":null,"mktValue":"30.54","note":"exp 1/21/2028"},{"id":"c8udjfy","ticker":"SOFI C17/30 VERTICAL SPREAD","openDate":"2026-03-13","openValue":"-1050","openFee":"6.73","closeDate":"","closeValue":null,"closeFee":null,"mktValue":"-184.98","note":"exp 6/17/2027"},{"id":"3rqhhyz","ticker":"SOFI C20/32 VERTICAL SPREAD","openDate":"2026-02-05","openValue":"-1645","openFee":"11.29","closeDate":"","closeValue":null,"closeFee":null,"mktValue":"-605.3","note":"exp 6/17/2027"},{"id":"tn9myuk","ticker":"NVO C40/60 VERTICAL SPREAD","openDate":"2026-03-13","openValue":"-916","openFee":"3.65","closeDate":"","closeValue":null,"closeFee":null,"mktValue":"385.54","note":"exp 12/17/2027"},{"id":"t9s600j","ticker":"NVO C45/90 VERTICAL SPREAD","openDate":"2026-04-05","openValue":"-1820","openFee":"2.85","closeDate":"","closeValue":null,"closeFee":null,"mktValue":"-256.70","note":"exp 12/27/2027"},{"id":"yafbzrv","ticker":"GOOGL C200 BUY CALL","openDate":"2025-07-28","openValue":"-6750","openFee":"4.33","closeDate":"2025-08-04","closeValue":"7000","closeFee":"4.36","mktValue":null,"note":""},{"id":"aldjg0m","ticker":"TSM P215/220 BULL PUT SPREAD","openDate":"2026-04-26","openValue":"492","openFee":"10.46","closeDate":"2025-09-04","closeValue":"-30","closeFee":"8.08","mktValue":null,"note":""},{"id":"ys6i4rf","ticker":"INTC C18/22 SYNTHETIC SPREAD","openDate":"2025-08-05","openValue":"2","openFee":"3.67","closeDate":"2025-08-15","closeValue":"360","closeFee":"3.68","mktValue":null,"note":""},{"id":"zxfe7aj","ticker":"BA P205/210 BULL PUT SPREAD","openDate":"2025-08-05","openValue":"364","openFee":"6.97","closeDate":"2025-08-12","closeValue":"-120","closeFee":"6.97","mktValue":null,"note":""},{"id":"lg28hab","ticker":"KO P68/69 BULL PUT SPREAD","openDate":"2025-08-11","openValue":"480","openFee":"34.84","closeDate":"2025-09-08","closeValue":"-1490","closeFee":"34.75","mktValue":null,"note":""},{"id":"2iaekek","ticker":"TSLA P315/320 BULL PUT SPREAD","openDate":"2025-08-11","openValue":"715","openFee":"8.72","closeDate":"2025-09-10","closeValue":"-25","closeFee":"8.69","mktValue":null,"note":""},{"id":"icqlkos","ticker":"MCD P290/295 BULL PUT SPREAD","openDate":"2025-08-13","openValue":"580","openFee":"8.71","closeDate":"2025-08-19","closeValue":"-150","closeFee":"8.71","mktValue":null,"note":""},{"id":"pu2s3nr","ticker":"ORCL P200 BUY PUT","openDate":"2025-08-14","openValue":"-270","openFee":"3.56","closeDate":"2025-08-19","closeValue":"262","closeFee":"3.3","mktValue":null,"note":""},{"id":"sb3fnvw","ticker":"QCOM P145/150 BULL PUT SPREAD","openDate":"2025-08-15","openValue":"408","openFee":"6.97","closeDate":"2025-09-13","closeValue":"-40","closeFee":"6.15","mktValue":null,"note":""},{"id":"5v5kzad","ticker":"ADBE P352.50/355 BULL PUT SPREAD","openDate":"2025-08-19","openValue":"372","openFee":"9.95","closeDate":"2025-09-18","closeValue":"-56","closeFee":"9.08","mktValue":null,"note":""},{"id":"7a1ybys","ticker":"ASML P740/745 BULL PUT SPREAD","openDate":"2025-08-26","openValue":"725","openFee":"8.71","closeDate":"2025-09-26","closeValue":"0","closeFee":"0","mktValue":null,"note":""},{"id":"1r5nyh9","ticker":"CPRT C60 BUY CALL","openDate":"2025-08-28","openValue":"-525","openFee":"4.35","closeDate":"","closeValue":"0","closeFee":"0","mktValue":null,"note":""},{"id":"3q8cj89","ticker":"GOOGL P210/215 BULL PUT SPREAD","openDate":"2025-09-03","openValue":"425","openFee":"8.7","closeDate":"2025-09-15","closeValue":"-50","closeFee":"8.69","mktValue":null,"note":""},{"id":"av9zh9y","ticker":"TSM C260/265 BEAR CALL SPREAD","openDate":"2025-09-08","openValue":"505","openFee":"8.69","closeDate":"2025-09-15","closeValue":"-1200","closeFee":"8.69","mktValue":null,"note":""},{"id":"2j4antm","ticker":"BA P240/245 BULL PUT SPREAD","openDate":"2025-09-09","openValue":"508","openFee":"6.95","closeDate":"2025-09-22","closeValue":"-80","closeFee":"6.98","mktValue":null,"note":""},{"id":"tzdqbpd","ticker":"KO P64/65 BULL PUT SPREAD","openDate":"2025-09-10","openValue":"500","openFee":"43.45","closeDate":"2025-10-24","closeValue":"0","closeFee":"0","mktValue":null,"note":""},{"id":"dwvxzas","ticker":"ACN P215/220 BULL PUT SPREAD","openDate":"2025-09-15","openValue":"500","openFee":"8.69","closeDate":"2025-10-07","closeValue":"-50","closeFee":"7.69","mktValue":null,"note":""},{"id":"5x71a5l","ticker":"TTD C50 BUY CALL","openDate":"2025-09-15","openValue":"-690","openFee":"1.41","closeDate":"2025-01-29","closeValue":"27","closeFee":"1.41","mktValue":null,"note":""},{"id":"05v0833","ticker":"DUOL P250/260 BULL PUT SPREAD","openDate":"2025-09-15","openValue":"550","openFee":"3.65","closeDate":"2025-10-17","closeValue":"0","closeFee":"0","mktValue":null,"note":""},{"id":"0ezu4t9","ticker":"WMT C106/107 BEAR CALL SPREAD","openDate":"2025-09-22","openValue":"560","openFee":"34.74","closeDate":"2025-10-16","closeValue":"-1400","closeFee":"34.74","mktValue":null,"note":""},{"id":"svtk2ht","ticker":"META C805/810 BEAR CALL SPREAD","openDate":"2025-09-24","openValue":"550","openFee":"8.69","closeDate":"2025-10-24","closeValue":"-4","closeFee":"3.66","mktValue":null,"note":""},{"id":"ahgtabt","ticker":"CRM P220/225 BULL PUT SPREAD","openDate":"2025-10-01","openValue":"565","openFee":"8.69","closeDate":"2025-10-31","closeValue":"0","closeFee":"0","mktValue":null,"note":""},{"id":"nn1h0o6","ticker":"ADBE P320/325 BULL PUT SPREAD","openDate":"2025-10-07","openValue":"558","openFee":"10.42","closeDate":"2025-11-08","closeValue":"-900","closeFee":"9.2","mktValue":null,"note":""},{"id":"8ga2dbs","ticker":"AMZN P205/210 BULL PUT SPREAD","openDate":"2025-10-08","openValue":"625","openFee":"8.69","closeDate":"2025-11-07","closeValue":"0","closeFee":"0","mktValue":null,"note":""},{"id":"xmv5ugg","ticker":"ACN P220/225 BULL PUT SPREAD","openDate":"2025-10-13","openValue":"500","openFee":"13.51","closeDate":"2025-11-14","closeValue":"0","closeFee":"0","mktValue":null,"note":""},{"id":"9u4i5q4","ticker":"SE P140/145 BULL PUT SPREAD","openDate":"2025-10-20","openValue":"665","openFee":"8.69","closeDate":"2025-12-11","closeValue":"-1350","closeFee":"8.67","mktValue":null,"note":""},{"id":"dtny88i","ticker":"OXY C42.5 BUY CALL","openDate":"2025-10-20","openValue":"-320","openFee":"3.29","closeDate":"2025-11-28","closeValue":"294","closeFee":"3.56","mktValue":null,"note":""},{"id":"idnizob","ticker":"UNH P335/340 BULL PUT SPREAD","openDate":"2025-10-28","openValue":"640","openFee":"8.69","closeDate":"2025-11-08","closeValue":"-2000","closeFee":"8.67","mktValue":null,"note":""},{"id":"ufxsnia","ticker":"ORCL P235/240 BULL PUT SPREAD","openDate":"2025-11-03","openValue":"648","openFee":"10.4","closeDate":"2025-11-08","closeValue":"-1614","closeFee":"10.4","mktValue":null,"note":""},{"id":"yv8jtgr","ticker":"DPZ P370/380 BULL PUT SPREAD","openDate":"2025-11-06","openValue":"630","openFee":"7.07","closeDate":"2025-12-19","closeValue":"0","closeFee":"0","mktValue":null,"note":""},{"id":"8hn8hty","ticker":"TSLA P370/375 BULL PUT SPREAD","openDate":"2025-11-07","openValue":"735","openFee":"9.34","closeDate":"2025-12-12","closeValue":"0","closeFee":"0","mktValue":null,"note":""},{"id":"al1ywzn","ticker":"QQQ P595/600 BULL PUT SPREAD","openDate":"2025-11-12","openValue":"980","openFee":"17.33","closeDate":"2025-11-18","closeValue":"-2200","closeFee":"17.33","mktValue":null,"note":""},{"id":"xwjeinh","ticker":"BRKB P490/495 BULL PUT SPREAD","openDate":"2025-11-13","openValue":"707","openFee":"12.13","closeDate":"2025-12-10","closeValue":"-1500","closeFee":"12.13","mktValue":null,"note":""},{"id":"5sawe1u","ticker":"INTC C20/38 SYNTHETIC SPREAD","openDate":"2025-11-17","openValue":"-3740","openFee":"7.10","closeDate":"2025-11-28","closeValue":"4464","closeFee":"3.44","mktValue":null,"note":""},{"id":"cyy0rgq","ticker":"INTC C38 BUY CALL","openDate":"2025-11-24","openValue":"20","openFee":"3.88","closeDate":"2025-11-28","closeValue":"-174","closeFee":"3.43","mktValue":null,"note":""},{"id":"2063t2i","ticker":"NVDA P182.5/192.5 BULL PUT SPREAD","openDate":"2025-11-22","openValue":"181","openFee":"6.9","closeDate":"2025-11-22","closeValue":"-789","closeFee":"7.41","mktValue":null,"note":""},{"id":"w4uepgw","ticker":"ORCL P200/210 BULL PUT SPREAD","openDate":"2025-11-22","openValue":"940","openFee":"7.41","closeDate":"2025-12-31","closeValue":"-850","closeFee":"6.57","mktValue":null,"note":""},{"id":"3zik8dq","ticker":"NVDA P175/185 BULL PUT SPREAD","openDate":"2025-11-22","openValue":"416","openFee":"6.57","closeDate":"2025-11-28","closeValue":"0","closeFee":"0","mktValue":null,"note":"Optioned exercised. Bought share $18500"},{"id":"dogbmns","ticker":"CELH C37.5 BUY CALL","openDate":"2025-11-22","openValue":"-1500","openFee":"3.34","closeDate":"2025-11-28","closeValue":"1606","closeFee":"3.46","mktValue":null,"note":""},{"id":"8rno32r","ticker":"CELH C40 SELL CALL","openDate":"2025-11-24","openValue":"30","openFee":"3.29","closeDate":"2025-11-28","closeValue":"-95","closeFee":"3.44","mktValue":null,"note":""},{"id":"6ryoc49","ticker":"PG C145/160 SYNTHETIC SPREAD","openDate":"2025-11-25","openValue":"-664","openFee":"2.81","closeDate":"2026-02-03","closeValue":"835","closeFee":"2.81","mktValue":null,"note":""},{"id":"zogmzln","ticker":"MSFT P445/455 BULL PUT SPREAD","openDate":"2025-11-25","openValue":"645","openFee":"7.73","closeDate":"2025-12-26","closeValue":"0","closeFee":"0","mktValue":null,"note":""},{"id":"37wzz0z","ticker":"QCOM C165/175 VERTICAL SPREAD","openDate":"2025-11-25","openValue":"-632","openFee":"7.74","closeDate":"2025-12-26","closeValue":"1900","closeFee":"1.77","mktValue":null,"note":"Option exercised. "},{"id":"8oc2h8i","ticker":"AMZN C225 CALENDAR SPREAD","openDate":"2025-11-25","openValue":"-2050","openFee":"1.41","closeDate":"2025-12-23","closeValue":"1953","closeFee":"1.21","mktValue":null,"note":""},{"id":"rshyc2f","ticker":"AMZN C225 CALENDAR SPREAD","openDate":"2025-11-25","openValue":"600","openFee":"1.4","closeDate":"2025-11-28","closeValue":"-802","closeFee":"1.4","mktValue":null,"note":""},{"id":"9sj37s3","ticker":"AMZN C230 CALENDAR SPREAD","openDate":"2025-11-28","openValue":"780","openFee":"1.41","closeDate":"2025-12-19","closeValue":"-38","closeFee":"1.2","mktValue":null,"note":""},{"id":"82cccb0","ticker":"AMZN C230 CALENDAR SPREAD","openDate":"2025-12-19","openValue":"304","openFee":"1.21","closeDate":"2025-12-23","closeValue":"-468","closeFee":"1.2","mktValue":null,"note":""},{"id":"fpnsgjj","ticker":"ACN P255/265 VERTICAL SPREAD","openDate":"2025-12-02","openValue":"-980","openFee":"7.31","closeDate":"2025-12-30","closeValue":"1900","closeFee":"6.86","mktValue":null,"note":""},{"id":"lbzemvs","ticker":"ARM C140 DIAGONAL SPREAD","openDate":"2025-12-04","openValue":"-1357","openFee":"3.44","closeDate":"2025-12-16","closeValue":"467","closeFee":"3.71","mktValue":null,"note":""},{"id":"14tf22d","ticker":"ARM C146 DIAGONAL SPREAD","openDate":"2025-12-04","openValue":"165","openFee":"3.46","closeDate":"2025-12-16","closeValue":"-8","closeFee":"3.55","mktValue":null,"note":""},{"id":"wvsztut","ticker":"ARM C146 DIAGONAL SPREAD","openDate":"2025-12-12","openValue":"125","openFee":"3.71","closeDate":"2025-12-13","closeValue":"-69","closeFee":"3.55","mktValue":null,"note":""},{"id":"y1h57ex","ticker":"ARM C133 DIAGONAL SPREAD","openDate":"2025-12-13","openValue":"355","openFee":"3.56","closeDate":"2025-12-13","closeValue":"-348","closeFee":"3.7","mktValue":null,"note":""},{"id":"jwhdubz","ticker":"ARM C140 DIAGONAL SPREAD","openDate":"2025-12-13","openValue":"122","openFee":"3.71","closeDate":"2025-12-16","closeValue":"-35","closeFee":"3.7","mktValue":null,"note":""},{"id":"n8st81n","ticker":"ADBE P317.5/322.5 BULL PUT SPREAD","openDate":"2025-12-08","openValue":"428","openFee":"9.03","closeDate":"2025-12-12","closeValue":"0","closeFee":"0","mktValue":null,"note":""},{"id":"1ww1j71","ticker":"NVO C45 DIAGONAL SPREAD","openDate":"2025-12-10","openValue":"-1306","openFee":"3.44","closeDate":"2025-12-26","closeValue":"1709","closeFee":"3.35","mktValue":null,"note":""},{"id":"nueupk5","ticker":"NVO C46 DIAGONAL SPREAD","openDate":"2025-12-10","openValue":"146","openFee":"3.46","closeDate":"2025-12-13","closeValue":"-432","closeFee":"3.55","mktValue":null,"note":""},{"id":"ueevofc","ticker":"NVO C48 DIAGONAL SPREAD","openDate":"2025-12-13","openValue":"277","openFee":"3.56","closeDate":"2025-12-26","closeValue":"-434","closeFee":"3.34","mktValue":null,"note":""},{"id":"4el0xpo","ticker":"BRKB C500 DIAGONAL SPREAD","openDate":"2025-12-19","openValue":"-2109","openFee":"1.2","closeDate":"2026-03-20","closeValue":"398","closeFee":"1.41","mktValue":null,"note":""},{"id":"okv5h31","ticker":"BRKB C505 DIAGONAL SPREAD","openDate":"2025-12-19","openValue":"466","openFee":"1.21","closeDate":"2025-12-24","closeValue":"-156","closeFee":"1.2","mktValue":null,"note":""},{"id":"45cnsty","ticker":"BRKB C500 DIAGONAL SPREAD","openDate":"2025-12-24","openValue":"500","openFee":"1.21","closeDate":"2026-01-08","closeValue":"-135","closeFee":"1.41","mktValue":null,"note":""},{"id":"94usew6","ticker":"BRKB C500 DIAGONAL SPREAD","openDate":"2025-12-24","openValue":"387","openFee":"1.4","closeDate":"2026-01-22","closeValue":"-7","closeFee":"1.2","mktValue":null,"note":""},{"id":"kcwmcvz","ticker":"BRKB C495 DIAGONAL SPREAD","openDate":"2026-01-22","openValue":"94","openFee":"1.41","closeDate":"2026-01-28","closeValue":"-8","closeFee":"1.2","mktValue":null,"note":""},{"id":"08m1rq9","ticker":"BRKB C495 DIAGONAL SPREAD","openDate":"2026-01-28","openValue":"37","openFee":"1.41","closeDate":"2026-01-29","closeValue":"-32","closeFee":"1.4","mktValue":null,"note":""},{"id":"9qm2y71","ticker":"QQQ C610 DIAGONAL SPREAD","openDate":"2025-12-19","openValue":"-2728","openFee":"1.2","closeDate":"2025-12-26","closeValue":"3449","closeFee":"1.41","mktValue":null,"note":""},{"id":"fqei02w","ticker":"QQQ C610 DIAGONAL SPREAD","openDate":"2025-12-19","openValue":"874","openFee":"1.21","closeDate":"2025-12-26","closeValue":"-1569","closeFee":"1.4","mktValue":null,"note":""},{"id":"lmdt7u9","ticker":"AMD C195/200 BULL PUT SPREAD","openDate":"2025-12-24","openValue":"708","openFee":"8.38","closeDate":"2026-01-20","closeValue":"-54","closeFee":"9.18","mktValue":null,"note":""},{"id":"210tjyv","ticker":"CRWD C480 CALENDAR SPREAD","openDate":"2025-12-30","openValue":"-4208","openFee":"3.71","closeDate":"2026-02-04","closeValue":"1583","closeFee":"3.46","mktValue":null,"note":""},{"id":"bvwt3cc","ticker":"CRWD C480 CALENDAR SPREAD","openDate":"2025-12-30","openValue":"928","openFee":"3.7","closeDate":"2026-01-06","closeValue":"-49","closeFee":"3.34","mktValue":null,"note":""},{"id":"f2yx34i","ticker":"CRWD C480 CALENDAR SPREAD","openDate":"2026-01-06","openValue":"241","openFee":"3.35","closeDate":"2026-01-16","closeValue":"-33","closeFee":"3.28","mktValue":null,"note":""},{"id":"704veff","ticker":"CRWD C485 CALENDAR SPREAD","openDate":"2026-01-16","openValue":"167","openFee":"3.29","closeDate":"2026-01-22","closeValue":"-6","closeFee":"3.55","mktValue":null,"note":""},{"id":"lwmqx3a","ticker":"CRWD C480 CALENDAR SPREAD","openDate":"2026-01-22","openValue":"153","openFee":"3.56","closeDate":"2026-01-28","closeValue":"-609","closeFee":"3.7","mktValue":null,"note":""},{"id":"ncp3xl7","ticker":"CRWD C490 CALENDAR SPREAD","openDate":"2026-01-28","openValue":"701","openFee":"3.71","closeDate":"2026-01-30","closeValue":"-77","closeFee":"3.28","mktValue":null,"note":""},{"id":"lz8742x","ticker":"CRWD C480 CALENDAR SPREAD","openDate":"2026-01-30","openValue":"140","openFee":"3.56","closeDate":"2026-02-04","closeValue":"-5","closeFee":"3.44","mktValue":null,"note":""},{"id":"cz1n3h0","ticker":"PEP P138 CROUCHING BULL SPREAD","openDate":"2025-12-30","openValue":"85","openFee":"3.46","closeDate":"2026-01-28","closeValue":"-4","closeFee":"3.55","mktValue":null,"note":""},{"id":"zibc0nu","ticker":"PEP P137 CROUCHING BULL SPREAD","openDate":"2026-01-28","openValue":"84","openFee":"3.56","closeDate":"2026-02-07","closeValue":"0","closeFee":"0","mktValue":null,"note":""},{"id":"tauoz63","ticker":"PEP C145 CROUCHIING BULL SPREAD","openDate":"2025-12-30","openValue":"-910","openFee":"3.44","closeDate":"2026-03-21","closeValue":"1288","closeFee":"3.29","mktValue":null,"note":""},{"id":"zccuvtm","ticker":"PEP C165 CROUCHING BULL SPREAD","openDate":"2025-12-30","openValue":"261","openFee":"3.46","closeDate":"2026-03-21","closeValue":"-368","closeFee":"3.28","mktValue":null,"note":""},{"id":"lupv0s2","ticker":"ACN P250 IRON CONDOR","openDate":"2025-12-30","openValue":"-1028","openFee":"5.94","closeDate":"2026-02-04","closeValue":"4700","closeFee":"5.95","mktValue":null,"note":""},{"id":"hklbkru","ticker":"ACN P255 IRON CONDOR","openDate":"2025-12-30","openValue":"1420","openFee":"5.95","closeDate":"2026-02-04","closeValue":"-6088","closeFee":"5.94","mktValue":null,"note":""},{"id":"6hxny6i","ticker":"ACN C290 IRON CONDOR","openDate":"2025-12-30","openValue":"1800","openFee":"5.95","closeDate":"2026-02-04","closeValue":"-200","closeFee":"5.94","mktValue":null,"note":""},{"id":"esp7sfp","ticker":"ACN C295 IRON CONDOR","openDate":"2025-12-30","openValue":"-1340","openFee":"5.94","closeDate":"2026-02-04","closeValue":"40","closeFee":"5.94","mktValue":null,"note":""},{"id":"g30mx91","ticker":"HD C345 CALENDAR SPREAD","openDate":"2025-12-30","openValue":"-2238","openFee":"3.55","closeDate":"2026-02-05","closeValue":"5092","closeFee":"3.56","mktValue":null,"note":""},{"id":"d7vwwa9","ticker":"HD C345 CALENDAR SPREAD","openDate":"2025-12-30","openValue":"714","openFee":"3.56","closeDate":"2026-01-07","closeValue":"-1236","closeFee":"3.55","mktValue":null,"note":""},{"id":"d1scnhw","ticker":"HD C350 CALENDAR SPREAD","openDate":"2026-01-07","openValue":"981","openFee":"3.56","closeDate":"2026-01-21","closeValue":"-3332","closeFee":"3.34","mktValue":null,"note":""},{"id":"3tdgofe","ticker":"HD C360 CALENDAR SPREAD","openDate":"2026-01-23","openValue":"2500","openFee":"3.35","closeDate":"2026-02-02","closeValue":"-1443","closeFee":"3.28","mktValue":null,"note":""},{"id":"c90um20","ticker":"HD C365 CALENDAR SPREAD","openDate":"2026-02-02","openValue":"1213","openFee":"3.29","closeDate":"2026-02-05","closeValue":"-2447","closeFee":"3.55","mktValue":null,"note":""},{"id":"sduvk3m","ticker":"DPZ P380/390 BULL PUT SPREAD","openDate":"2026-01-09","openValue":"900","openFee":"6.91","closeDate":"2026-02-03","closeValue":"-784","closeFee":"6.92","mktValue":null,"note":""},{"id":"nao0eb1","ticker":"CRWD P425/430 BULL PUT SPREAD","openDate":"2026-01-12","openValue":"728","openFee":"9.30","closeDate":"2026-02-03","closeValue":"-1995","closeFee":"12.1","mktValue":null,"note":""},{"id":"eykqbe8","ticker":"SPY C705/710 BEAR CALL SPREAD","openDate":"2026-01-16","openValue":"-1805","openFee":"12.37","closeDate":"2026-02-05","closeValue":"2475","closeFee":"11.29","mktValue":null,"note":""},{"id":"cnuauwr","ticker":"AMZN P210/215 BULL PUT SPREAD","openDate":"2026-01-20","openValue":"660","openFee":"17.86","closeDate":"2026-02-13","closeValue":"-2832","closeFee":"13.54","mktValue":null,"note":""},{"id":"o2nybby","ticker":"PANW P170/175 BULL PUT SPREAD","openDate":"2026-01-29","openValue":"592","openFee":"6.91","closeDate":"2026-02-03","closeValue":"-1220","closeFee":"6.91","mktValue":null,"note":""},{"id":"up1q482","ticker":"TSLA P375/380 BULL PUT SPREAD","openDate":"2026-02-10","openValue":"525","openFee":"12.38","closeDate":"2026-03-21","closeValue":"-1695","closeFee":"12.38","mktValue":null,"note":""},{"id":"abn419x","ticker":"AMD P175/180 BULL PUT SPREAD","openDate":"2026-02-18","openValue":"432","openFee":"8.57","closeDate":"2026-03-20","closeValue":"0","closeFee":"0","mktValue":null,"note":""}],"cashBalances":{"MYR":567.87},"deposits":[{"id":"rb1ifah","date":"2024-04-13","type":"deposit","ccy":"MYR","amount":10000,"note":"MooMoo MY - 1st deposit"},{"id":"9524lf5","date":"2024-05-24","type":"deposit","ccy":"MYR","amount":15000,"note":"MooMoo MY"},{"id":"2o6q9u8","date":"2024-07-07","type":"deposit","ccy":"MYR","amount":2254,"note":"MooMoo MY"},{"id":"t95teoo","date":"2024-10-04","type":"deposit","ccy":"MYR","amount":3000,"note":"MooMoo MY"},{"id":"dh73ffa","date":"2024-12-31","type":"deposit","ccy":"MYR","amount":8232,"note":"MooMoo MY"},{"id":"gjikvq3","date":"2025-01-23","type":"deposit","ccy":"MYR","amount":1514,"note":"MooMoo MY"},{"id":"2zm1982","date":"2025-02-24","type":"deposit","ccy":"MYR","amount":15000,"note":"MooMoo MY"},{"id":"jsltcq9","date":"2025-04-07","type":"deposit","ccy":"MYR","amount":4000,"note":"MooMoo MY"},{"id":"8rqyksd","date":"2025-08-11","type":"deposit","ccy":"MYR","amount":6000,"note":"MooMoo MY"},{"id":"3yepugw","date":"2025-09-02","type":"deposit","ccy":"MYR","amount":5000,"note":"MooMoo MY"},{"id":"0jfh4qk","date":"2025-11-25","type":"deposit","ccy":"MYR","amount":2000,"note":"MooMoo MY"},{"id":"5hfsqmv","date":"2026-01-29","type":"deposit","ccy":"MYR","amount":5000,"note":"MooMoo MY"},{"id":"a7nl35e","date":"2021-04-07","type":"deposit","ccy":"SGD","amount":2700,"note":"MooMoo SG - 1st deposit"},{"id":"xvah8yh","date":"2021-05-01","type":"deposit","ccy":"SGD","amount":10000,"note":"MooMoo SG"},{"id":"ipnprr3","date":"2021-07-27","type":"deposit","ccy":"SGD","amount":1200,"note":"MooMoo SG"},{"id":"p4x4hdo","date":"2023-11-10","type":"deposit","ccy":"SGD","amount":2000,"note":"MooMoo SG"},{"id":"csotoh4","date":"2023-11-20","type":"deposit","ccy":"SGD","amount":200,"note":"MooMoo SG"},{"id":"yfkt0s0","date":"2024-12-31","type":"deposit","ccy":"SGD","amount":5700,"note":"MooMoo SG"},{"id":"znhln8q","date":"2025-12-31","type":"deposit","ccy":"SGD","amount":9337,"note":"MooMoo SG"},{"id":"i8qm9u0","date":"2021-04-12","type":"withdrawal","ccy":"SGD","amount":2730,"note":"MooMoo SG"},{"id":"owy4lyi","date":"2021-09-10","type":"withdrawal","ccy":"SGD","amount":6106.7,"note":"MooMoo SG"},{"id":"ovxuev8","date":"2025-11-24","type":"withdrawal","ccy":"SGD","amount":4000,"note":"MooMoo SG"},{"id":"9f7399p","date":"2020-08-01","type":"deposit","ccy":"MYR","amount":524513,"note":"HLE - Harta purchase"}]},{"id":"p1","name":"PKM","color":"#64b5f6","transactions":[{"id":"t1","date":"2025-11-05","type":"Buy","stock":"MapleTree","qty":5000,"price":2.04,"fee":11.13,"ccy":"SGD","amount":null,"note":""},{"id":"t3","date":"2026-01-28","type":"Buy","stock":"Alpha","qty":72500,"price":0.275,"fee":41.94,"ccy":"MYR","amount":null,"note":""},{"id":"t4","date":"2026-01-28","type":"Buy","stock":"TopGlove SG","qty":13800,"price":1.978,"fee":0,"ccy":"SGD","amount":null,"note":""},{"id":"t5","date":"2025-12-15","type":"Dividend","stock":"TopGlove SG","qty":0,"price":0,"fee":0,"ccy":"SGD","amount":20.98,"note":"Q4 div"},{"id":"t6","date":"2026-02-09","type":"Buy","stock":"MSFT","qty":10,"price":404.47,"fee":1.11,"ccy":"USD","amount":null,"note":""},{"id":"t7","date":"2026-03-13","type":"Dividend","stock":"MapleTree","qty":5000,"price":0,"fee":0,"ccy":"SGD","amount":158.5,"note":""},{"id":"t8","date":"2026-03-13","type":"Dividend","stock":"MSFT","qty":0,"price":0,"fee":0,"ccy":"USD","amount":6.37,"note":""},{"id":"t9","date":"2026-03-19","type":"Buy","stock":"AMD","qty":5,"price":199.7,"fee":1.09,"ccy":"USD","amount":null,"note":""},{"id":"t10","date":"2026-03-25","type":"Buy","stock":"CapLand Ascendas","qty":4100,"price":2.47,"fee":11.04,"ccy":"SGD","amount":null,"note":""},{"id":"t11","date":"2026-04-30","type":"Dividend","stock":"CapLand Ascendas","qty":0,"price":0,"fee":0,"ccy":"SGD","amount":153.75,"note":""},{"id":"19e5oow","date":"2025-04-07","type":"Buy","stock":"MSFT","ccy":"USD","qty":10,"price":357,"fee":1.11,"amount":null,"note":""},{"id":"im1s0yi","date":"2025-05-02","type":"Sell","stock":"MSFT","ccy":"USD","qty":10,"price":435.99,"fee":1.25,"amount":null,"note":""},{"id":"bnj0gbt","date":"2026-03-31","type":"Dividend","stock":"Alpha","ccy":"MYR","qty":0,"price":0,"fee":0,"amount":362.5,"note":""},{"id":"o01n3cv","date":"2026-04-24","type":"Sell","stock":"AMD","ccy":"USD","qty":5,"price":336.5,"fee":1.16,"amount":null,"note":""},{"id":"fhgad5h","date":"2026-04-13","type":"Buy","stock":"CapLand Ascendas","ccy":"SGD","qty":150,"price":2.35,"fee":0,"amount":null,"note":"Right issue subscription "},{"id":"adi7uur","date":"2020-11-25","type":"Buy","stock":"Harta","ccy":"MYR","qty":51400,"price":6.429,"fee":0,"amount":null,"note":"Harta purchase "},{"id":"1a6w1a8","date":"2026-04-29","type":"Buy","stock":"MapleTree","ccy":"SGD","qty":10000,"price":2,"fee":10.9,"amount":null,"note":""},{"id":"hhqdyqd","date":"2026-04-30","type":"Buy","stock":"PLTR","ccy":"USD","qty":10,"price":138,"fee":1.11,"amount":null,"note":""},{"id":"0ml0grj","date":"2026-05-01","type":"Sell","stock":"Alpha","ccy":"MYR","qty":72500,"price":0.265,"fee":41.14,"amount":null,"note":""}],"prices":{"Harta":{"price":1.12,"ccy":"MYR"},"Alpha":{"price":0.265,"ccy":"MYR"},"MapleTree":{"price":1.97,"ccy":"SGD"},"CapLand Ascendas":{"price":2.49,"ccy":"SGD"},"TopGlove SG":{"price":0.23,"ccy":"SGD"},"MSFT":{"price":414.44,"ccy":"USD"},"PLTR":{"price":144.07,"ccy":"USD"}},"optionTrades":[],"cashBalances":{"SGD":2416.69,"MYR":19166.63},"deposits":[{"id":"1t88xo9","date":"2024-09-28","type":"deposit","ccy":"SGD","amount":10100,"note":"MooMoo SG - 1st deposit"},{"id":"baqcbpi","date":"2025-07-04","type":"deposit","ccy":"SGD","amount":4000,"note":"MooMoo SG"},{"id":"bsbh9sy","date":"2025-09-23","type":"deposit","ccy":"SGD","amount":4000,"note":"MooMoo SG"},{"id":"iwwvkyy","date":"2025-11-05","type":"deposit","ccy":"SGD","amount":10000,"note":"MooMoo SG"},{"id":"jbh9fkm","date":"2026-03-05","type":"deposit","ccy":"SGD","amount":10000,"note":"MooMoo SG"},{"id":"eqn9lxi","date":"2025-01-21","type":"withdrawal","ccy":"SGD","amount":10000,"note":"MooMoo SG"},{"id":"j3xjl24","date":"2025-01-23","type":"withdrawal","ccy":"SGD","amount":531.46,"note":"MooMoo SG"},{"id":"d90061b","date":"2025-05-02","type":"withdrawal","ccy":"SGD","amount":1000,"note":"MooMoo SG"},{"id":"89csdmf","date":"2020-11-28","type":"deposit","ccy":"MYR","amount":330450.6,"note":"HLE - Harta purchase"},{"id":"bhu9c6z","date":"2026-01-28","type":"deposit","ccy":"MYR","amount":19979.44,"note":"HLE - Alpha purchase"}]},{"id":"77sad5x","name":"TTH","color":"#81c784","transactions":[{"id":"vn3wpco","date":"2020-08-01","type":"Buy","stock":"Harta","ccy":"MYR","qty":14700,"price":6.803,"fee":0,"amount":null,"note":""}],"prices":{"Harta":{"price":1.12,"ccy":"MYR"}},"optionTrades":[],"cashBalances":{},"deposits":[{"id":"7cg4fd3","date":"2020-08-01","type":"deposit","ccy":"MYR","amount":100000,"note":"RM100k fund - TTH (MAE)"}]}],"fx":{"SGD":3.12,"USD":3.97,"HKD":0.57,"GBP":5.9}};}
@@ -1049,7 +1052,7 @@ function renderSettingsPx(){
   allStocks.forEach(function(s){if(!byCcy[s.ccy])byCcy[s.ccy]=[];byCcy[s.ccy].push(s);});
   Object.keys(byCcy).forEach(function(c){byCcy[c].sort(function(a,b){return b.mktVal-a.mktVal;});});
   const ccyOrder=[...CCY_ORDER.filter(function(c){return byCcy[c];}),...Object.keys(byCcy).filter(function(c){return CCY_ORDER.indexOf(c)<0;})];
-  const CCY_ACCENT={'MYR':'#84cc16','SGD':'#f97316','USD':'#3b82f6'};
+  const CCY_ACCENT=CCY_COLORS;
   let rowsHtml='';
   if(allStocks.length){
     // Single header row at top
@@ -1520,19 +1523,19 @@ function renderDashboard(){
   const heroSection=`<div style="margin-bottom:12px">
     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px">
       <div style="flex:1;min-width:0">
-        <div style="font-size:8.5px;font-weight:400;color:rgba(180,140,50,0.5);letter-spacing:2px;text-transform:uppercase;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;margin-bottom:8px">Total Net Worth</div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-          <div>
-          <div class="pv-networth-wrap">
-            <div class="pv-val" style="font-size:34px;font-weight:200;color:rgba(255,255,255,0.92);letter-spacing:-1px;line-height:1.05;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;white-space:nowrap">RM ${grandMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
-            <div class="pv-hide" style="font-size:34px;color:rgba(255,255,255,0.92);font-weight:200;line-height:1.05;white-space:nowrap">••••••••</div>
-          </div>
-          </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="font-size:8.5px;font-weight:700;color:rgba(180,140,50,0.7);letter-spacing:2px;text-transform:uppercase">Net Worth</div>
           <button onclick="togglePrivacy()" style="background:none;border:none;cursor:pointer;padding:4px;opacity:0.38;line-height:0;flex-shrink:0">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(200,160,60,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
             </svg>
           </button>
+        </div>
+        <div style="margin-bottom:10px">
+          <div class="pv-networth-wrap">
+            <div class="pv-val" style="font-size:34px;font-weight:300;color:#fff;letter-spacing:-1px;line-height:1.05;white-space:nowrap">RM ${grandMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+            <div class="pv-hide" style="font-size:34px;color:#fff;font-weight:300;line-height:1.05;white-space:nowrap">••••••••</div>
+          </div>
         </div>
         <div style="width:24px;height:1px;background:rgba(180,140,50,0.35)"></div>
       </div>
@@ -1603,9 +1606,9 @@ function initOrbEffects(){
   }
 
   const LAYERS=[
-    {n:20,rMin:0.60,rMax:0.82,sMin:0.25,sMax:0.55,szMin:1.0,szMax:2.2,opMin:0.08,opMax:0.28},
-    {n:16,rMin:0.72,rMax:0.94,sMin:0.5,sMax:1.1,szMin:0.8,szMax:1.6,opMin:0.10,opMax:0.38},
-    {n:8, rMin:0.88,rMax:0.99,sMin:1.2,sMax:2.2,szMin:0.5,szMax:1.0,opMin:0.15,opMax:0.55},
+    {n:12,rMin:0.60,rMax:0.82,sMin:0.25,sMax:0.55,szMin:1.0,szMax:2.0,opMin:0.08,opMax:0.28},
+    {n:10,rMin:0.72,rMax:0.94,sMin:0.5,sMax:1.1,szMin:0.8,szMax:1.5,opMin:0.10,opMax:0.36},
+    {n:5, rMin:0.88,rMax:0.99,sMin:1.2,sMax:2.2,szMin:0.5,szMax:1.0,opMin:0.15,opMax:0.50},
   ];
 
   let orbs=[],particles=[];
@@ -1627,57 +1630,61 @@ function initOrbEffects(){
   }
   initParticles();
 
-  // Equator shimmer angle per orb — a bright arc rotating slowly around the rim
+  // Equator shimmer angle per orb
   let shimmerAngles=orbs.map(function(_,i){return i*Math.PI*0.6;});
 
   let last=performance.now();
+  let lastFrame=0;
+  const TARGET_FPS=30;
+  const FRAME_MS=1000/TARGET_FPS;
+
   function step(now){
-    const dt=Math.min(now-last,50);last=now;
+    window._orbRaf=requestAnimationFrame(step);
+    // Throttle to 30fps
+    if(now-lastFrame<FRAME_MS)return;
+    const dt=Math.min(now-last,66);last=now;lastFrame=now;
     const t=now*0.001;
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
     orbs.forEach(function(o,oi){
       const [r,g,b]=o.rgb;
 
-      // Inner breathing glow — stronger pulse
+      // Inner breathing glow
       const breath=Math.sin(t*0.7+oi*1.4)*0.5+0.5;
       ctx.save();
       ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,Math.PI*2);ctx.clip();
       const gGrad=ctx.createRadialGradient(o.x,o.y,0,o.x,o.y,o.r*0.8);
-      gGrad.addColorStop(0,'rgba('+r+','+g+','+b+','+(0.06+breath*0.12).toFixed(3)+')');
-      gGrad.addColorStop(0.5,'rgba('+r+','+g+','+b+','+(0.01+breath*0.04).toFixed(3)+')');
+      gGrad.addColorStop(0,'rgba('+r+','+g+','+b+','+(0.06+breath*0.12).toFixed(2)+')');
       gGrad.addColorStop(1,'transparent');
       ctx.fillStyle=gGrad;ctx.fillRect(o.x-o.r,o.y-o.r,o.r*2,o.r*2);
       ctx.restore();
 
-      // Outer ambient halo — breathes slower
+      // Outer ambient halo
       const hPulse=Math.sin(t*0.4+oi*2.0)*0.4+0.6;
       const hGrad=ctx.createRadialGradient(o.x,o.y,o.r*0.8,o.x,o.y,o.r*1.5);
       hGrad.addColorStop(0,'rgba('+r+','+g+','+b+',0)');
-      hGrad.addColorStop(0.45,'rgba('+r+','+g+','+b+','+(0.07*hPulse).toFixed(3)+')');
+      hGrad.addColorStop(0.5,'rgba('+r+','+g+','+b+','+(0.06*hPulse).toFixed(2)+')');
       hGrad.addColorStop(1,'transparent');
       ctx.fillStyle=hGrad;
       ctx.beginPath();ctx.arc(o.x,o.y,o.r*1.5,0,Math.PI*2);ctx.fill();
 
-      // Rotating equator shimmer — bright arc on the rim
+      // Rotating equator shimmer
       shimmerAngles[oi]+=dt*0.0006*(oi%2===0?1:-1);
       const sa=shimmerAngles[oi];
       const arcLen=Math.PI*0.55;
       ctx.save();
       ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,Math.PI*2);ctx.clip();
-      ctx.beginPath();
-      ctx.arc(o.x,o.y,o.r*0.97,sa,sa+arcLen);
+      ctx.beginPath();ctx.arc(o.x,o.y,o.r*0.97,sa,sa+arcLen);
+      const mid=sa+arcLen*0.5;
       const shimGrad=ctx.createLinearGradient(
-        o.x+Math.cos(sa)*o.r, o.y+Math.sin(sa)*o.r,
-        o.x+Math.cos(sa+arcLen)*o.r, o.y+Math.sin(sa+arcLen)*o.r
+        o.x+Math.cos(sa)*o.r*0.97, o.y+Math.sin(sa)*o.r*0.97,
+        o.x+Math.cos(mid)*o.r*0.97, o.y+Math.sin(mid)*o.r*0.97
       );
       shimGrad.addColorStop(0,'rgba('+r+','+g+','+b+',0)');
-      shimGrad.addColorStop(0.3,'rgba('+r+','+g+','+b+',0.45)');
-      shimGrad.addColorStop(0.7,'rgba(255,255,255,0.35)');
+      shimGrad.addColorStop(0.5,'rgba(255,255,255,0.32)');
       shimGrad.addColorStop(1,'rgba('+r+','+g+','+b+',0)');
       ctx.strokeStyle=shimGrad;
-      ctx.lineWidth=1.4*dpr;
-      ctx.stroke();
+      ctx.lineWidth=1.4*dpr;ctx.stroke();
       ctx.restore();
     });
 
@@ -1689,15 +1696,13 @@ function initOrbEffects(){
       const x=o.x+Math.cos(p.angle)*p.dist;
       const y=o.y+Math.sin(p.angle)*p.dist;
       ctx.beginPath();ctx.arc(x,y,p.size,0,Math.PI*2);
-      ctx.fillStyle='rgba('+r+','+g+','+b+','+(p.opacity*pulse).toFixed(3)+')';
+      ctx.fillStyle='rgba('+r+','+g+','+b+','+(p.opacity*pulse).toFixed(2)+')';
       ctx.fill();
     });
-
-    window._orbRaf=requestAnimationFrame(step);
   }
 
   if(window._orbRaf)cancelAnimationFrame(window._orbRaf);
-  last=performance.now();
+  last=performance.now();lastFrame=0;
   window._orbRaf=requestAnimationFrame(step);
 }
 
@@ -1706,7 +1711,7 @@ function goPortfolio(id){
   TAB='overview';
   VIEW=null;
   save();
-  render();
+  swTab('overview');
 }
 
 function goPortfolioCcy(id,ccy){
@@ -1753,7 +1758,6 @@ function setDateBar(label){
   _clockTimer=setInterval(liveClock,1000);
   liveClock();
   fixLayout();
-  updateGlobalPlus();
 }
 function renderContent(){
   Object.values(charts).forEach(c=>{try{c.destroy();}catch(e){}});charts={};
@@ -1777,7 +1781,7 @@ function renderContent(){
   else if(TAB==='holdings'){document.body.style.overflow='';$('ct').style.overflow='';$('ct').style.height='';setDateBar((p?p.name:'')+'  — Holdings');$('ct').style.padding='14px 16px 0';$('ct').style.background='#020202';$('ct').innerHTML=renderHoldings(p);}
   else if(TAB==='transactions'){document.body.style.overflow='';$('ct').style.overflow='';$('ct').style.height='';setDateBar((p?p.name:'')+'  — Transactions');$('ct').style.padding='14px 16px 0';$('ct').style.background='#020202';$('ct').innerHTML=renderTransactions(p);fixLayout();}
   else if(TAB==='options'){$('ct').style.overflow='';$('ct').style.height='';$('ct').style.background='#020202';setDateBar((p?p.name:'')+'  — Options');$('ct').style.padding='14px 16px 0';$('ct').innerHTML=`<div style="background:radial-gradient(ellipse at 25% 58%,rgba(120,80,10,0.06) 0%,transparent 42%),radial-gradient(ellipse at 72% 42%,rgba(8,80,40,0.04) 0%,transparent 38%),#020202;min-height:100vh">${renderOptions()}</div>`;}
-  else if(TAB==='journey'){document.body.style.overflow='';$('ct').style.overflow='';$('ct').style.height='';const jLabel={'dividend':'Dividend','pnl':'PnL','cashflow':'Cash Flow'}[window.jSubTab||'dividend']||'Journey';setDateBar((p?p.name:'')+'  — '+jLabel);$('ct').style.padding='14px 16px 0';$('ct').style.background='#020202';$('ct').innerHTML=renderJourney(p);}
+  else if(TAB==='journey'){document.body.style.overflow='';$('ct').style.overflow='';$('ct').style.height='';const jLabel={'dividend':'Dividend','pnl':'PnL'}[window.jSubTab||'dividend']||'Journey';setDateBar((p?p.name:'')+'  — '+jLabel);$('ct').style.padding='14px 16px 0';$('ct').style.background='#020202';$('ct').innerHTML=renderJourney(p);}
   else if(TAB==='deposits'){window.jSubTab='cashflow';TAB='journey';setDateBar((p?p.name:'')+'  — Cash Flow');$('ct').style.padding='14px 16px 0';$('ct').style.background='#020202';$('ct').innerHTML=renderJourney(p);}
 }
 
@@ -1813,8 +1817,7 @@ function renderOverview(p){
   },0);
 
   // ── PALETTE for ccy dots/bars ─────────────────────────
-  const CCY_COLORS={'MYR':'#3b82f6','SGD':'#f59e0b','USD':'#22c55e','GBP':'#a78bfa','HKD':'#f43f5e','JPY':'#06b6d4'};
-  const ccyColor=(c)=>CCY_COLORS[c]||'#888';
+  const ccyColor=getCcyColor;
 
   // Build per-ccy data
   const ccyData=allCcys.map(function(ccy){
@@ -1857,19 +1860,19 @@ function renderOverview(p){
     <!-- Same structure as dashboard heroSection -->
     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px">
       <div style="flex:1;min-width:0">
-        <div style="font-size:8.5px;font-weight:400;color:rgba(180,140,50,0.5);letter-spacing:2px;text-transform:uppercase;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;margin-bottom:8px">${p.name} · Total Net Worth</div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-          <div>
-          <div class="pv-networth-wrap">
-            <div class="pv-val" style="font-size:34px;font-weight:200;color:rgba(255,255,255,0.92);letter-spacing:-1px;line-height:1.05;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;white-space:nowrap">RM ${personMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
-            <div class="pv-hide" style="font-size:34px;color:rgba(255,255,255,0.92);font-weight:200;line-height:1.05;white-space:nowrap">••••••••</div>
-          </div>
-          </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="font-size:8.5px;font-weight:700;color:rgba(180,140,50,0.7);letter-spacing:2px;text-transform:uppercase">${p.name} · Net Worth</div>
           <button onclick="togglePrivacy()" style="background:none;border:none;cursor:pointer;padding:4px;opacity:0.38;line-height:0;flex-shrink:0">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(200,160,60,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
             </svg>
           </button>
+        </div>
+        <div style="margin-bottom:10px">
+          <div class="pv-networth-wrap">
+            <div class="pv-val" style="font-size:34px;font-weight:300;color:#fff;letter-spacing:-1px;line-height:1.05;white-space:nowrap">RM ${personMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+            <div class="pv-hide" style="font-size:34px;color:#fff;font-weight:300;line-height:1.05;white-space:nowrap">••••••••</div>
+          </div>
         </div>
         <div style="width:24px;height:1px;background:rgba(180,140,50,0.35)"></div>
       </div>
@@ -1932,7 +1935,7 @@ function renderOverview(p){
     </div>`;
   });
 
-  const assetSummary=`<div style="margin:0;padding:0 0 4px">
+  const assetSummary=`<div style="margin:0;padding:0 0 8px">
     <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:2px;margin-bottom:10px;text-transform:uppercase;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06)">Asset Summary</div>
     <div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:2px">
       <span style="font-size:9px;color:rgba(255,255,255,0.22);font-weight:600;letter-spacing:1px">ASSET</span>
@@ -1970,7 +1973,7 @@ function renderOverview(p){
   const viewAll=allHoldings.length>10?`<div onclick="drillStock('','MYR')" style="text-align:right;padding:10px 0;font-size:12px;font-weight:600;color:#3b82f6;cursor:pointer">View All Holdings ›</div>`:'';
 
   const holdingsCard=`<div style="margin:0;padding:0 0 4px">
-    <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:2px;margin-bottom:12px;text-transform:uppercase;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06)">Holdings (by Market Value — MYR Equivalent)</div>
+    <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:2px;margin-bottom:12px;text-transform:uppercase;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06)">Holdings (by Market Value — MYR Equivalent)</div>
     <div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.07)">
       <span style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.25);letter-spacing:1px">#&nbsp;&nbsp;STOCK</span>
       <span style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.25);letter-spacing:1px">HOLDING VALUE</span>
@@ -1979,7 +1982,7 @@ function renderOverview(p){
     ${viewAll}
   </div>`;
 
-  return `<div style="padding:14px 16px 0;min-height:100vh;background:radial-gradient(ellipse at 25% 58%,rgba(120,80,10,0.06) 0%,transparent 42%),radial-gradient(ellipse at 72% 42%,rgba(8,80,40,0.04) 0%,transparent 38%),#020202">${topCard}${assetSummary}${holdingsCard}</div>`;
+  return `<div style="padding:14px 16px 0;min-height:100vh;background:radial-gradient(ellipse at 25% 58%,rgba(120,80,10,0.06) 0%,transparent 42%),radial-gradient(ellipse at 72% 42%,rgba(8,80,40,0.04) 0%,transparent 38%),#020202">${topCard}${assetSummary}<div style="height:12px"></div>${holdingsCard}</div>`;
 }
 
 function drawOverviewCharts(p){
@@ -2000,7 +2003,7 @@ function renderCcyDetail(p,ccy){
   const tot=Math.round((u+d+r-pf2)*100)/100;
   const totPct=co>0?tot/co*100:null;
   const mvWithCash=mv+cb;
-  const col=({'MYR':'#3b82f6','SGD':'#f59e0b','USD':'#22c55e','GBP':'#a78bfa','HKD':'#f43f5e','JPY':'#06b6d4'})[ccy]||'#888';
+  const col=getCcyColor(ccy);
   const holdings=getHoldings(p,true).filter(h=>h.ccy===ccy).sort((a,b)=>toMYR(b.mktVal,b.ccy)-toMYR(a.mktVal,a.ccy));
   const COLORS=['#3b82f6','#22c55e','#a78bfa','#f59e0b','#f43f5e','#06b6d4','#8b5cf6','#ec4899'];
 
@@ -2266,13 +2269,13 @@ function renderTx(p,filterYrCcy){
     html+='<div class="bb" onclick="TAB=\'journey\';journeyFilter=null;renderContent()">← Back to Journey</div>';
     html+='<div style="margin-bottom:.75rem;padding:.5rem .75rem;background:var(--bd);border-radius:var(--r);font-size:12px;color:var(--blue)">Dividends for '+filterYrCcy.ccy+' in '+filterYrCcy.yr+'</div>';
   } else {
-    const typeFilterOpts=['','Buy','Sell','Dividend','Platform Fee','Closed Trades'].map(t=>'<option value="'+t+'">'+(t||'All types')+'</option>').join('');
+    const typeFilterOpts=['','Buy','Sell','Dividend','Platform Fee','Closed Trades','Cash Flow'].map(t=>'<option value="'+t+'">'+(t||'All types')+'</option>').join('');
     html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:.75rem">'
       +'<input id="tx-search" placeholder="Search stock, note…" oninput="filterTxTable()" style="flex:1">'
       +'<select id="tx-type-filter" onchange="filterTxTable()" style="flex:1">'+typeFilterOpts+'</select>'
       +'<button class="pri sm" id="bat" onclick="omm(\'at\')" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;padding:0;font-size:18px;line-height:1;border-radius:50%;flex-shrink:0">+</button>'
       +'</div>'
-      +'<div style="font-size:10px;color:rgba(255,255,255,0.25);margin-bottom:.75rem;letter-spacing:.5px;font-family:Courier New,monospace" id="tx-count">'+txs.length+' TRANSACTIONS</div>';
+      +'<div style="font-size:10px;color:rgba(255,255,255,0.25);margin-bottom:.75rem;letter-spacing:.5px;font-family:Courier New,monospace" id="tx-count">'+(txs.length+(p.deposits||[]).length)+' TRANSACTIONS</div>';
   }
 
   // Closed trades view (unchanged, hidden by default)
@@ -2318,31 +2321,60 @@ function renderTx(p,filterYrCcy){
     +(_closedAll.length===0?'<div class="m" style="text-align:center;padding:2rem;font-size:12px">No realized P&L yet.</div>':'')
     +'</div>';
 
-  // ── Clean card list — Date · Type · Stock · Amount ──
-  const TYPE_COL={'Buy':'#3b82f6','Sell':'#00e676','Dividend':'#f59e0b','Platform Fee':'#888'};
+  // ── Clean card list — merge txs + deposits sorted by date ──
+  const TYPE_COL={'Buy':'#3b82f6','Sell':'#00e676','Dividend':'#f59e0b','Platform Fee':'#888','deposit':'#60a5fa','withdrawal':'#c084fc'};
+
+  // Build combined list
+  const deps2=(p.deposits||[]).map(function(d,i){return{_isDep:true,_depIdx:i,date:d.date,type:d.type,ccy:d.ccy,amount:d.amount,note:d.note};});
+  const combined=[...txs.map(tx=>({...tx,_isDep:false})),...deps2].sort((a,b)=>b.date.localeCompare(a.date));
+
   html+='<div id="tx-table-wrap">';
-  txs.forEach(tx=>{
-    const amt=tx.amount!=null?+tx.amount:tx.type==='Sell'?(+tx.qty)*(+tx.price)-(+tx.fee||0):(+tx.qty)*(+tx.price)+(+tx.fee||0);
-    const amtStr=amt>0?fc(amt,tx.ccy):'—';
-    const col=TYPE_COL[tx.type]||'#888';
-    const ds=((tx.stock||'').toLowerCase()+' '+tx.type.toLowerCase()+' '+(tx.note||'').toLowerCase()+' '+tx.date).replace(/"/g,'');
-    const safeId=tx.id.replace(/'/g,"\\'").replace(/"/g,'&quot;');
-    html+=`<div data-search="${ds}" onclick="openTxDetail('${safeId}')"
-      style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;gap:8px">
-      <div style="width:6px;height:6px;border-radius:50%;background:${col};flex-shrink:0;margin-top:1px"></div>
-      <div style="min-width:0;flex:1">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:1px">
-          <span style="font-size:13px;font-weight:600;color:#fff">${tx.stock||'—'}</span>
-          <span style="font-size:9px;font-weight:600;color:${col};background:${col}18;padding:1px 5px;border-radius:6px;border:1px solid ${col}33">${tx.type}</span>
+  combined.forEach(function(item){
+    if(item._isDep){
+      const col=TYPE_COL[item.type]||'#888';
+      const label=item.type==='deposit'?'Deposit':'Withdrawal';
+      const amt=parseFloat(item.amount)||0;
+      const amtStr=fc(amt,item.ccy);
+      const ds=(item.type+' '+(item.note||'').toLowerCase()+' '+item.date).replace(/"/g,'');
+      html+=`<div data-search="${ds}" onclick="openDepositModal(${item._depIdx})"
+        style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;gap:8px">
+        <div style="width:6px;height:6px;border-radius:50%;background:${col};flex-shrink:0;margin-top:1px"></div>
+        <div style="min-width:0;flex:1">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:1px">
+            <span style="font-size:13px;font-weight:600;color:#fff">${item.note||label}</span>
+            <span style="font-size:9px;font-weight:600;color:${col};background:${col}18;padding:1px 5px;border-radius:6px;border:1px solid ${col}33">${label}</span>
+          </div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.3)">${item.date} · ${item.ccy}</div>
         </div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.3)">${tx.date}${tx.note?' · '+tx.note:''}</div>
-      </div>
-      <div style="text-align:right;flex-shrink:0">
-        <div style="font-size:12px;font-weight:600;color:#fff;white-space:nowrap">${amtStr}</div>
-        ${tx.qty>0?`<div style="font-size:9px;color:rgba(255,255,255,0.28)">${(+tx.qty).toLocaleString()} shares</div>`:''}
-      </div>
-      <div style="color:rgba(255,255,255,0.15);font-size:12px;flex-shrink:0">›</div>
-    </div>`;
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:12px;font-weight:600;color:#fff;white-space:nowrap">${item.type==='deposit'?'+':'-'}${amtStr}</div>
+        </div>
+        <div style="color:rgba(255,255,255,0.15);font-size:12px;flex-shrink:0">›</div>
+      </div>`;
+    } else {
+      const tx=item;
+      const amt=tx.amount!=null?+tx.amount:tx.type==='Sell'?(+tx.qty)*(+tx.price)-(+tx.fee||0):(+tx.qty)*(+tx.price)+(+tx.fee||0);
+      const amtStr=amt>0?fc(amt,tx.ccy):'—';
+      const col=TYPE_COL[tx.type]||'#888';
+      const ds=((tx.stock||'').toLowerCase()+' '+tx.type.toLowerCase()+' '+(tx.note||'').toLowerCase()+' '+tx.date).replace(/"/g,'');
+      const safeId=tx.id.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+      html+=`<div data-search="${ds}" onclick="openTxDetail('${safeId}')"
+        style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;gap:8px">
+        <div style="width:6px;height:6px;border-radius:50%;background:${col};flex-shrink:0;margin-top:1px"></div>
+        <div style="min-width:0;flex:1">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:1px">
+            <span style="font-size:13px;font-weight:600;color:#fff">${tx.stock||'—'}</span>
+            <span style="font-size:9px;font-weight:600;color:${col};background:${col}18;padding:1px 5px;border-radius:6px;border:1px solid ${col}33">${tx.type}</span>
+          </div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.3)">${tx.date}${tx.note?' · '+tx.note:''}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:12px;font-weight:600;color:#fff;white-space:nowrap">${amtStr}</div>
+          ${tx.qty>0?`<div style="font-size:9px;color:rgba(255,255,255,0.28)">${(+tx.qty).toLocaleString()} shares</div>`:''}
+        </div>
+        <div style="color:rgba(255,255,255,0.15);font-size:12px;flex-shrink:0">›</div>
+      </div>`;
+    }
   });
   html+='</div>';
 
@@ -2416,10 +2448,12 @@ function _renderTxModal(tx,editing){
     html+=fld('Note','',inp('etn','text',tx.note||'','Optional'));
 
     html+=`<div style="display:flex;gap:8px;margin-top:14px">
-      <button onclick="if(confirm('Delete?')){S.portfolios=S.portfolios.map(function(p){return p.id!==S.activeId?p:{...p,transactions:p.transactions.filter(function(t){return t.id!=='${safeId}';})}});cmm();save();render();}"
+      <button onclick="confirmDelete('This transaction will be permanently removed.',function(){deleteTx('${safeId}')})"
         style="flex:1;padding:11px;border-radius:10px;background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.25);color:var(--red);font-size:13px;font-weight:600;cursor:pointer">Delete</button>
+      <button onclick="cmm()"
+        style="flex:1;padding:11px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.55);font-size:13px;cursor:pointer">Cancel</button>
       <button onclick="_saveTxInline('${safeId}')"
-        style="flex:2;padding:11px;border-radius:10px;background:rgba(0,212,255,0.12);border:1px solid rgba(0,212,255,0.35);color:#00d4ff;font-size:13px;font-weight:700;cursor:pointer">Save</button>
+        style="flex:1;padding:11px;border-radius:10px;background:rgba(0,212,255,0.12);border:1px solid rgba(0,212,255,0.35);color:#00d4ff;font-size:13px;font-weight:700;cursor:pointer">Save</button>
     </div>`;
 
   html+='</div>';
@@ -2472,10 +2506,27 @@ function filterTxTable(){
   const type=(document.getElementById('tx-type-filter')||{value:''}).value;
   const ct=document.getElementById('tx-closed-view');
   const tt=document.getElementById('tx-table-wrap');
+  const cnt=document.getElementById('tx-count');
+  let cf=document.getElementById('tx-cashflow-view');
+
+  if(type==='Cash Flow'){
+    if(ct)ct.style.display='none';
+    if(tt)tt.style.display='none';
+    if(cnt)cnt.textContent='';
+    if(!cf){
+      cf=document.createElement('div');
+      cf.id='tx-cashflow-view';
+      const wrap=document.getElementById('tx-table-wrap');
+      if(wrap)wrap.parentNode.insertBefore(cf,wrap.nextSibling);
+    }
+    cf.innerHTML=renderCashFlowInline();
+    cf.style.display='';
+    return;
+  }
+  if(cf)cf.style.display='none';
   if(type==='Closed Trades'){
     if(ct)ct.style.display='';
     if(tt)tt.style.display='none';
-    const cnt=document.getElementById('tx-count');
     if(cnt)cnt.textContent='';
     return;
   }
@@ -2491,8 +2542,100 @@ function filterTxTable(){
     r.style.display=show?'flex':'none';
     if(show)visible++;
   });
-  const cnt=document.getElementById('tx-count');
   if(cnt)cnt.textContent=visible+' TRANSACTIONS';
+}
+
+function renderCashFlowInline(){
+  const p=pf();
+  if(!p.deposits)p.deposits=[];
+  const deps=p.deposits.map((d,i)=>({...d,_oi:i})).sort((a,b)=>b.date.localeCompare(a.date));
+
+  // Total by currency
+  const byCcy={};
+  deps.forEach(function(d){
+    if(!byCcy[d.ccy])byCcy[d.ccy]={dep:0,wdr:0};
+    const amt=parseFloat(d.amount)||0;
+    if(d.type==='deposit')byCcy[d.ccy].dep+=amt;
+    else byCcy[d.ccy].wdr+=amt;
+  });
+
+  // Summary minicards
+  let summary='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:14px">';
+  Object.entries(byCcy).forEach(function([ccy,v]){
+    const net=v.dep-v.wdr;
+    summary+='<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 12px">'
+      +'<div style="font-size:9px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;white-space:nowrap">'+ccy+' Net Capital</div>'
+      +'<div class="pv-val" style="font-size:14px;font-weight:700;color:'+('#fff')+';white-space:nowrap">'+fc(net,ccy)+'</div>'
+      +'<div class="pv-hide" style="font-size:14px;color:#888">••••</div></div>';
+  });
+  summary+='</div>';
+
+  // Yearly net flow — compact table
+  const allCcys=[...new Set(deps.map(d=>d.ccy))].sort();
+  const byYear={};
+  deps.forEach(function(d){
+    const yr=d.date.slice(0,4);
+    if(!byYear[yr])byYear[yr]={};
+    if(!byYear[yr][d.ccy])byYear[yr][d.ccy]={dep:0,wdr:0};
+    const amt=parseFloat(d.amount)||0;
+    if(d.type==='deposit')byYear[yr][d.ccy].dep+=amt;
+    else byYear[yr][d.ccy].wdr+=amt;
+  });
+  const years=Object.keys(byYear).sort((a,b)=>b-a);
+
+  let yearTable='<div style="margin-bottom:14px">'
+    +'<div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Yearly Net Flow</div>'
+    +'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:11px">'
+    +'<thead><tr>'
+    +'<th style="text-align:left;padding:5px 8px 5px 0;color:rgba(255,255,255,0.3);font-weight:600;border-bottom:1px solid rgba(255,255,255,0.08)">Year</th>';
+  allCcys.forEach(function(ccy){
+    yearTable+='<th style="text-align:right;padding:5px 6px;color:'+getCcyColor(ccy)+';font-weight:700;border-bottom:1px solid rgba(255,255,255,0.08)">'+ccy+'</th>';
+  });
+  yearTable+='</tr></thead><tbody>';
+  years.forEach(function(yr){
+    yearTable+='<tr>';
+    yearTable+='<td style="padding:6px 8px 6px 0;color:rgba(255,255,255,0.5);font-weight:600;border-bottom:1px solid rgba(255,255,255,0.04)">'+yr+'</td>';
+    allCcys.forEach(function(ccy){
+      const v=byYear[yr][ccy];
+      if(!v){yearTable+='<td style="padding:6px 6px;text-align:right;color:rgba(255,255,255,0.18);border-bottom:1px solid rgba(255,255,255,0.04)">—</td>';return;}
+      const net=v.dep-v.wdr;
+      const col='#fff';
+      yearTable+='<td style="padding:6px 6px;text-align:right;font-weight:700;color:'+col+';border-bottom:1px solid rgba(255,255,255,0.04);white-space:nowrap" class="pv-val">'+(net>=0?'+':'')+fc(net,ccy)+'</td>'
+        +'<td style="display:none" class="pv-hide"><td style="padding:6px 6px;text-align:right;color:'+col+'" class="pv-hide">••••</td>';
+    });
+    yearTable+='</tr>';
+  });
+  // Total row
+  yearTable+='<tr><td style="padding:7px 8px 4px 0;color:rgba(255,255,255,0.65);font-weight:700;border-top:1px solid rgba(255,255,255,0.1)">Total</td>';
+  allCcys.forEach(function(ccy){
+    const v=byCcy[ccy];
+    if(!v){yearTable+='<td style="padding:7px 6px 4px;text-align:right;border-top:1px solid rgba(255,255,255,0.1)">—</td>';return;}
+    const net=v.dep-v.wdr;
+    const col='#fff';
+    yearTable+='<td style="padding:7px 6px 4px;text-align:right;font-weight:700;color:'+col+';border-top:1px solid rgba(255,255,255,0.1);white-space:nowrap" class="pv-val">'+(net>=0?'+':'')+fc(net,ccy)+'</td>';
+  });
+  yearTable+='</tr></tbody></table></div></div>';
+
+  // Transaction rows
+  let rows='';
+  deps.forEach(function(d){
+    const col='rgba(255,255,255,0.6)';
+    const amt=parseFloat(d.amount)||0;
+    rows+='<div onclick="openDepositModal('+d._oi+')" style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:8px;cursor:pointer">'
+      +'<div style="width:6px;height:6px;border-radius:50%;background:'+col+';flex-shrink:0"></div>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:1px">'+(d.note||d.type)+'</div>'
+      +'<div style="font-size:10px;color:rgba(255,255,255,0.3)">'+d.date+' · '+d.ccy+'</div></div>'
+      +'<div class="pv-val" style="font-size:13px;font-weight:600;color:'+col+'">'+(d.type==='deposit'?'+':'-')+fc(amt,d.ccy)+'</div>'
+      +'<div class="pv-hide" style="font-size:13px;color:'+col+'">••••</div>'
+      +'<div style="color:rgba(255,255,255,0.2);font-size:14px;flex-shrink:0">›</div>'
+      +'</div>';
+  });
+
+  const allEntries='<div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.06)">All Entries</div>'
+    +(rows||'<div style="text-align:center;padding:2rem;color:rgba(255,255,255,0.3);font-size:13px">No entries yet.</div>');
+
+  return summary+yearTable+allEntries;
 }
 
 // ── Closed trades tab ────────────────────────────────────────────────────────────
@@ -2547,7 +2690,7 @@ function renderJourney(p){
     const on=window.jSubTab===key;
     return`<button onclick="window.jSubTab='${key}';renderContent()" style="padding:6px 20px;font-size:12px;font-weight:${on?700:500};border-radius:20px;border:1px solid ${on?'rgba(255,255,255,0.4)':'rgba(255,255,255,0.1)'};color:${on?'#fff':'rgba(255,255,255,0.35)'};background:${on?'rgba(255,255,255,0.08)':'transparent'};cursor:pointer;transition:all .2s;box-shadow:${on?'0 0 12px rgba(255,255,255,0.12),inset 0 1px 0 rgba(255,255,255,0.15)':'none'}">${label}</button>`;
   }
-  const subTabs=`<div style="display:flex;gap:8px;margin-bottom:1.25rem">${tabBtn('dividend','Dividend')}${tabBtn('pnl','PnL')}${tabBtn('cashflow','Cash Flow')}</div>`;
+  const subTabs=`<div style="display:flex;gap:8px;margin-bottom:1.25rem">${tabBtn('dividend','Dividend')}${tabBtn('pnl','PnL')}</div>`;
 
   if(window.jSubTab==='cashflow'){
     const depContent=p?renderDeposits(p):'<p class="m" style="padding:1rem;font-size:12px">Select a portfolio to view cash flows.</p>';
@@ -2764,7 +2907,7 @@ $('ov').addEventListener('click',e=>{if(e.target===$('ov'))cmm();});
   mi.addEventListener('touchstart',function(e){_mty=e.touches[0].clientY;},{passive:true});
   mi.addEventListener('touchend',function(e){
     const dy=e.changedTouches[0].clientY-_mty;
-    if(dy>80)cmm();
+    if(dy>120)cmm();
   },{passive:true});
 })();
 function setupAC(){const inp=$('ts'),list=$('ac-list');if(!inp||!list)return;const dict=stockDict(),stocks=Object.keys(dict);inp.addEventListener('input',()=>{const q=inp.value.trim().toLowerCase();const m=stocks.filter(s=>s.toLowerCase().includes(q)&&q.length>0);if(!m.length){list.classList.remove('open');return;}list.innerHTML=m.map(s=>`<div class="ac-item" onclick="selStk('${s}','${dict[s]}')"><span>${s}</span><span class="ac-ccy">${dict[s]}</span></div>`).join('');list.classList.add('open');});inp.addEventListener('blur',()=>setTimeout(()=>list.classList.remove('open'),200));}
@@ -2799,6 +2942,7 @@ function renderModal(){
       +'<div id="tpw" '+pShow+'><label class="lbl">Price per unit</label><input type="number" id="tp" step="0.0001" value="'+(tx.price||'')+'"></div>'
       +'<div id="tfw" '+fShow+'><label class="lbl">Fee</label><input type="number" id="tf" step="0.01" value="'+(tx.fee||'')+'"></div>'
       +'<div id="taw" '+aShow+'><label class="lbl">Amount</label><input type="number" id="ta" step="0.01" value="'+(tx.amount!=null&&tx.amount!==''?tx.amount:'')+'"></div>'
+      +'<div id="tcfw" style="display:none"><label class="lbl">Amount</label><input type="number" id="tcf-amt" step="0.01" min="0" placeholder="0.00"></div>'
       +'<div class="full"><label class="lbl">Note</label><input id="tn" value="'+(tx.note||'')+'"></div>'
       +'</div>'
       +'<div style="display:flex;gap:8px;margin-top:1.25rem;justify-content:flex-end">'
@@ -2840,7 +2984,7 @@ function renderModal(){
                     ...Object.keys(byCcy).filter(function(c){return CCY_ORDER.indexOf(c)<0;})];
 
     let rowsHtml='';
-    const CCY_ACCENT={'MYR':'#84cc16','SGD':'#f97316','USD':'#3b82f6'};
+    const CCY_ACCENT=CCY_COLORS;
 
     if(allStocks.length){
       ccyOrder.forEach(function(ccy){
@@ -2961,9 +3105,39 @@ function slc(c){const i=$('pc');if(i)i.value=c;document.querySelectorAll('[data-
 function aap(){const n=($('pn')||{}).value?.trim(),col=($('pc')||{}).value;if(!n)return;const p0={id:uid(),name:n,color:col||PFPAL[S.portfolios.length%PFPAL.length],transactions:[],prices:{}};S.portfolios.push(p0);S.activeId=p0.id;window._fromSettings=false;cmm();save();render();toggleSettings();}
 function dep(){const n=($('pn')||{}).value?.trim(),col=($('pc')||{}).value;if(!n)return;S.portfolios=S.portfolios.map(p=>p.id===S.activeId?{...p,name:n,color:col}:p);window._fromSettings=false;cmm();save();render();toggleSettings();}
 function ddp(){S.portfolios=S.portfolios.filter(p=>p.id!==S.activeId);S.activeId=S.portfolios[0].id;window._fromSettings=false;cmm();save();render();toggleSettings();}
-function ttc(){const t=($('tt')||{}).value,isF=t==='Dividend'||t==='Platform Fee',isPF=t==='Platform Fee';['tqw','tpw','tfw'].forEach(id=>{const e=$(id);if(e)e.style.display=isF?'none':'';});const aw=$('taw');if(aw)aw.style.display=isF?'':'none';const sw=$('tsw');if(sw)sw.style.display=isPF?'none':'';const al=aw?aw.querySelector('label'):null;if(al)al.textContent=isPF?'Fee Amount (deducted from Realized P&L)':'Amount';}
+function ttc(){
+  const t=($('tt')||{}).value;
+  const isF=t==='Dividend'||t==='Platform Fee';
+  const isPF=t==='Platform Fee';
+  const isCF=t==='Deposit'||t==='Withdraw';
+  ['tqw','tpw','tfw'].forEach(id=>{const e=$(id);if(e)e.style.display=(isF||isCF)?'none':'';});
+  const aw=$('taw');if(aw)aw.style.display=isF?'':'none';
+  const sw=$('tsw');if(sw)sw.style.display=(isPF||isCF)?'none':'';
+  const al=aw?aw.querySelector('label'):null;
+  if(al)al.textContent=isPF?'Fee Amount (deducted from Realized P&L)':'Amount';
+  const cfw=$('tcfw');if(cfw)cfw.style.display=isCF?'':'none';
+}
 function gTx(){const type=($('tt')||{}).value,isF=type==='Dividend'||type==='Platform Fee',isPF=type==='Platform Fee';return{date:($('td')||{}).value||'',type,stock:isPF?'':($('ts')?$('ts').value.trim():''),ccy:($('tc')||{}).value||'USD',qty:isF?0:+(($('tq')||{}).value||0),price:isF?0:+(($('tp')||{}).value||0),fee:isF?0:+(($('tf')||{}).value||0),amount:isF?+(($('ta')||{}).value||0):null,note:($('tn')||{}).value||''};}
-function aat(){const d=gTx();if(['Buy','Sell'].includes(d.type)&&!d.stock){alert('Please enter a stock name.');return;}if(['Buy','Sell'].includes(d.type)&&!(+d.qty>0)){alert('Please enter a valid quantity.');return;}if(['Buy','Sell'].includes(d.type)&&!(+d.price>0)){alert('Please enter a valid price.');return;}const tx={id:uid(),...d};S.portfolios=S.portfolios.map(p=>p.id!==S.activeId?p:{...p,transactions:[...p.transactions,tx]});cmm();save();render();}
+function aat(){
+  const d=gTx();
+  if(d.type==='Deposit'||d.type==='Withdraw'){
+    const amt=parseFloat(($('tcf-amt')||{}).value||0);
+    if(!amt){alert('Please enter an amount.');return;}
+    const entry={date:d.date,type:d.type==='Deposit'?'deposit':'withdrawal',ccy:d.ccy,amount:String(amt),note:d.note};
+    S.portfolios=S.portfolios.map(p=>{
+      if(p.id!==S.activeId)return p;
+      if(!p.deposits)p.deposits=[];
+      return{...p,deposits:[...p.deposits,entry]};
+    });
+    cmm();save();render();return;
+  }
+  if(['Buy','Sell'].includes(d.type)&&!d.stock){alert('Please enter a stock name.');return;}
+  if(['Buy','Sell'].includes(d.type)&&!(+d.qty>0)){alert('Please enter a valid quantity.');return;}
+  if(['Buy','Sell'].includes(d.type)&&!(+d.price>0)){alert('Please enter a valid price.');return;}
+  const tx={id:uid(),...d};
+  S.portfolios=S.portfolios.map(p=>p.id!==S.activeId?p:{...p,transactions:[...p.transactions,tx]});
+  cmm();save();render();
+}
 function eet(){const d=gTx();S.portfolios=S.portfolios.map(p=>{if(p.id!==S.activeId)return p;return{...p,transactions:p.transactions.map(t=>t.id===ETX.id?{...t,...d}:t)};});cmm();save();render();}
 function oet(id){
   const p=pf();
@@ -3170,7 +3344,7 @@ function filterOpts(section){
 }
 function addOpt(){showOptModal({id:uid(),ticker:'',openDate:new Date().toISOString().split('T')[0],openValue:'',closeDate:'',closeValue:null,mktValue:null,note:''},-1);}
 function editOpt(i){showOptModal(Object.assign({},pf().optionTrades[i]),i);}
-function delOpt(i){if(!confirm('Delete this option trade?'))return;pf().optionTrades.splice(i,1);save();renderContent();}
+function delOpt(i){pf().optionTrades.splice(i,1);save();cmm();renderContent();}
 
 function showOptDetail(i){
   const t=pf().optionTrades[i];
@@ -3207,9 +3381,10 @@ function showOptDetail(i){
       }
       ${fld('Note','Expiry date, strategy, memo','note',t.note||'')}
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <button class="dng" onclick="cmm();delOpt(${i})">✕ Delete</button>
-      <button class="pri" onclick="saveOptDetail(${i})">💾 Save</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <button class="dng" onclick="confirmDelete('This option trade will be permanently removed.',function(){delOpt(${i})})">Delete</button>
+      <button onclick="cmm()" style="padding:10px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.55);font-size:13px;cursor:pointer">Cancel</button>
+      <button class="pri" onclick="saveOptDetail(${i})">Save</button>
     </div>`;
 
   document.getElementById('mi').innerHTML=html;
@@ -3793,22 +3968,19 @@ function ccyMiniCardStyleDashed(ccy){
   };
   return m[ccy]||'background:rgba(79,195,247,0.08);border:1px dashed rgba(79,195,247,0.3)';
 }
-function ccyAccent(ccy){
-  const m={'MYR':'#84cc16','SGD':'#f97316','USD':'#3b82f6'};
-  return m[ccy]||'#4fc3f7';
-}
+function ccyAccent(ccy){return getCcyColor(ccy);}
 function ccyFlag(ccy){
   const flags={'MYR':'🇲🇾','SGD':'🇸🇬','USD':'🇺🇸','HKD':'🇭🇰','GBP':'🇬🇧','EUR':'🇪🇺'};
   return flags[ccy]||'';
 }
 function ccyTag(ccy,extra){
   const cols={
-    'MYR':'background:#84cc16;color:#fff;border-color:#84cc16',
-    'SGD':'background:#f97316;color:#fff;border-color:#f97316',
-    'USD':'background:#3b82f6;color:#fff;border-color:#3b82f6',
-    'HKD':'background:#ef4444;color:#fff;border-color:#ef4444',
-    'GBP':'background:#6366f1;color:#fff;border-color:#6366f1',
-    'EUR':'background:#10b981;color:#fff;border-color:#10b981',
+    'MYR':'background:'+CCY_COLORS.MYR+';color:#fff;border-color:'+CCY_COLORS.MYR,
+    'SGD':'background:'+CCY_COLORS.SGD+';color:#fff;border-color:'+CCY_COLORS.SGD,
+    'USD':'background:'+CCY_COLORS.USD+';color:#fff;border-color:'+CCY_COLORS.USD,
+    'HKD':'background:'+CCY_COLORS.HKD+';color:#fff;border-color:'+CCY_COLORS.HKD,
+    'GBP':'background:'+CCY_COLORS.GBP+';color:#fff;border-color:'+CCY_COLORS.GBP,
+    'EUR':'background:'+CCY_COLORS.EUR+';color:#fff;border-color:'+CCY_COLORS.EUR,
   };
   const flags={
     'MYR':'🇲🇾','SGD':'🇸🇬','USD':'🇺🇸','HKD':'🇭🇰','GBP':'🇬🇧','EUR':'🇪🇺',
@@ -3921,7 +4093,7 @@ function renderDeposits(p){
       const dep=cd.filter(d=>d.type==='deposit').reduce((s,d)=>s+(+d.amount),0);
       const wit=cd.filter(d=>d.type==='withdrawal').reduce((s,d)=>s+(+d.amount),0);
       const net=dep-wit;
-      const CCY_ACCENT={'MYR':'#84cc16','SGD':'#f97316','USD':'#3b82f6'};
+      const CCY_ACCENT=CCY_COLORS;
       const accent=CCY_ACCENT[ccy]||'#4fc3f7';
       return'<div style="background:rgba(255,255,255,0.03);border-radius:var(--r);border:1px solid var(--b1);border-top:2px solid '+accent+';padding:8px 10px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.04)">'
         +'<div style="margin-bottom:6px">'+ccyTag(ccy)+'</div>'
@@ -3946,7 +4118,7 @@ function renderDeposits(p){
       const totDep=cdeps.filter(d=>d.type==='deposit').reduce((s,d)=>s+(+d.amount),0);
       const totWit=cdeps.filter(d=>d.type==='withdrawal').reduce((s,d)=>s+(+d.amount),0);
       const net=totDep-totWit;
-      const CCY_ACCENT={'MYR':'#84cc16','SGD':'#f97316','USD':'#3b82f6'};
+      const CCY_ACCENT=CCY_COLORS;
       const accent=CCY_ACCENT[ccy]||'#4fc3f7';
       return'<div style="position:relative;overflow:hidden;background:linear-gradient(160deg,#080810,#0c0c18);border-radius:10px;border:1px solid rgba(255,255,255,0.06);border-top:2px solid '+accent+';padding:12px;box-shadow:0 0 0 1px rgba(255,255,255,0.02),0 8px 24px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.06)">'
         +'<div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,'+accent+',transparent);opacity:0.6"></div>'
@@ -3984,7 +4156,7 @@ function renderDeposits(p){
     }).join('');
 
     const safeKey=ccy.replace(/[^a-z]/gi,'_');
-    const CCY_ACCENT={'MYR':'#84cc16','SGD':'#f97316','USD':'#3b82f6'};
+    const CCY_ACCENT=CCY_COLORS;
     const accent=CCY_ACCENT[ccy]||'#4fc3f7';
     return'<div style="margin-bottom:1.25rem">'
       +'<div onclick="toggleDepRows(this,\''+safeKey+'\')" style="cursor:pointer;position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.06);border-left:3px solid '+accent+';border-radius:var(--r);padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px;font-size:12px;font-weight:600;color:rgba(255,255,255,0.65)">'
@@ -4057,26 +4229,45 @@ function filterDepYear(yr){
     r.style.display=(yr==='all'||r.dataset.yr===yr)?'':'none';
   });
 }
-function openDepositModal(idx){
+function openDepositModal(idx,preType){
   const p=pf();if(!p.deposits)p.deposits=[];
   const isEdit=idx!==undefined;
-  const d=isEdit?p.deposits[idx]:{date:new Date().toISOString().split('T')[0],type:'deposit',ccy:'MYR',amount:'',note:''};
-  const ccyOpts=['MYR','SGD','USD'].map(c=>'<option '+((d.ccy||'MYR')===c?'selected':'')+'>'+c+'</option>').join('');
-  const h='<h3>'+(isEdit?'Edit':'Add')+' Deposit / Withdrawal</h3>'
-    +'<div class="fg">'
-    +'<div><label class="lbl">Type</label>'
-    +'<select id="dep-type"><option value="deposit" '+(d.type==='deposit'?'selected':'')+'>Deposit</option>'
-    +'<option value="withdrawal" '+(d.type==='withdrawal'?'selected':'')+'>Withdrawal</option></select></div>'
-    +'<div><label class="lbl">Date</label><input type="date" id="dep-date" value="'+d.date+'"></div>'
-    +'<div><label class="lbl">Currency</label><select id="dep-ccy">'+ccyOpts+'</select></div>'
-    +'<div><label class="lbl">Amount</label><input type="number" id="dep-amt" step="0.01" min="0" value="'+(d.amount||'')+'" placeholder="0.00"></div>'
-    +'<div class="full"><label class="lbl">Note</label><input id="dep-note" value="'+(d.note||'')+'" placeholder="e.g. Monthly top-up"></div>'
-    +'</div>'
+  const defaultType=preType||'deposit';
+  const d=isEdit?p.deposits[idx]:{date:new Date().toISOString().split('T')[0],type:defaultType,ccy:'MYR',amount:'',note:''};
+  const iStyle='text-align:center;text-align-last:center;font-size:16px;font-weight:500;padding:7px 10px;width:160px;flex-shrink:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;-webkit-appearance:none;appearance:none';
+
+  function fld(label,hint,input){
+    return'<div style="padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.07)">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">'
+      +'<div style="flex:1;min-width:0"><div style="font-size:12px;color:rgba(220,235,255,0.9);font-weight:600">'+label+'</div>'
+      +(hint?'<div style="font-size:9px;color:rgba(160,185,255,0.45);margin-top:2px">'+hint+'</div>':'')
+      +'</div>'+input+'</div></div>';
+  }
+
+  const ccyOpts=['MYR','SGD','USD','HKD','GBP','EUR'].map(c=>'<option '+((d.ccy||'MYR')===c?'selected':'')+'>'+c+'</option>').join('');
+  const typeOpts='<option value="deposit" '+(d.type==='deposit'?'selected':'')+'>Deposit</option>'
+    +'<option value="withdrawal" '+(d.type==='withdrawal'||d.type==='Withdraw'?'selected':'')+'>Withdrawal</option>';
+
+  const header='<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.08)">'
+    +'<div style="width:38px;height:38px;border-radius:11px;background:rgba(0,230,118,0.12);border:1.5px solid rgba(0,230,118,0.35);display:flex;align-items:center;justify-content:center;flex-shrink:0">'
+    +'<span style="font-size:13px">💰</span></div>'
+    +'<div><div style="font-size:15px;font-weight:700;color:#fff">'+(isEdit?'Edit Entry':'Cash Flow')+' </div>'
+    +'<div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:1px">'+(isEdit?'Update deposit or withdrawal':'Add deposit or withdrawal')+'</div>'
+    +'</div></div>';
+
+  const h=header
+    +fld('Type','',`<select id="dep-type" style="${iStyle}">${typeOpts}</select>`)
+    +fld('Date','',`<input type="date" id="dep-date" value="${d.date}" style="${iStyle}">`)
+    +fld('Currency','',`<select id="dep-ccy" style="${iStyle}">${ccyOpts}</select>`)
+    +fld('Amount','Positive number',`<input type="number" id="dep-amt" step="0.01" min="0" value="${d.amount||''}" placeholder="0.00" style="${iStyle}">`)
+    +fld('Note','Optional',`<input id="dep-note" value="${d.note||''}" placeholder="e.g. Monthly top-up" style="${iStyle}">`)
     +'<input type="hidden" id="dep-idx" value="'+(isEdit?idx:'')+'">'
-    +'<div style="display:flex;gap:8px;margin-top:1.25rem;justify-content:flex-end">'
-    +'<button onclick="cmm()">Cancel</button>'
-    +'<button class="pri" onclick="saveDeposit()">'+(isEdit?'Save':'Add')+'</button>'
+    +'<div style="display:flex;gap:8px;margin-top:14px">'
+    +(isEdit?`<button onclick="confirmDelete('This entry will be permanently removed.',function(){delDeposit(${idx})})" style="flex:1;padding:11px;border-radius:10px;background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.25);color:var(--red);font-size:13px;font-weight:600;cursor:pointer">Delete</button>`:'')
+    +(isEdit?'<button onclick="cmm()" style="flex:1;padding:11px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.55);font-size:13px;cursor:pointer">Cancel</button>':'')
+    +'<button onclick="saveDeposit()" style="flex:1;padding:11px;border-radius:10px;background:rgba(0,212,255,0.12);border:1px solid rgba(0,212,255,0.35);color:#00d4ff;font-size:13px;font-weight:700;cursor:pointer">'+(isEdit?'Save':'Add')+'</button>'
     +'</div>';
+
   $('mi').innerHTML=h;$('ov').classList.add('open');MM='dep';
 }
 function saveDeposit(){
@@ -4088,14 +4279,39 @@ function saveDeposit(){
   const note=$('dep-note').value.trim();
   if(!date||isNaN(amount)||amount<=0){alert('Please fill in date and amount.');return;}
   const idx=$('dep-idx').value;
-  const entry={id:uid(),date,type,ccy,amount,note};
+  const entry={id:uid(),date,type,ccy,amount:String(amount),note};
   if(idx!==''){p.deposits[+idx]=entry;}else{p.deposits.push(entry);}
-  save();cmm();renderContent();
+  save();cmm();
+  // Refresh cash flow view if currently showing
+  const cf=document.getElementById('tx-cashflow-view');
+  if(cf&&cf.style.display!=='none'){cf.innerHTML=renderCashFlowInline();}
+  else{renderContent();}
 }
 function editDeposit(i){openDepositModal(i);}
+function deleteTx(id){
+  S.portfolios=S.portfolios.map(function(p){
+    return p.id!==S.activeId?p:{...p,transactions:p.transactions.filter(function(t){return t.id!==id;})};
+  });
+  cmm();save();render();
+}
+function confirmDelete(msg,onConfirm){
+  const prev=$('mi').innerHTML;
+  $('mi').innerHTML=`<div style="text-align:center;padding:8px 0 4px">
+    <div style="font-size:28px;margin-bottom:12px">🗑️</div>
+    <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:8px">Delete?</div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:20px">${msg}</div>
+    <div style="display:flex;gap:8px">
+      <button onclick="$('mi').innerHTML=window._prevModal" style="flex:1;padding:11px;border-radius:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.6);font-size:13px;cursor:pointer">Cancel</button>
+      <button onclick="(${onConfirm})()" style="flex:1;padding:11px;border-radius:10px;background:rgba(255,77,109,0.15);border:1px solid rgba(255,77,109,0.4);color:#ff4d6d;font-size:13px;font-weight:700;cursor:pointer">Delete</button>
+    </div>
+  </div>`;
+  window._prevModal=prev;
+}
 function delDeposit(i){
-  if(!confirm('Delete this entry?'))return;
-  pf().deposits.splice(i,1);save();renderContent();
+  pf().deposits.splice(i,1);save();cmm();
+  const cf=document.getElementById('tx-cashflow-view');
+  if(cf&&cf.style.display!=='none')cf.innerHTML=renderCashFlowInline();
+  else renderContent();
 }
 
 function render(){
@@ -4171,11 +4387,11 @@ showWelcomeIfFirstLoad();
 
     // Handle sub-tab swiping within journey
     if(TAB==='journey'){
-      const J_ORDER=['dividend','pnl','cashflow'];
+      const J_ORDER=['dividend','pnl'];
       const ji=J_ORDER.indexOf(window.jSubTab||'dividend');
       if(dx<0&&ji<J_ORDER.length-1){window.jSubTab=J_ORDER[ji+1];renderContent();return;}
       if(dx>0&&ji>0){window.jSubTab=J_ORDER[ji-1];renderContent();return;}
-      // Edge: swipe left from cashflow → go to settings
+      // Edge: swipe left from pnl → go to settings
       if(dx<0&&ji===J_ORDER.length-1){toggleSettings();return;}
       // Edge: swipe right from dividend → go to options
       if(dx>0&&ji===0){swTab('options');return;}
