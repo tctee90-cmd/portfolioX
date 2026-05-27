@@ -398,11 +398,17 @@ body.privacy-on .pv-networth-wrap .pv-val{visibility:hidden}
 body.privacy-on .pv-networth-wrap .pv-hide{visibility:visible}
 
 /* ── PRIVACY MODE ── */
-body.privacy-on .pv-val:not(.pv-networth-wrap .pv-val){display:none!important}
-body.privacy-on .pv-hide:not(.pv-networth-wrap .pv-hide){display:block!important}
-body.privacy-on span.pv-hide:not(.pv-networth-wrap .pv-hide){display:inline!important}
-body.privacy-on .orb-num.pv-val{display:none!important}
-body.privacy-on .orb-num.pv-hide{display:block!important}
+body.privacy-on .pv-val:not(.pv-networth-wrap .pv-val){visibility:hidden!important}
+body.privacy-on .pv-hide:not(.pv-networth-wrap .pv-hide){visibility:visible!important}
+body.privacy-on span.pv-hide:not(.pv-networth-wrap .pv-hide){visibility:visible!important}
+body.privacy-on .orb-num.pv-val{visibility:hidden!important}
+body.privacy-on .orb-num.pv-hide{visibility:visible!important}
+/* pv-hide always takes up space but is invisible by default */
+.pv-hide{visibility:hidden;height:0;overflow:hidden;margin:0;padding:0}
+body.privacy-on .pv-hide{height:auto;overflow:visible}
+/* orb-num pv-hide sits in place */
+.orb-num.pv-hide{visibility:hidden;position:absolute;top:0;left:0;right:0;height:auto;overflow:visible}
+.orb-num.pv-val{position:relative}
 /* SVG text privacy */
 body.privacy-on svg .pv-val{display:block!important;visibility:hidden!important}
 body.privacy-on svg .pv-hide{display:block!important;visibility:visible!important}
@@ -1448,24 +1454,28 @@ function renderDashboard(){
             font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;
             margin-bottom:${sz>=200?3:2}px;
             text-shadow:0 1px 0 rgba(0,0,0,1),0 2px 12px rgba(0,0,0,1)">${d.pf0.name}</div>
-          <div class="pv-val orb-num" style="
-            font-size:${fPct}px;font-weight:200;color:#fff;
-            line-height:1;letter-spacing:-1.5px;
-            font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;
-            text-shadow:0 2px 0 rgba(0,0,0,1),0 4px 16px rgba(0,0,0,0.9)">${d.alloc.toFixed(1)}%</div>
-          <div class="pv-hide orb-num" style="font-size:${fPct}px;color:#fff;font-weight:200;letter-spacing:-1.5px">••••</div>
+          <div style="position:relative;line-height:1;text-align:center">
+            <div class="pv-val orb-num" style="
+              font-size:${fPct}px;font-weight:200;color:#fff;
+              line-height:1;letter-spacing:-1.5px;
+              font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;
+              text-shadow:0 2px 0 rgba(0,0,0,1),0 4px 16px rgba(0,0,0,0.9)">${d.alloc.toFixed(1)}%</div>
+            <div class="pv-hide orb-num" style="font-size:${fPct}px;color:#fff;font-weight:200;letter-spacing:-1.5px">••••</div>
+          </div>
           <div style="width:${sz>=200?22:15}px;height:1px;margin:${sz>=200?7:4}px auto;
             background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent);
             box-shadow:0 0 8px rgba(255,255,255,0.4)"></div>
-          <div class="pv-val orb-num" style="
-            font-size:${fRm}px;font-weight:500;
-            color:rgba(255,255,255,0.88);
-            font-family:-apple-system,'Helvetica Neue',monospace;
-            letter-spacing:0.2px;
-            text-shadow:0 1px 0 rgba(0,0,0,1)">
-            RM ${d.pfMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}
+          <div style="position:relative;text-align:center">
+            <div class="pv-val orb-num" style="
+              font-size:${fRm}px;font-weight:500;
+              color:rgba(255,255,255,0.88);
+              font-family:-apple-system,'Helvetica Neue',monospace;
+              letter-spacing:0.2px;
+              text-shadow:0 1px 0 rgba(0,0,0,1)">
+              RM ${d.pfMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}
+            </div>
+            <div class="pv-hide orb-num" style="font-size:${fRm}px;color:rgba(255,255,255,0.88)">••••••</div>
           </div>
-          <div class="pv-hide orb-num" style="font-size:${fRm}px;color:rgba(255,255,255,0.88)">••••••</div>
         </div>
       </div>
     </div>`;
@@ -1523,7 +1533,7 @@ function renderDashboard(){
   // HERO — net worth LEFT, health card RIGHT, minicards below
   const heroSection=`<div style="margin-bottom:12px">
     <div style="margin-bottom:8px">
-      <div style="font-size:8.5px;font-weight:700;color:rgba(180,140,50,0.7);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Net Worth</div>
+      <div style="font-size:8.5px;font-weight:700;color:rgba(180,140,50,0.7);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Net Worth &nbsp;<span style="color:rgba(180,140,50,0.4);font-weight:400">— All Portfolios (${S.portfolios.length})</span></div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
         <div style="flex:1;min-width:0">
           <div class="pv-networth-wrap">
@@ -1857,7 +1867,7 @@ function renderOverview(p){
   </div>`;
 
   const topCard=`<div style="margin:0;padding:0 0 12px">
-    <div style="font-size:8.5px;font-weight:700;color:rgba(180,140,50,0.7);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">${p.name} · Net Worth</div>
+    <div style="font-size:8.5px;font-weight:700;color:rgba(180,140,50,0.7);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Net Worth &nbsp;<span style="color:rgba(180,140,50,0.4);font-weight:400">· ${p.name} — Holdings (${getHoldings(p,true).length})</span></div>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
       <div style="flex:1;min-width:0">
         <div class="pv-networth-wrap">
@@ -1932,7 +1942,7 @@ function renderOverview(p){
     <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:2px;margin-bottom:10px;text-transform:uppercase;padding-top:14px;border-top:1px solid rgba(255,255,255,0.06)">Asset Summary</div>
     <div style="display:flex;justify-content:space-between;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:2px">
       <span style="font-size:9px;color:rgba(255,255,255,0.22);font-weight:600;letter-spacing:1px">ASSET</span>
-      <span style="font-size:9px;color:rgba(255,255,255,0.22);font-weight:600;letter-spacing:1px">NET P&L</span>
+      <span style="font-size:9px;color:rgba(255,255,255,0.22);font-weight:600;letter-spacing:1px">NET P&L <span style="font-weight:400;opacity:0.6">(excl. cash)</span></span>
     </div>
     ${assetRows}
   </div>`;
@@ -2898,11 +2908,15 @@ $('ov').addEventListener('click',e=>{if(e.target===$('ov'))cmm();});
 
 // Swipe down to close modal
 (function(){
-  let _mty=0;
+  let _mty=0,_mMoved=false;
   const mi=$('mi');
-  mi.addEventListener('touchstart',function(e){_mty=e.touches[0].clientY;},{passive:true});
+  mi.addEventListener('touchstart',function(e){_mty=e.touches[0].clientY;_mMoved=false;},{passive:true});
+  mi.addEventListener('touchmove',function(){_mMoved=true;},{passive:true});
+  mi.addEventListener('touchcancel',function(){_mty=0;_mMoved=false;},{passive:true});
   mi.addEventListener('touchend',function(e){
+    if(!_mMoved)return;
     const dy=e.changedTouches[0].clientY-_mty;
+    _mty=0;_mMoved=false;
     if(dy>120)cmm();
   },{passive:true});
 })();
@@ -4333,15 +4347,27 @@ showWelcomeIfFirstLoad();
 // ── Swipe left/right to switch tabs ──────────────────────────────
 (function(){
   const TAB_ORDER=['dashboard','overview','transactions','options','journey','settings'];
-  let _tx=0,_ty=0,_target=null;
+  let _tx=0,_ty=0,_target=null,_tMoved=false;
   document.addEventListener('touchstart',function(e){
     _tx=e.touches[0].clientX;
     _ty=e.touches[0].clientY;
     _target=e.target;
+    _tMoved=false;
+  },{passive:true});
+  document.addEventListener('touchmove',function(e){
+    _tMoved=true;
+  },{passive:true});
+  document.addEventListener('touchcancel',function(){
+    _tx=0;_ty=0;_target=null;_tMoved=false;
   },{passive:true});
   document.addEventListener('touchend',function(e){
     const dx=e.changedTouches[0].clientX-_tx;
     const dy=e.changedTouches[0].clientY-_ty;
+    // Reset state immediately
+    const target=_target;
+    _tx=0;_ty=0;_target=null;
+    if(!_tMoved)return; // tap, not swipe
+    _tMoved=false;
     if(Math.abs(dx)<60||Math.abs(dy)>Math.abs(dx)*0.5)return;
     // Don't swipe if settings panel is open — swipe right to close it
     const sp=document.getElementById('settings-panel');
@@ -4356,15 +4382,10 @@ showWelcomeIfFirstLoad();
       const ey=e.changedTouches[0].clientY;
       if(ey>=r.top)return;
     }
-    // ── Swipe right on detail page = go back ──
-    if(VIEW&&dx>0){
-      VIEW=null;
-      render();
-      return;
-    }
+    // Swipe right on detail page = go back
+    if(VIEW&&dx>0){VIEW=null;render();return;}
     // Check if touch started inside a horizontally scrollable container
-    // and that container still has scroll room in the swipe direction
-    let el=_target;
+    let el=target;
     while(el&&el!==document.body){
       const style=window.getComputedStyle(el);
       const overflowX=style.overflowX;
@@ -4387,9 +4408,7 @@ showWelcomeIfFirstLoad();
       const ji=J_ORDER.indexOf(window.jSubTab||'dividend');
       if(dx<0&&ji<J_ORDER.length-1){window.jSubTab=J_ORDER[ji+1];renderContent();return;}
       if(dx>0&&ji>0){window.jSubTab=J_ORDER[ji-1];renderContent();return;}
-      // Edge: swipe left from pnl → go to settings
       if(dx<0&&ji===J_ORDER.length-1){toggleSettings();return;}
-      // Edge: swipe right from dividend → go to options
       if(dx>0&&ji===0){swTab('options');return;}
     }
 
