@@ -905,7 +905,7 @@ function renderTabMenu(){
   const lbl=document.getElementById('tab-menu-label');
   if(lbl)lbl.textContent=TAB_LABELS[TAB]||TAB;
   if(!dd)return;
-  const tabs=['dashboard','overview','transactions','options','deposits','journey'];
+  const tabs=['dashboard','overview','transactions','options','deposits'];
   dd.innerHTML=tabs.map(t=>{
     const isActive=TAB===t;
     return'<button onclick="closeTabMenu();swTab(\''+t+'\')"'
@@ -2152,7 +2152,7 @@ function renderHoldings(p){
     +`</div><div id="hld-wrap">${tables}</div>`;
 }
 // ── Stock detail ─────────────────────────────────────────────────────────────────
-function drillStock(stock,ccy){VIEW={type:'stock',stock,ccy};renderContent();}
+function drillStock(stock,ccy){if(window.pushNav)window.pushNav(function(){VIEW=null;renderContent();});VIEW={type:'stock',stock,ccy};renderContent();}
 function renderStockDetail(p,stock,ccy){
   const h=getHoldings(p,false).find(h=>h.stock===stock)||{};
   let txs=p.transactions.filter(t=>t.stock===stock&&['Buy','Sell','Dividend'].includes(t.type));
@@ -2275,7 +2275,7 @@ function renderTx(p,filterYrCcy){
     html+='<div class="bb" onclick="TAB=\'journey\';journeyFilter=null;renderContent()">← Back to Journey</div>';
     html+='<div style="margin-bottom:.75rem;padding:.5rem .75rem;background:var(--bd);border-radius:var(--r);font-size:12px;color:var(--blue)">Dividends for '+filterYrCcy.ccy+' in '+filterYrCcy.yr+'</div>';
   } else {
-    const typeFilterOpts=['','Buy','Sell','Dividend','Platform Fee','Closed Trades','Cash Flow'].map(t=>'<option value="'+t+'">'+(t||'All types')+'</option>').join('');
+    const typeFilterOpts=['','Buy','Sell','Dividend','P&L','Platform Fee','Closed Trades','Cash Flow'].map(t=>'<option value="'+t+'">'+(t||'All types')+'</option>').join('');
     html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:.75rem">'
       +'<input id="tx-search" placeholder="Search stock, note…" oninput="filterTxTable()" style="flex:1">'
       +'<select id="tx-type-filter" onchange="filterTxTable()" style="flex:1">'+typeFilterOpts+'</select>'
@@ -2302,32 +2302,71 @@ function renderTx(p,filterYrCcy){
     +'<div style="font-size:13px;font-weight:700;color:'+(v.d>0?'var(--green)':'var(--t3)')+'">'+( v.d>0?fc(v.d,ccy):'—')+'</div></div>'
     +'</div>'
   ).join('');
-  const _closedRows=_closedAll.map(h=>{
-    const tot=h.realized+h.divs;
-    const pct=h.cost>0?tot/h.cost*100:null;
-    const statusLabel=h.qty>0
-      ?'<span style="font-size:9px;padding:1px 6px;border-radius:10px;background:rgba(0,230,118,0.06);color:var(--green);border:1px solid rgba(0,230,118,0.2)">Partial</span>'
-      :'<span style="font-size:9px;padding:1px 6px;border-radius:10px;background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.35);border:1px solid rgba(255,255,255,0.1)">Closed</span>';
-    return '<tr class="ck" onclick="drillStock(\''+h.stock.replace(/'/g,"\\'")+'\',\''+h.ccy+'\')">'
-      +'<td style="font-weight:600">'+h.stock+' '+statusLabel+'</td>'
-      +'<td><span class="ctag">'+h.ccy+'</span></td>'
-      +'<td class="r '+sc(h.realized)+'" style="font-weight:600">'+(h.realized!==0?sgn(h.realized,h.ccy):'—')+'</td>'
-      +'<td class="r g">'+(h.divs>0?fc(h.divs,h.ccy):'—')+'</td>'
-      +'<td class="r '+sc(tot)+'" style="font-weight:600">'+sgn(tot,h.ccy)+'</td>'
-      +'<td class="r">'+(pct!==null?'<span style="color:'+(pct>=0?'var(--green)':'var(--red)')+';font-weight:600">'+fp(pct)+'</span>':'—')+'</td>'
-      +'<td class="m" style="font-size:11px">'+(h.firstDate||'—')+'</td>'
-      +'</tr>';
-  }).join('');
+  // Build timeline for closed trades — grouped by first-buy month
+  const _clMonths=[], _clMonthMap={};
+  _closedAll.forEach(function(h){
+    const ym=(h.firstDate||'0000-00').slice(0,7);
+    if(!_clMonthMap[ym]){_clMonthMap[ym]=[];_clMonths.push(ym);}
+    _clMonthMap[ym].push(h);
+  });
+  const _MN=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  function _clMonthLabel(ym){const[y,m]=ym.split('-');return _MN[parseInt(m,10)-1]+' '+y;}
+  function _clDayLabel(d){if(!d||d==='—')return{day:'—',mon:''};const dt=new Date(d+'T00:00:00');return{day:dt.getDate(),mon:_MN[dt.getMonth()]};}
+
+  let _clTimelineHtml='';
+  _clMonths.forEach(function(ym){
+    _clTimelineHtml+=`<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:1.5px;padding:14px 0 8px;font-family:'Courier New',monospace">${_clMonthLabel(ym)}</div>`;
+    const items=_clMonthMap[ym];
+    _clTimelineHtml+='<div>';
+    items.forEach(function(h,idx){
+      const isLast=idx===items.length-1;
+      const tot=h.realized+h.divs;
+      const pct=h.cost>0?tot/h.cost*100:null;
+      const isPartial=h.qty>0;
+      const pnlCol=tot>=0?'#4ade80':'#f87171';
+      const statusCol=isPartial?'#4ade80':'rgba(255,255,255,0.35)';
+      const statusBg=isPartial?'rgba(0,230,118,0.08)':'rgba(255,255,255,0.04)';
+      const statusBorder=isPartial?'rgba(0,230,118,0.25)':'rgba(255,255,255,0.1)';
+      const statusText=isPartial?'Partial':'Closed';
+      const avatarText=(h.stock||'?').slice(0,3).toUpperCase();
+      const avatarFontSize=avatarText.length<=2?'12px':'9px';
+      const {day,mon}=_clDayLabel(h.firstDate);
+      _clTimelineHtml+=`<div onclick="drillStock('${h.stock.replace(/'/g,"\\'")}','${h.ccy}')"
+        style="display:flex;align-items:stretch;gap:0;cursor:pointer;margin-bottom:6px">
+        <div style="display:flex;flex-direction:column;align-items:center;width:46px;flex-shrink:0;padding-top:6px">
+          <div style="font-size:16px;font-weight:700;color:rgba(255,255,255,0.85);line-height:1">${day}</div>
+          <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:.5px">${mon}</div>
+          ${!isLast?`<div style="flex:1;width:1px;background:rgba(255,255,255,0.08);margin-top:6px;min-height:12px"></div>`:''}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;width:38px;flex-shrink:0;padding-top:4px">
+          <div style="width:32px;height:32px;border-radius:50%;background:#1a1a2e;border:1.5px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:${avatarFontSize};font-weight:800;color:#fff;flex-shrink:0;letter-spacing:-0.5px">${avatarText}</div>
+        </div>
+        <div style="flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-top:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;min-width:0;margin-left:4px;margin-bottom:2px">
+          <div style="min-width:0;flex:1">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+              <span style="font-size:13px;font-weight:700;color:#fff">${h.stock}</span>
+              <span style="font-size:9px;font-weight:600;color:${statusCol};background:${statusBg};padding:1px 6px;border-radius:6px;border:1px solid ${statusBorder};white-space:nowrap">${statusText}</span>
+            </div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.25)">${h.ccy}${h.divs>0?' · Div: '+fc(h.divs,h.ccy):''}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;margin-left:8px">
+            <div style="font-size:13px;font-weight:700;color:${pnlCol};white-space:nowrap" class="pv-val">${sgn(tot,h.ccy)}</div>
+            <div style="font-size:13px;color:${pnlCol}" class="pv-hide">••••</div>
+            ${pct!==null?`<div style="font-size:10px;color:${pnlCol};opacity:0.8" class="pv-val">${pct>=0?'+':''}${fp(pct)}</div>`:''}
+          </div>
+        </div>
+      </div>`;
+    });
+    _clTimelineHtml+='</div>';
+  });
+
   html+='<div id="tx-closed-view" style="display:none">'
     +_closedSummary
     +'<div style="font-size:10px;color:rgba(255,255,255,0.25);margin-bottom:.5rem;letter-spacing:.5px;font-family:Courier New,monospace">'+_closedAll.length+' POSITION'+(_closedAll.length!==1?'S':'')+'</div>'
-    +'<div style="overflow-x:auto"><table class="tbl"><thead><tr>'
-    +'<th>Stock</th><th>CCY</th><th class="r">Realized P&L</th><th class="r">Dividends</th><th class="r">Net P&L</th><th class="r">P&L %</th><th>First Buy</th>'
-    +'</tr></thead><tbody>'+_closedRows+'</tbody></table></div>'
-    +(_closedAll.length===0?'<div class="m" style="text-align:center;padding:2rem;font-size:12px">No realized P&L yet.</div>':'')
+    +(_closedAll.length===0?'<div class="m" style="text-align:center;padding:2rem;font-size:12px">No realized P&L yet.</div>':_clTimelineHtml)
     +'</div>';
 
-  // ── Timeline card list — grouped by month ──
+    // ── Timeline card list — grouped by month ──
   const TYPE_COL={'Buy':'#3b82f6','Sell':'#00e676','Dividend':'#f59e0b','Platform Fee':'#888','deposit':'#60a5fa','withdrawal':'#c084fc'};
   // Avatar letter + bg colour per type
   const TYPE_AVATAR={
@@ -2533,6 +2572,7 @@ function _renderTxModal(tx,editing){
     </div>`;
 
   html+='</div>';
+  if(window.pushNav)window.pushNav(function(){cmm();});
   omm('_txd',html);
 }
 
@@ -2585,6 +2625,27 @@ function filterTxTable(){
   const cnt=document.getElementById('tx-count');
   let cf=document.getElementById('tx-cashflow-view');
 
+  // P&L inline view
+  let pv=document.getElementById('tx-pnl-view');
+  if(type==='P&L'){
+    if(ct)ct.style.display='none';
+    if(tt)tt.style.display='none';
+    if(cnt)cnt.textContent='';
+    if(cf)cf.style.display='none';
+    let ds2=document.getElementById('tx-div-summary');
+    if(ds2)ds2.style.display='none';
+    if(!pv){
+      pv=document.createElement('div');
+      pv.id='tx-pnl-view';
+      const wrap=document.getElementById('tx-table-wrap');
+      if(wrap)wrap.parentNode.insertBefore(pv,wrap);
+    }
+    pv.innerHTML=renderPnlInline();
+    pv.style.display='';
+    return;
+  }
+  if(pv)pv.style.display='none';
+
   if(type==='Cash Flow'){
     if(ct)ct.style.display='none';
     if(tt)tt.style.display='none';
@@ -2598,6 +2659,20 @@ function filterTxTable(){
     cf.innerHTML=renderCashFlowInline();
     cf.style.display='';
     return;
+  }
+  // Dividend summary panel
+  let ds=document.getElementById('tx-div-summary');
+  if(type==='Dividend'){
+    if(!ds){
+      ds=document.createElement('div');
+      ds.id='tx-div-summary';
+      const wrap=document.getElementById('tx-table-wrap');
+      if(wrap)wrap.parentNode.insertBefore(ds,wrap);
+    }
+    ds.innerHTML=renderDividendSummaryInline();
+    ds.style.display='';
+  } else {
+    if(ds)ds.style.display='none';
   }
   if(cf)cf.style.display='none';
   if(type==='Closed Trades'){
@@ -2638,6 +2713,125 @@ function filterTxTable(){
     }
   }
   if(cnt)cnt.textContent=visible+' TRANSACTIONS';
+}
+
+function renderDividendSummaryInline(){
+  const p=pf();
+  const divTxs=p.transactions.filter(t=>t.type==='Dividend'&&t.amount>0);
+  if(!divTxs.length)return'';
+
+  // Total by ccy
+  const byCcy={};
+  divTxs.forEach(function(t){
+    if(!byCcy[t.ccy])byCcy[t.ccy]=0;
+    byCcy[t.ccy]+=parseFloat(t.amount)||0;
+  });
+
+  // By year+ccy
+  const byYear={};
+  divTxs.forEach(function(t){
+    const yr=t.date.slice(0,4);
+    if(!byYear[yr])byYear[yr]={};
+    if(!byYear[yr][t.ccy])byYear[yr][t.ccy]=0;
+    byYear[yr][t.ccy]+=parseFloat(t.amount)||0;
+  });
+  const years=Object.keys(byYear).sort((a,b)=>b-a);
+  const allCcys=[...new Set(divTxs.map(t=>t.ccy))].sort();
+
+  // Summary minicards
+  let summary='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:14px">';
+  Object.entries(byCcy).forEach(function([ccy,tot]){
+    summary+=`<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-top:1.5px solid rgba(245,158,11,0.4);border-radius:10px;padding:10px 12px">
+      <div style="font-size:9px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">${ccy} Total Dividends</div>
+      <div class="pv-val" style="font-size:14px;font-weight:700;color:#4ade80;white-space:nowrap">+${fc(tot,ccy)}</div>
+      <div class="pv-hide" style="font-size:14px;color:#888">••••</div></div>`;
+  });
+  summary+='</div>';
+
+  // Yearly breakdown cards — tap to drill
+  let yrCards='<div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.06)">By Year</div>';
+  const curYr=new Date().getFullYear();
+  years.forEach(function(yr){
+    const isCur=parseInt(yr)===curYr;
+    allCcys.forEach(function(ccy){
+      const amt=byYear[yr][ccy];
+      if(!amt)return;
+      yrCards+=`<div onclick="window._divDrillFrom='transactions';jDrill('div','${ccy}',${yr})"
+        style="display:flex;align-items:center;background:${isCur?'rgba(245,158,11,0.06)':'rgba(255,255,255,0.03)'};border:1px solid ${isCur?'rgba(245,158,11,0.25)':'rgba(255,255,255,0.07)'};border-top:1px solid ${isCur?'rgba(245,158,11,0.45)':'rgba(255,255,255,0.12)'};border-radius:10px;padding:10px 14px;cursor:pointer;margin-bottom:8px;gap:12px">
+        <div style="width:40px;flex-shrink:0">
+          <div style="font-size:15px;font-weight:700;color:${isCur?'#f59e0b':'rgba(255,255,255,0.7)'}">${yr}</div>
+          ${isCur?'<div style="font-size:8px;color:#f59e0b;letter-spacing:1px">NOW</div>':''}
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:2px">${ccy} · Tap to see transactions</div>
+          <div style="font-size:13px;font-weight:700;color:#4ade80 " class="pv-val">+${fc(amt,ccy)}</div>
+          <div style="font-size:13px;color:#4ade80" class="pv-hide">••••</div>
+        </div>
+        <div style="color:rgba(255,255,255,0.15);font-size:12px;flex-shrink:0">›</div>
+      </div>`;
+    });
+  });
+
+  return summary+yrCards;
+}
+
+function renderPnlInline(){
+  const p=pf();
+  const d=journeyData(p);
+  const ccys=Object.keys(d);
+  if(!ccys.length)return'<p class="m" style="padding:2rem;text-align:center;font-size:12px">No realized P&L yet.</p>';
+
+  let html='';
+  ccys.forEach(function(ccy){
+    const rows=d[ccy];
+    const totalGross=Math.round(rows.reduce((s,r)=>s+r.realYr,0)*100)/100;
+    const totalPf=Math.round(rows.reduce((s,r)=>s+(r.pfYr||0),0)*100)/100;
+    const totalNet=Math.round((totalGross-totalPf)*100)/100;
+    const hasReal=rows.some(r=>r.realYr!==0||r.pfYr>0);
+    if(!hasReal)return;
+
+    // Summary minicard
+    html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-top:1.5px solid rgba(0,212,255,0.4);border-radius:10px;padding:10px 12px">
+        <div style="font-size:9px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">${ccy} Net Realized</div>
+        <div class="pv-val" style="font-size:14px;font-weight:700;color:${totalNet>=0?'#4ade80':'#f87171'};white-space:nowrap">${sgn(totalNet,ccy)}</div>
+        <div class="pv-hide" style="font-size:14px;color:#888">••••</div>
+      </div>
+      ${totalPf>0?`<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:10px 12px">
+        <div style="font-size:9px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">${ccy} Platform Fees</div>
+        <div class="pv-val" style="font-size:14px;font-weight:700;color:#f87171;white-space:nowrap">−${fc(totalPf,ccy)}</div>
+        <div class="pv-hide" style="font-size:14px;color:#888">••••</div>
+      </div>`:''}
+    </div>`;
+
+    // Year cards
+    html+='<div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.06)">By Year</div>';
+    const curYr=new Date().getFullYear();
+    rows.filter(r=>r.realYr!==0||r.pfYr>0).forEach(function(r){
+      const isCur=r.yr===curYr;
+      const net=Math.round((r.realYr-(r.pfYr||0))*100)/100;
+      const netCol=net>=0?'#4ade80':'#f87171';
+      html+=`<div onclick="window._divDrillFrom='transactions';window._drillType='pnl';jDrill('pnl','${ccy}',${r.yr})"
+        style="display:flex;align-items:center;background:${isCur?'rgba(0,212,255,0.05)':'rgba(255,255,255,0.03)'};border:1px solid ${isCur?'rgba(0,212,255,0.2)':'rgba(255,255,255,0.07)'};border-top:1px solid ${isCur?'rgba(0,212,255,0.35)':'rgba(255,255,255,0.12)'};border-radius:10px;padding:10px 14px;cursor:pointer;margin-bottom:8px;gap:12px">
+        <div style="width:40px;flex-shrink:0">
+          <div style="font-size:15px;font-weight:700;color:${isCur?'#00d4ff':'rgba(255,255,255,0.7)'}">${r.yr}</div>
+          ${isCur?'<div style="font-size:8px;color:#00d4ff;letter-spacing:1px">NOW</div>':''}
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:2px">Realized${r.pfYr>0?' · Fees: −'+fc(r.pfYr,ccy):''}  </div>
+          <div style="font-size:12px;font-weight:600;color:${r.realYr>=0?'#4ade80':'#f87171'}" class="pv-val">${r.realYr!==0?sgn(r.realYr,ccy):'—'}</div>
+          <div style="font-size:12px;color:${r.realYr>=0?'#4ade80':'#f87171'}" class="pv-hide">••••</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:2px">Net P&L</div>
+          <div style="font-size:13px;font-weight:700;color:${netCol}" class="pv-val">${sgn(net,ccy)}</div>
+          <div style="font-size:13px;color:${netCol}" class="pv-hide">••••</div>
+        </div>
+        <div style="color:rgba(255,255,255,0.15);font-size:12px;flex-shrink:0">›</div>
+      </div>`;
+    });
+  });
+  return html||'<p class="m" style="padding:2rem;text-align:center;font-size:12px">No realized P&L yet.</p>';
 }
 
 function renderCashFlowInline(){
@@ -2711,26 +2905,62 @@ function renderCashFlowInline(){
   });
   yearTable+='</tr></tbody></table></div></div>';
 
-  // Transaction rows
-  let rows='';
+  // Timeline rows grouped by month
+  const _cfMN=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  function _cfMonthLabel(ym){const[y,m]=ym.split('-');return _cfMN[parseInt(m,10)-1]+' '+y;}
+  function _cfDayLabel(d){const dt=new Date(d+'T00:00:00');return{day:dt.getDate(),mon:_cfMN[dt.getMonth()]};}
+  const _cfMonths=[],_cfMonthMap={};
   deps.forEach(function(d){
-    const col='rgba(255,255,255,0.6)';
-    const amt=parseFloat(d.amount)||0;
-    rows+='<div onclick="openDepositModal('+d._oi+')" style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:8px;cursor:pointer">'
-      +'<div style="width:6px;height:6px;border-radius:50%;background:'+col+';flex-shrink:0"></div>'
-      +'<div style="flex:1;min-width:0">'
-      +'<div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:1px">'+(d.note||d.type)+'</div>'
-      +'<div style="font-size:10px;color:rgba(255,255,255,0.3)">'+d.date+' · '+d.ccy+'</div></div>'
-      +'<div class="pv-val" style="font-size:13px;font-weight:600;color:'+col+'">'+(d.type==='deposit'?'+':'-')+fc(amt,d.ccy)+'</div>'
-      +'<div class="pv-hide" style="font-size:13px;color:'+col+'">••••</div>'
-      +'<div style="color:rgba(255,255,255,0.2);font-size:14px;flex-shrink:0">›</div>'
-      +'</div>';
+    const ym=d.date.slice(0,7);
+    if(!_cfMonthMap[ym]){_cfMonthMap[ym]=[];_cfMonths.push(ym);}
+    _cfMonthMap[ym].push(d);
   });
+  let _cfTimeline='<div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.06)">All Entries</div>';
+  if(!deps.length){
+    _cfTimeline+='<div style="text-align:center;padding:2rem;color:rgba(255,255,255,0.3);font-size:13px">No entries yet.</div>';
+  } else {
+    _cfMonths.forEach(function(ym){
+      _cfTimeline+=`<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:1.5px;padding:14px 0 8px;font-family:'Courier New',monospace">${_cfMonthLabel(ym)}</div>`;
+      const items=_cfMonthMap[ym];
+      _cfTimeline+='<div>';
+      items.forEach(function(d,idx){
+        const isLast=idx===items.length-1;
+        const isDeposit=d.type==='deposit';
+        const amt=parseFloat(d.amount)||0;
+        const avatarCol=isDeposit?'#60a5fa':'#c084fc';
+        const avatarBg=isDeposit?'#1e3a5f':'#3b0764';
+        const avatarLetter=isDeposit?'↑':'↓';
+        const {day,mon}=_cfDayLabel(d.date);
+        _cfTimeline+=`<div onclick="openDepositModal(${d._oi})"
+          style="display:flex;align-items:stretch;gap:0;cursor:pointer;margin-bottom:6px">
+          <div style="display:flex;flex-direction:column;align-items:center;width:46px;flex-shrink:0;padding-top:6px">
+            <div style="font-size:16px;font-weight:700;color:rgba(255,255,255,0.85);line-height:1">${day}</div>
+            <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:.5px">${mon}</div>
+            ${!isLast?`<div style="flex:1;width:1px;background:rgba(255,255,255,0.08);margin-top:6px;min-height:12px"></div>`:''}
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;width:38px;flex-shrink:0;padding-top:4px">
+            <div style="width:32px;height:32px;border-radius:50%;background:${avatarBg};border:1.5px solid ${avatarCol};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0">${avatarLetter}</div>
+          </div>
+          <div style="flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-top:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;min-width:0;margin-left:4px;margin-bottom:2px">
+            <div style="min-width:0;flex:1">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                <span style="font-size:13px;font-weight:700;color:#fff">${d.note||d.type}</span>
+                <span style="font-size:9px;font-weight:600;color:${avatarCol};background:${avatarBg};padding:1px 6px;border-radius:6px;border:1px solid ${avatarCol}55;white-space:nowrap">${isDeposit?'Deposit':'Withdrawal'}</span>
+              </div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.25)">${d.ccy}</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;margin-left:8px">
+              <div class="pv-val" style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap">${isDeposit?'+':'-'}${fc(amt,d.ccy)}</div>
+              <div class="pv-hide" style="font-size:13px;color:rgba(255,255,255,0.5)">••••</div>
+            </div>
+          </div>
+        </div>`;
+      });
+      _cfTimeline+='</div>';
+    });
+  }
 
-  const allEntries='<div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,0.06)">All Entries</div>'
-    +(rows||'<div style="text-align:center;padding:2rem;color:rgba(255,255,255,0.3);font-size:13px">No entries yet.</div>');
-
-  return summary+yearTable+allEntries;
+  return summary+yearTable+_cfTimeline;
 }
 
 // ── Closed trades tab ────────────────────────────────────────────────────────────
@@ -2779,13 +3009,13 @@ function renderJourney(p){
   const sum=getSummary(p);
 
   // Sub-tab state stored on window so it survives re-renders
-  if(window.jSubTab===undefined)window.jSubTab='dividend';
+  if(window.jSubTab===undefined||window.jSubTab==='dividend')window.jSubTab='pnl';
 
   function tabBtn(key,label){
     const on=window.jSubTab===key;
     return`<button onclick="window.jSubTab='${key}';renderContent()" style="padding:6px 20px;font-size:12px;font-weight:${on?700:500};border-radius:20px;border:1px solid ${on?'rgba(255,255,255,0.4)':'rgba(255,255,255,0.1)'};color:${on?'#fff':'rgba(255,255,255,0.35)'};background:${on?'rgba(255,255,255,0.08)':'transparent'};cursor:pointer;transition:all .2s;box-shadow:${on?'0 0 12px rgba(255,255,255,0.12),inset 0 1px 0 rgba(255,255,255,0.15)':'none'}">${label}</button>`;
   }
-  const subTabs=`<div style="display:flex;gap:8px;margin-bottom:1.25rem">${tabBtn('dividend','Dividend')}${tabBtn('pnl','PnL')}</div>`;
+  const subTabs=`<div style="display:flex;gap:8px;margin-bottom:1.25rem">${tabBtn('pnl','PnL')}</div>`;
 
   if(window.jSubTab==='cashflow'){
     const depContent=p?renderDeposits(p):'<p class="m" style="padding:1rem;font-size:12px">Select a portfolio to view cash flows.</p>';
@@ -2797,24 +3027,27 @@ function renderJourney(p){
     if(window.jSubTab==='dividend'){
       const totalDiv=rows.reduce((s,r)=>s+r.divYr,0);
       if(!totalDiv)return`<div style="margin-bottom:1.5rem">${ccyTag(ccy)}<p class="m" style="font-size:12px;margin-top:.5rem">No dividends recorded.</p></div>`;
-      const rowsHtml=rows.filter(r=>r.divYr>0).map(r=>{
+      const yrDivCards=rows.filter(r=>r.divYr>0).map(r=>{
         const isCur=r.yr===new Date().getFullYear();
-        return`<tr style="${isCur?'background:var(--bdd)':''}">
-          <td style="font-weight:600;color:var(--blue);cursor:pointer;text-decoration:underline;text-underline-offset:3px" onclick="jDrill('div','${ccy}',${r.yr})">${r.yr}${isCur?' ◂':''}</td>
-          <td class="r g" style="font-weight:600">${fc(r.divYr,ccy)}</td>
-        </tr>`;
+        return`<div onclick="window._divDrillFrom='journey';jDrill('div','${ccy}',${r.yr})"
+          style="display:flex;align-items:center;background:${isCur?'rgba(245,158,11,0.06)':'rgba(255,255,255,0.03)'};border:1px solid ${isCur?'rgba(245,158,11,0.25)':'rgba(255,255,255,0.07)'};border-top:1px solid ${isCur?'rgba(245,158,11,0.45)':'rgba(255,255,255,0.12)'};border-radius:10px;padding:10px 14px;cursor:pointer;margin-bottom:8px;gap:12px">
+          <div style="width:40px;flex-shrink:0">
+            <div style="font-size:15px;font-weight:700;color:${isCur?'#f59e0b':'rgba(255,255,255,0.7)'}">${r.yr}</div>
+            ${isCur?`<div style="font-size:8px;color:#f59e0b;letter-spacing:1px">NOW</div>`:''}
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:2px">Dividends received</div>
+            <div style="font-size:13px;font-weight:700;color:#4ade80">+${fc(r.divYr,ccy)}</div>
+          </div>
+          <div style="color:rgba(255,255,255,0.15);font-size:12px;flex-shrink:0">›</div>
+        </div>`;
       }).join('');
       return`<div style="margin-bottom:2rem">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:.6rem;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:.75rem;flex-wrap:wrap">
           ${ccyTag(ccy)}
           <span class="pv-num" style="font-size:12px;color:var(--green);font-weight:600">Total: ${fc(totalDiv,ccy)}</span>
         </div>
-        <p style="font-size:11px;color:var(--t2);margin-bottom:.5rem">Click a year to see full dividend transactions for that year.</p>
-        <div style="overflow-x:auto"><table class="tbl" style="max-width:320px">
-          <thead><tr><th>Year</th><th class="r">Dividends received</th></tr></thead>
-          <tbody>${rowsHtml}</tbody>
-          <tfoot><tr><td style="font-weight:600">Total</td><td class="r g" style="font-weight:700">${fc(totalDiv,ccy)}</td></tr></tfoot>
-        </table></div>
+        ${yrDivCards}
       </div>`;
     } else {
       // PnL tab — realYr is gross realized, pfYr is fees for that year
@@ -2822,40 +3055,55 @@ function renderJourney(p){
       const totalPf=Math.round(rows.reduce((s,r)=>s+(r.pfYr||0),0)*100)/100;
       const totalNet=Math.round((totalGross-totalPf)*100)/100;
       const hasReal=rows.some(r=>r.realYr!==0||r.pfYr>0);
-      const rowsHtml=rows.filter(r=>r.realYr!==0||r.pfYr>0).map(r=>{
+      const yrCards=rows.filter(r=>r.realYr!==0||r.pfYr>0).map(r=>{
         const isCur=r.yr===new Date().getFullYear();
         const net=Math.round((r.realYr-(r.pfYr||0))*100)/100;
-        return`<tr style="${isCur?'background:var(--bdd)':''}">
-          <td style="font-weight:600;color:var(--blue);cursor:pointer;text-decoration:underline;text-underline-offset:3px" onclick="jDrill('pnl','${ccy}',${r.yr})">${r.yr}${isCur?' ◂':''}</td>
-          <td class="r ${sc(r.realYr)}" style="font-weight:600">${r.realYr!==0?sgn(r.realYr,ccy):'—'}</td>
-          <td class="r rr" style="font-weight:600">${r.pfYr>0?'−'+fc(r.pfYr,ccy):'—'}</td>
-          <td class="r ${sc(net)}" style="font-weight:700">${sgn(net,ccy)}</td>
-        </tr>`;
+        const netCol=net>=0?'#4ade80':'#f87171';
+        return`<div onclick="jDrill('pnl','${ccy}',${r.yr})"
+          style="display:flex;align-items:center;background:${isCur?'rgba(0,212,255,0.05)':'rgba(255,255,255,0.03)'};border:1px solid ${isCur?'rgba(0,212,255,0.2)':'rgba(255,255,255,0.07)'};border-top:1px solid ${isCur?'rgba(0,212,255,0.35)':'rgba(255,255,255,0.12)'};border-radius:10px;padding:10px 14px;cursor:pointer;margin-bottom:8px;gap:12px">
+          <div style="width:40px;flex-shrink:0">
+            <div style="font-size:15px;font-weight:700;color:${isCur?'#00d4ff':'rgba(255,255,255,0.7)'}">${r.yr}</div>
+            ${isCur?`<div style="font-size:8px;color:#00d4ff;letter-spacing:1px">NOW</div>`:''}
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:2px">Realized${r.pfYr>0?' · Fees: −'+fc(r.pfYr,ccy):''}</div>
+            <div style="font-size:11px;font-weight:600;color:${r.realYr>=0?'#4ade80':'#f87171'}">${r.realYr!==0?sgn(r.realYr,ccy):'—'}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:2px">Net P&L</div>
+            <div style="font-size:13px;font-weight:700;color:${netCol}">${sgn(net,ccy)}</div>
+          </div>
+          <div style="color:rgba(255,255,255,0.15);font-size:12px;flex-shrink:0">›</div>
+        </div>`;
       }).join('');
       return`<div style="margin-bottom:2rem">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:.6rem;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:.75rem;flex-wrap:wrap">
           ${ccyTag(ccy)}
           ${hasReal?`<span style="font-size:12px;font-weight:600" class="${sc(totalNet)}">Net Realized: ${sgn(totalNet,ccy)}</span>`:''}
         </div>
-        ${hasReal?`<p style="font-size:11px;color:var(--t2);margin-bottom:.5rem">Click a year to see the Buy/Sell transactions that generated that P&L.</p>
-        <div style="overflow-x:auto"><table class="tbl" style="max-width:480px">
-          <thead><tr><th>Year</th><th class="r">Realized P&L</th><th class="r">Platform Fees</th><th class="r">Net P&L</th></tr></thead>
-          <tbody>${rowsHtml}</tbody>
-          <tfoot>
-            <tr>
-              <td style="font-weight:600">Total</td>
-              <td class="r ${sc(totalGross)}" style="font-weight:700">${sgn(totalGross,ccy)}</td>
-              <td class="r rr" style="font-weight:700">${totalPf>0?'−'+fc(totalPf,ccy):'—'}</td>
-              <td class="r ${sc(totalNet)}" style="font-weight:700">${sgn(totalNet,ccy)}</td>
-            </tr>
-          </tfoot>
-        </table></div>`:
-        `<p class="m" style="font-size:12px">No realized P&L yet.</p>`}
+        ${hasReal?yrCards:`<p class="m" style="font-size:12px">No realized P&L yet.</p>`}
       </div>`;
     }
   }).join('');
 
   return`<div style="background:radial-gradient(ellipse at 25% 58%,rgba(120,80,10,0.06) 0%,transparent 42%),radial-gradient(ellipse at 72% 42%,rgba(8,80,40,0.04) 0%,transparent 38%),#020202;min-height:100vh">${subTabs}${sections}</div>`;
+}
+
+// ── Shared timeline helpers ──
+const _jMN=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+function _jMonthLabel(ym){const[y,m]=ym.split('-');return _jMN[parseInt(m,10)-1]+' '+y;}
+function _jDayLabel(d){if(!d)return{day:'—',mon:''};const dt=new Date(d+'T00:00:00');return{day:dt.getDate(),mon:_jMN[dt.getMonth()]};}
+function _jTimeline(items,rowFn){
+  const months=[],mmap={};
+  items.forEach(function(item){const ym=(item.date||'0000-00').slice(0,7);if(!mmap[ym]){mmap[ym]=[];months.push(ym);}mmap[ym].push(item);});
+  let html='';
+  months.forEach(function(ym){
+    html+=`<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:1.5px;padding:14px 0 8px;font-family:'Courier New',monospace">${_jMonthLabel(ym)}</div><div>`;
+    const its=mmap[ym];
+    its.forEach(function(item,idx){html+=rowFn(item,idx===its.length-1);});
+    html+='</div>';
+  });
+  return html||'<p class="m" style="padding:1rem 0;font-size:12px">No transactions found.</p>';
 }
 
 function jDrill(mode,ccy,yr){
@@ -2867,32 +3115,55 @@ function jDrill(mode,ccy,yr){
     txs=p.transactions.filter(t=>t.type==='Dividend'&&t.ccy===ccy&&t.date.slice(0,4)===String(yr));
     txs.sort((a,b)=>b.date.localeCompare(a.date));
     const totalDiv=txs.reduce((s,t)=>s+(t.amount!=null?+t.amount:0),0);
-    const backBtn='<div class="bb" onclick="window.jSubTab=\'dividend\';renderContent()">← Back to Dividend</div>';
     const banner='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:.75rem;padding:.75rem 1rem;background:rgba(0,230,118,0.06);border-radius:var(--r);border-left:3px solid rgba(0,230,118,0.5)">'
       +'<span style="font-size:13px;font-weight:600;color:var(--green)">Dividends — '+ccy+' '+yr+'</span>'
       +'<span style="font-size:15px;font-weight:700;color:var(--green)">+'+fc(totalDiv,ccy)+'</span>'
       +'</div>';
-    const searchBar='<div class="search-bar"><input id="jd-search" placeholder="Search stock…" oninput="filterJdrillTable()" style="max-width:280px">'
-      +'<span class="m" style="font-size:12px" id="jd-cnt">'+txs.length+' record'+(txs.length!==1?'s':'')+'</span></div>';
-    let tbody='';
-    txs.forEach(t=>{
-      const ds=(t.stock||'').toLowerCase()+' '+(t.note||'').toLowerCase();
-      tbody+='<tr data-jd="'+ds.replace(/"/g,'')+'">'
-        +'<td class="m">'+t.date+'</td>'
-        +'<td style="font-weight:600">'+(t.stock||'—')+'</td>'
-        +'<td class="r g" style="font-weight:600">'+fc(t.amount!=null?+t.amount:0,ccy)+'</td>'
-        +'<td class="m">'+(t.note||'—')+'</td>'
-        +'</tr>';
+
+    const timelineHtml=_jTimeline(txs,function(t,isLast){
+      const amt=t.amount!=null?+t.amount:0;
+      const avatarText=(t.stock||'?').slice(0,3).toUpperCase();
+      const avatarFontSize=avatarText.length<=2?'12px':'9px';
+      const {day,mon}=_jDayLabel(t.date);
+      return `<div style="display:flex;align-items:stretch;gap:0;margin-bottom:6px">
+        <div style="display:flex;flex-direction:column;align-items:center;width:46px;flex-shrink:0;padding-top:6px">
+          <div style="font-size:16px;font-weight:700;color:rgba(255,255,255,0.85);line-height:1">${day}</div>
+          <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:.5px">${mon}</div>
+          ${!isLast?`<div style="flex:1;width:1px;background:rgba(255,255,255,0.08);margin-top:6px;min-height:12px"></div>`:''}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;width:38px;flex-shrink:0;padding-top:4px">
+          <div style="width:32px;height:32px;border-radius:50%;background:#78350f;border:1.5px solid #f59e0b;display:flex;align-items:center;justify-content:center;font-size:${avatarFontSize};font-weight:800;color:#fff;flex-shrink:0;letter-spacing:-0.5px">${avatarText}</div>
+        </div>
+        <div style="flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-top:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;min-width:0;margin-left:4px;margin-bottom:2px">
+          <div style="min-width:0;flex:1">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+              <span style="font-size:13px;font-weight:700;color:#fff">${t.stock||'—'}</span>
+              <span style="font-size:9px;font-weight:600;color:#f59e0b;background:rgba(245,158,11,0.1);padding:1px 6px;border-radius:6px;border:1px solid rgba(245,158,11,0.3)">Dividend</span>
+            </div>
+            ${t.note?`<div style="font-size:10px;color:rgba(255,255,255,0.25);font-style:italic">${t.note}</div>`:''}
+          </div>
+          <div style="text-align:right;flex-shrink:0;margin-left:8px">
+            <div style="font-size:13px;font-weight:700;color:#4ade80;white-space:nowrap">+${fc(amt,ccy)}</div>
+          </div>
+        </div>
+      </div>`;
     });
-    const tableHtml=txs.length
-      ?'<div style="overflow-x:auto"><table class="tbl" id="jd-table">'
-        +'<thead><tr><th>Date</th><th>Stock</th><th class="r">Amount</th><th>Note</th></tr></thead>'
-        +'<tbody>'+tbody+'</tbody>'
-        +'<tfoot><tr><td colspan="2">Total <span class="m" style="font-size:11px;font-weight:400">('+txs.length+' transaction'+(txs.length!==1?'s':'')+')</span></td><td class="r g" style="font-weight:700">'+fc(totalDiv,ccy)+'</td><td></td></tr></tfoot>'
-        +'</table></div>'
-      :'<p class="m" style="padding:1rem 0;font-size:12px">No dividend transactions for this period.</p>';
     TAB='journey';
-    $('ct').innerHTML=backBtn+banner+searchBar+tableHtml;
+    if(window.pushNav)window.pushNav(function(){
+      // Go back to wherever we came from
+      if(window._divDrillFrom==='transactions'){
+        TAB='transactions';
+        renderContent();
+        // Restore Dividend filter
+        setTimeout(function(){
+          const sel=document.getElementById('tx-type-filter');
+          if(sel){sel.value='Dividend';filterTxTable();}
+        },50);
+      } else {
+        window.jSubTab='pnl';renderContent();
+      }
+    });
+    $('ct').innerHTML=banner+timelineHtml;
     document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab==='journey'));
     return;
   }
@@ -2920,7 +3191,6 @@ function jDrill(mode,ccy,yr){
 
   const platformFeeYr=Math.round(p.transactions.filter(t=>t.type==='Platform Fee'&&t.ccy===ccy&&t.date.slice(0,4)===String(yr)).reduce((s,t)=>s+(+t.amount||0),0)*100)/100;
   const totalPnl=realizedPnl;
-  const backBtn='<div class="bb" onclick="window.jSubTab=\'pnl\';renderContent()">← Back to PnL</div>';
 
   // Summary cards
   const cards='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:1rem">'
@@ -2933,34 +3203,46 @@ function jDrill(mode,ccy,yr){
     +'<span class="m" style="font-size:11px;margin-left:auto">'+txs.length+' transaction'+(txs.length!==1?'s':'')+'</span>'
     +'</div>';
 
-  const searchBar='<div class="search-bar"><input id="jd-search" placeholder="Search stock…" oninput="filterJdrillTable()" style="max-width:280px">'
-    +'<span class="m" style="font-size:12px" id="jd-cnt">'+txs.length+' record'+(txs.length!==1?'s':'')+'</span></div>';
-
-  let tbody='';
-  txs.forEach(t=>{
+  const TYPE_COL_J={'Buy':'#3b82f6','Sell':'#00e676'};
+  const TYPE_AV_J={
+    'Buy':{bg:'#1e40af',border:'#3b82f6'},
+    'Sell':{bg:'#7f1d1d',border:'#ef4444'}
+  };
+  const pnlTimelineHtml=_jTimeline(txs,function(t,isLast){
     const amt=t.type==='Sell'?(+t.qty)*(+t.price)-(+t.fee||0):(+t.qty)*(+t.price)+(+t.fee||0);
-    const ds=(t.stock||'').toLowerCase()+' '+t.type.toLowerCase()+' '+(t.note||'').toLowerCase();
-    tbody+='<tr data-jd="'+ds.replace(/"/g,'')+'">'
-      +'<td class="m">'+t.date+'</td>'
-      +'<td>'+bdg(t.type)+'</td>'
-      +'<td style="font-weight:600">'+(t.stock||'—')+'</td>'
-      +'<td class="r m">'+(+t.qty).toLocaleString()+'</td>'
-      +'<td class="r">'+fc(+t.price,t.ccy,4)+'</td>'
-      +'<td class="r m">'+(t.fee>0?fc(+t.fee,t.ccy):'—')+'</td>'
-      +'<td class="r" style="font-weight:600">'+fc(amt,t.ccy)+'</td>'
-      +'<td class="m">'+(t.note||'—')+'</td>'
-      +'</tr>';
+    const av=TYPE_AV_J[t.type]||{bg:'#1f2937',border:'#6b7280'};
+    const col=TYPE_COL_J[t.type]||'#888';
+    const avatarText=(t.stock||'?').slice(0,3).toUpperCase();
+    const avatarFontSize=avatarText.length<=2?'12px':'9px';
+    const {day,mon}=_jDayLabel(t.date);
+    return `<div style="display:flex;align-items:stretch;gap:0;margin-bottom:6px">
+      <div style="display:flex;flex-direction:column;align-items:center;width:46px;flex-shrink:0;padding-top:6px">
+        <div style="font-size:16px;font-weight:700;color:rgba(255,255,255,0.85);line-height:1">${day}</div>
+        <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:.5px">${mon}</div>
+        ${!isLast?`<div style="flex:1;width:1px;background:rgba(255,255,255,0.08);margin-top:6px;min-height:12px"></div>`:''}
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;width:38px;flex-shrink:0;padding-top:4px">
+        <div style="width:32px;height:32px;border-radius:50%;background:${av.bg};border:1.5px solid ${av.border};display:flex;align-items:center;justify-content:center;font-size:${avatarFontSize};font-weight:800;color:#fff;flex-shrink:0;letter-spacing:-0.5px">${avatarText}</div>
+      </div>
+      <div style="flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-top:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;min-width:0;margin-left:4px;margin-bottom:2px">
+        <div style="min-width:0;flex:1">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+            <span style="font-size:13px;font-weight:700;color:#fff">${t.stock||'—'}</span>
+            <span style="font-size:9px;font-weight:600;color:${col};background:${col}18;padding:1px 6px;border-radius:6px;border:1px solid ${col}33;white-space:nowrap">${t.type}</span>
+          </div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.25)">Qty: ${(+t.qty).toLocaleString()} · ${fc(+t.price,t.ccy,4)}${t.fee>0?' · Fee: '+fc(+t.fee,t.ccy):''}</div>
+          ${t.note?`<div style="font-size:10px;color:rgba(255,255,255,0.2);font-style:italic;margin-top:1px">${t.note}</div>`:''}
+        </div>
+        <div style="text-align:right;flex-shrink:0;margin-left:8px">
+          <div style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap">${fc(amt,t.ccy)}</div>
+        </div>
+      </div>
+    </div>`;
   });
-  const tableHtml=txs.length
-    ?'<div style="overflow-x:auto"><table class="tbl" id="jd-table">'
-      +'<thead><tr><th>Date</th><th>Type</th><th>Stock</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Fee</th><th class="r">Total</th><th>Note</th></tr></thead>'
-      +'<tbody>'+tbody+'</tbody>'
-      +'<tfoot><tr><td colspan="5">Realized P&L this year</td><td colspan="2" class="r '+sc(realizedPnl)+'" style="font-weight:700">'+sgn(realizedPnl,ccy)+'</td><td></td></tr></tfoot>'
-      +'</table></div>'
-    :'<p class="m" style="padding:1rem 0;font-size:12px">No Buy/Sell transactions found for this period.</p>';
 
   TAB='journey';
-  $('ct').innerHTML=backBtn+banner+cards+searchBar+tableHtml;
+  if(window.pushNav)window.pushNav(function(){window.jSubTab='pnl';renderContent();});
+  $('ct').innerHTML=banner+cards+pnlTimelineHtml;
   document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab==='journey'));
 }
 
@@ -3190,7 +3472,7 @@ function doRestore(e){
 
 // ── Actions ────────────────────────────────────────────────────────────────────
 function swPf(id){S.activeId=id;TAB='overview';VIEW=null;journeyFilter=null;save();render();}
-function swTab(t){
+function swTab(t){if(window._navStack)window._navStack=[];
   closeSettings();
   TAB=t;VIEW=null;journeyFilter=null;
   // Update nav instantly
@@ -3357,58 +3639,95 @@ function renderOptions(){
     return`<div>${toolbar}${summary}<div style="text-align:center;padding:2rem;font-size:12px;color:rgba(255,255,255,0.3)">No option trades yet. Tap + to add one.</div></div>`;
   }
 
-  // All trades as card rows — open first then closed
-  const allSorted=[
-    ...trades.map((t,i)=>({t,i,open:isOpen(t)})).filter(x=>x.open),
-    ...trades.map((t,i)=>({t,i,open:isOpen(t)})).filter(x=>!x.open)
-  ];
+  // ── Timeline rows — same design as Transactions tab ──
+  const MN=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  function optMonthLabel(ym){const[y,m]=ym.split('-');return MN[parseInt(m,10)-1]+' '+y;}
+  function optDayLabel(d){if(!d)return{day:'—',mon:''};const dt=new Date(d+'T00:00:00');return{day:dt.getDate(),mon:MN[dt.getMonth()]};}
 
-  let openRows='', closedRows='';
+  // Build open section — grouped by openDate month
+  function buildTimeline(list, dateKey, idxBase){
+    const months=[], monthMap={};
+    list.forEach(function({t,i}){
+      const ym=(t[dateKey]||'0000-00').slice(0,7);
+      if(!monthMap[ym]){monthMap[ym]=[];months.push(ym);}
+      monthMap[ym].push({t,i});
+    });
+    let html='';
+    months.forEach(function(ym){
+      html+=`<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:1.5px;padding:14px 0 8px;font-family:'Courier New',monospace">${optMonthLabel(ym)}</div>`;
+      const items=monthMap[ym];
+      html+='<div>';
+      items.forEach(function({t,i},idx){
+        const isLast=idx===items.length-1;
+        const o=parseFloat(t.openValue)||0;
+        const of0=parseFloat(t.openFee)||0;
+        const open=isOpen(t);
+        let pnl=null,pnlPct=null;
+        if(open){
+          const hasMkt=t.mktValue!=null&&t.mktValue!=='';
+          if(hasMkt){pnl=o+(parseFloat(t.mktValue)||0)-of0;pnlPct=o?pnl/Math.abs(o)*100:null;}
+        } else {
+          const c=parseFloat(t.closeValue)||0,cf0=parseFloat(t.closeFee)||0;
+          pnl=o+c-of0-cf0;pnlPct=o?pnl/Math.abs(o)*100:null;
+        }
+        const pnlCol=pnl===null?'rgba(255,255,255,0.4)':pnl>=0?'#4ade80':'#f87171';
+        const avatarBg=open?'#0c2d3f':'#1a1a1a';
+        const avatarBorder=open?'#00d4ff':'rgba(255,255,255,0.2)';
+        const tickerRoot=(t.ticker||'?').split(' ')[0].slice(0,3).toUpperCase();
+        const avatarFontSize=tickerRoot.length<=2?'12px':'9px';
+        const avatarLetter=tickerRoot;
+        const ds=((t.ticker||'').toLowerCase()+' '+(t.note||'').toLowerCase()+' '+(open?'open':'closed'));
+        const dateStr=t[dateKey]||'';
+        const {day,mon}=optDayLabel(dateStr);
+        // Extract ticker root (first word) for display
+        const tickerShort=(t.ticker||'—').split(' ')[0];
+        const spreadType=(t.ticker||'').split(' ').slice(1).join(' ')||'';
+        html+=`<div data-opt-search="${ds}" onclick="showOptDetail(${i})"
+          style="display:flex;align-items:stretch;gap:0;cursor:pointer;margin-bottom:6px">
+          <div style="display:flex;flex-direction:column;align-items:center;width:46px;flex-shrink:0;padding-top:6px">
+            <div style="font-size:16px;font-weight:700;color:rgba(255,255,255,0.85);line-height:1">${day}</div>
+            <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:.5px">${mon}</div>
+            ${!isLast?`<div style="flex:1;width:1px;background:rgba(255,255,255,0.08);margin-top:6px;min-height:12px"></div>`:''}
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;width:38px;flex-shrink:0;padding-top:4px">
+            <div style="width:32px;height:32px;border-radius:50%;background:${avatarBg};border:1.5px solid ${avatarBorder};display:flex;align-items:center;justify-content:center;font-size:${avatarFontSize};font-weight:800;color:#fff;flex-shrink:0;letter-spacing:-0.5px">${avatarLetter}</div>
+          </div>
+          <div style="flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-top:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;min-width:0;margin-left:4px;margin-bottom:2px">
+            <div style="min-width:0;flex:1;overflow:hidden">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;flex-wrap:nowrap">
+                <span style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap">${tickerShort}</span>
+                <span style="font-size:9px;font-weight:600;color:${open?'#00d4ff':'rgba(255,255,255,0.3)'};background:${open?'rgba(0,212,255,0.1)':'rgba(255,255,255,0.05)'};padding:1px 6px;border-radius:6px;border:1px solid ${open?'rgba(0,212,255,0.3)':'rgba(255,255,255,0.12)'};white-space:nowrap;flex-shrink:0">${open?'Open':'Closed'}</span>
+              </div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.25);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${spreadType}</div>
+              ${t.note?`<div style="font-size:10px;color:rgba(255,255,255,0.2);font-style:italic;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.note}</div>`:''}
+            </div>
+            <div style="text-align:right;flex-shrink:0;margin-left:8px">
+              <div class="pv-val" style="font-size:13px;font-weight:700;color:${pnlCol};white-space:nowrap">${pnl!==null?fmtN(pnl):'—'}</div>
+              <div class="pv-hide" style="font-size:13px;color:${pnlCol}">••••</div>
+              ${pnlPct!==null?`<div class="pv-val" style="font-size:10px;color:${pnlCol};opacity:0.8;text-align:right">${pnlPct>=0?'+':''}${pnlPct.toFixed(1)}%</div>`:''}
+            </div>
+          </div>
+        </div>`;
+      });
+      html+='</div>';
+    });
+    return html;
+  }
 
-  allSorted.forEach(function({t,i,open}){
-    const o=parseFloat(t.openValue)||0;
-    const of0=parseFloat(t.openFee)||0;
-    let pnl=null,pnlPct=null;
-    if(open){
-      const hasMkt=t.mktValue!=null&&t.mktValue!=='';
-      if(hasMkt){pnl=o+(parseFloat(t.mktValue)||0)-of0;pnlPct=o?pnl/Math.abs(o)*100:null;}
-    } else {
-      const c=parseFloat(t.closeValue)||0,cf0=parseFloat(t.closeFee)||0;
-      pnl=o+c-of0-cf0;pnlPct=o?pnl/Math.abs(o)*100:null;
-    }
-    const pnlCol=pnl===null?'rgba(255,255,255,0.3)':pnl>=0?'#4ade80':'#f87171';
-    const dotCol=open?'#00d4ff':'rgba(255,255,255,0.3)';
-    const ds=((t.ticker||'').toLowerCase()+' '+(t.note||'').toLowerCase()+' '+(open?'open':'closed'));
-
-    const row=`<div data-opt-search="${ds}" onclick="showOptDetail(${i})"
-      style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;gap:8px">
-      <div style="width:6px;height:6px;border-radius:50%;background:${dotCol};flex-shrink:0"></div>
-      <div style="min-width:0;flex:1;overflow:hidden">
-        <div style="font-size:12px;font-weight:700;color:#fff;font-family:'Courier New',monospace;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px">${t.ticker||'—'}</div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.openDate||'—'}${t.note?' · '+t.note:''}</div>
-      </div>
-      <div style="text-align:right;flex-shrink:0;min-width:80px">
-        <div class="pv-val" style="font-size:12px;font-weight:600;color:${pnlCol};white-space:nowrap">${pnl!==null?fmtN(pnl):'No mkt val'}</div>
-        <div class="pv-hide" style="font-size:12px;color:${pnlCol}">••••</div>
-        ${pnlPct!==null?`<div class="pv-val" style="font-size:9px;color:${pnlCol};opacity:0.8">${pnlPct>=0?'+':''}${pnlPct.toFixed(1)}%</div>`:''}
-      </div>
-      <div style="color:rgba(255,255,255,0.15);font-size:12px;flex-shrink:0">›</div>
-    </div>`;
-
-    if(open) openRows+=row; else closedRows+=row;
-  });
+  const openItems=openT.map((t)=>({t,i:trades.indexOf(t)})).sort((a,b)=>(b.t.openDate||'').localeCompare(a.t.openDate||''));
+  const closedItems=closedT.map((t)=>({t,i:trades.indexOf(t)})).sort((a,b)=>(b.t.closeDate||'').localeCompare(a.t.closeDate||''));
 
   const openSection=openT.length?`
-    <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;padding:10px 0 6px;border-top:1px solid rgba(255,255,255,0.06)">Open Positions · ${openT.length}</div>
-    ${openRows}`:'';
+    <div style="font-size:9px;font-weight:700;color:rgba(0,212,255,0.6);letter-spacing:2px;text-transform:uppercase;padding:10px 0 2px;border-top:1px solid rgba(255,255,255,0.06)">Open Positions · ${openT.length}</div>
+    ${buildTimeline(openItems,'openDate',0)}`:'';
 
   const closedSection=closedT.length?`
     <div onclick="(function(el){var b=el.nextElementSibling;var a=el.querySelector('.caret');b.style.display=b.style.display==='none'?'':'none';a.textContent=b.style.display==='none'?'›':'⌄';})(this)"
-      style="display:flex;align-items:center;gap:8px;padding:10px 0 6px;border-top:1px solid rgba(255,255,255,0.06);cursor:pointer;user-select:none">
-      <span style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;flex:1">Closed Trades · ${closedT.length}</span>
-      <span class="caret" style="font-size:14px;color:rgba(255,255,255,0.25);transition:transform .2s">›</span>
+      style="display:flex;align-items:center;gap:8px;padding:10px 0 4px;border-top:1px solid rgba(255,255,255,0.06);cursor:pointer;user-select:none">
+      <span style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;flex:1">Closed Trades · ${closedT.length}</span>
+      <span class="caret" style="font-size:14px;color:rgba(255,255,255,0.25)">›</span>
     </div>
-    <div style="display:none">${closedRows}</div>`:'';
+    <div style="display:none">${buildTimeline(closedItems,'closeDate',0)}</div>`:'' ;
 
   return`${toolbar}${summary}<div id="opt-rows">${openSection}${closedSection}</div>`;
 }
@@ -3486,6 +3805,7 @@ function showOptDetail(i){
       <button class="pri" onclick="saveOptDetail(${i})">Save</button>
     </div>`;
 
+  if(window.pushNav)window.pushNav(function(){cmm();});
   document.getElementById('mi').innerHTML=html;
   document.getElementById('ov').classList.add('open');
 }
@@ -4435,7 +4755,12 @@ showWelcomeIfFirstLoad();
 
 // ── Swipe left/right to switch tabs ──────────────────────────────
 (function(){
-  const TAB_ORDER=['dashboard','overview','transactions','options','journey','settings'];
+  // ── Nav stack for back-swipe ──
+  window._navStack=[];
+  window.pushNav=function(backFn){window._navStack.push(backFn);};
+  window.goBack=function(){if(window._navStack.length){const fn=window._navStack.pop();fn();}};
+
+  const TAB_ORDER=['dashboard','overview','transactions','options','settings'];
   let _tx=0,_ty=0,_target=null,_tMoved=false;
   document.addEventListener('touchstart',function(e){
     _tx=e.touches[0].clientX;
@@ -4461,7 +4786,7 @@ showWelcomeIfFirstLoad();
     // Don't swipe if settings panel is open — swipe right to close it
     const sp=document.getElementById('settings-panel');
     if(sp&&sp.style.display!=='none'){
-      if(dx>0){closeSettings();TAB='journey';}
+      if(dx>0){closeSettings();TAB='options';renderContent();}
       return;
     }
     // Don't swipe if touch ended over bottom nav
@@ -4471,7 +4796,8 @@ showWelcomeIfFirstLoad();
       const ey=e.changedTouches[0].clientY;
       if(ey>=r.top)return;
     }
-    // Swipe right on detail page = go back
+    // Swipe right = go back (nav stack first, then VIEW, then tab)
+    if(dx>0&&window._navStack&&window._navStack.length){window.goBack();return;}
     if(VIEW&&dx>0){VIEW=null;render();return;}
     // Check if touch started inside a horizontally scrollable container
     let el=target;
@@ -4491,15 +4817,7 @@ showWelcomeIfFirstLoad();
     const idx=TAB_ORDER.indexOf(curTab);
     if(idx===-1)return;
 
-    // Handle sub-tab swiping within journey
-    if(TAB==='journey'){
-      const J_ORDER=['dividend','pnl'];
-      const ji=J_ORDER.indexOf(window.jSubTab||'dividend');
-      if(dx<0&&ji<J_ORDER.length-1){window.jSubTab=J_ORDER[ji+1];renderContent();return;}
-      if(dx>0&&ji>0){window.jSubTab=J_ORDER[ji-1];renderContent();return;}
-      if(dx<0&&ji===J_ORDER.length-1){toggleSettings();return;}
-      if(dx>0&&ji===0){swTab('options');return;}
-    }
+
 
     if(dx<0&&idx<TAB_ORDER.length-1){
       const next=TAB_ORDER[idx+1];
@@ -4590,10 +4908,7 @@ setTimeout(matchScanLine,300);
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3h12z"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
     <span>Options</span>
   </button>
-  <button onclick="swTab('journey')" data-nav="journey" class="bnav-btn">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18 L8 14 L13 17 L21 8"/><polyline points="15,8 21,8 21,14"/><circle cx="3" cy="18" r="1.5" fill="currentColor"/><circle cx="13" cy="17" r="1.5" fill="currentColor"/></svg>
-    <span>Journey</span>
-  </button>
+
   <button onclick="toggleSettings()" class="bnav-btn" id="bnav-settings">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     <span>Settings</span>
