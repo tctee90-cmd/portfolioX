@@ -2327,62 +2327,132 @@ function renderTx(p,filterYrCcy){
     +(_closedAll.length===0?'<div class="m" style="text-align:center;padding:2rem;font-size:12px">No realized P&L yet.</div>':'')
     +'</div>';
 
-  // ── Clean card list — merge txs + deposits sorted by date ──
+  // ── Timeline card list — grouped by month ──
   const TYPE_COL={'Buy':'#3b82f6','Sell':'#00e676','Dividend':'#f59e0b','Platform Fee':'#888','deposit':'#60a5fa','withdrawal':'#c084fc'};
+  // Avatar letter + bg colour per type
+  const TYPE_AVATAR={
+    'Buy':    {letter:'B', bg:'#1e40af', border:'#3b82f6'},
+    'Sell':   {letter:'S', bg:'#7f1d1d', border:'#ef4444'},
+    'Dividend':{letter:'D', bg:'#78350f', border:'#f59e0b'},
+    'Platform Fee':{letter:'P', bg:'#1f2937', border:'#6b7280'},
+    'deposit':{letter:'↑', bg:'#1e3a5f', border:'#60a5fa'},
+    'withdrawal':{letter:'↓', bg:'#3b0764', border:'#c084fc'},
+  };
 
   // Build combined list
   const deps2=(p.deposits||[]).map(function(d,i){return{_isDep:true,_depIdx:i,date:d.date,type:d.type,ccy:d.ccy,amount:d.amount,note:d.note};});
   const combined=[...txs.map(tx=>({...tx,_isDep:false})),...deps2].sort((a,b)=>b.date.localeCompare(a.date));
 
-  html+='<div id="tx-table-wrap">';
+  // Group by YYYY-MM
+  const months=[];
+  const monthMap={};
   combined.forEach(function(item){
-    if(item._isDep){
-      const col=TYPE_COL[item.type]||'#888';
-      const label=item.type==='deposit'?'Deposit':'Withdrawal';
-      const amt=parseFloat(item.amount)||0;
-      const amtStr=fc(amt,item.ccy);
-      const ds=(item.type+' '+(item.note||'').toLowerCase()+' '+item.date).replace(/"/g,'');
-      html+=`<div data-search="${ds}" onclick="openDepositModal(${item._depIdx})"
-        style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;gap:8px">
-        <div style="width:6px;height:6px;border-radius:50%;background:${col};flex-shrink:0;margin-top:1px"></div>
-        <div style="min-width:0;flex:1">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:1px">
-            <span style="font-size:13px;font-weight:600;color:#fff">${item.note||label}</span>
-            <span style="font-size:9px;font-weight:600;color:${col};background:${col}18;padding:1px 5px;border-radius:6px;border:1px solid ${col}33">${label}</span>
-          </div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.3)">${item.date} · ${item.ccy}</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:12px;font-weight:600;color:#fff;white-space:nowrap">${item.type==='deposit'?'+':'-'}${amtStr}</div>
-        </div>
-        <div style="color:rgba(255,255,255,0.15);font-size:12px;flex-shrink:0">›</div>
-      </div>`;
-    } else {
-      const tx=item;
-      const amt=tx.amount!=null?+tx.amount:tx.type==='Sell'?(+tx.qty)*(+tx.price)-(+tx.fee||0):(+tx.qty)*(+tx.price)+(+tx.fee||0);
-      const amtStr=amt>0?fc(amt,tx.ccy):'—';
-      const col=TYPE_COL[tx.type]||'#888';
-      const ds=((tx.stock||'').toLowerCase()+' '+tx.type.toLowerCase()+' '+(tx.note||'').toLowerCase()+' '+tx.date).replace(/"/g,'');
-      const safeId=tx.id.replace(/'/g,"\\'").replace(/"/g,'&quot;');
-      html+=`<div data-search="${ds}" onclick="openTxDetail('${safeId}')"
-        style="display:flex;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;gap:8px">
-        <div style="width:6px;height:6px;border-radius:50%;background:${col};flex-shrink:0;margin-top:1px"></div>
-        <div style="min-width:0;flex:1">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:1px">
-            <span style="font-size:13px;font-weight:600;color:#fff">${tx.stock||'—'}</span>
-            <span style="font-size:9px;font-weight:600;color:${col};background:${col}18;padding:1px 5px;border-radius:6px;border:1px solid ${col}33">${tx.type}</span>
-          </div>
-          <div style="font-size:10px;color:rgba(255,255,255,0.3)">${tx.date}${tx.note?' · '+tx.note:''}</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:12px;font-weight:600;color:#fff;white-space:nowrap">${amtStr}</div>
-          ${tx.qty>0?`<div style="font-size:9px;color:rgba(255,255,255,0.28)">${(+tx.qty).toLocaleString()} shares</div>`:''}
-        </div>
-        <div style="color:rgba(255,255,255,0.15);font-size:12px;flex-shrink:0">›</div>
-      </div>`;
-    }
+    const ym=item.date.slice(0,7);
+    if(!monthMap[ym]){monthMap[ym]=[];months.push(ym);}
+    monthMap[ym].push(item);
   });
-  html+='</div>';
+
+  function fmtMonthLabel(ym){
+    const [y,m]=ym.split('-');
+    const mn=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    return mn[parseInt(m,10)-1]+' '+y;
+  }
+  function fmtDayLabel(dateStr){
+    const d=new Date(dateStr+'T00:00:00');
+    const mn=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    return {day:d.getDate(), mon:mn[d.getMonth()]};
+  }
+
+  html+='<div id="tx-table-wrap">';
+
+  months.forEach(function(ym){
+    // Month header
+    html+=`<div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:1.5px;padding:14px 0 8px;font-family:'Courier New',monospace">${fmtMonthLabel(ym)}</div>`;
+
+    const items=monthMap[ym];
+    // Timeline container
+    html+='<div style="position:relative;padding-left:0">';
+
+    items.forEach(function(item,idx){
+      const isLast=idx===items.length-1;
+
+      if(item._isDep){
+        const col=TYPE_COL[item.type]||'#888';
+        const av=TYPE_AVATAR[item.type]||{letter:'?',bg:'#1f2937',border:'#6b7280'};
+        const label=item.type==='deposit'?'Deposit':'Withdrawal';
+        const amt=parseFloat(item.amount)||0;
+        const amtStr=fc(amt,item.ccy);
+        const ds=(item.type+' '+(item.note||'').toLowerCase()+' '+item.date).replace(/"/g,'');
+        const {day,mon}=fmtDayLabel(item.date);
+        html+=`<div data-search="${ds}" onclick="openDepositModal(${item._depIdx})"
+          style="display:flex;align-items:stretch;gap:0;cursor:pointer;margin-bottom:6px">
+          <!-- Date column -->
+          <div style="display:flex;flex-direction:column;align-items:center;width:46px;flex-shrink:0;padding-top:6px">
+            <div style="font-size:16px;font-weight:700;color:rgba(255,255,255,0.85);line-height:1">${day}</div>
+            <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:.5px">${mon}</div>
+            ${!isLast?`<div style="flex:1;width:1px;background:rgba(255,255,255,0.08);margin-top:6px;min-height:12px"></div>`:''}
+          </div>
+          <!-- Avatar -->
+          <div style="display:flex;flex-direction:column;align-items:center;width:38px;flex-shrink:0;padding-top:4px">
+            <div style="width:32px;height:32px;border-radius:50%;background:${av.bg};border:1.5px solid ${av.border};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">${av.letter}</div>
+          </div>
+          <!-- Content card -->
+          <div style="flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-top:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;min-width:0;margin-left:4px;margin-bottom:2px">
+            <div style="min-width:0">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                <span style="font-size:13px;font-weight:700;color:#fff">${item.note||label}</span>
+                <span style="font-size:9px;font-weight:600;color:${col};background:${col}18;padding:1px 6px;border-radius:6px;border:1px solid ${col}33">${label}</span>
+              </div>
+              <div style="font-size:10px;color:rgba(255,255,255,0.25)">${item.ccy}</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;margin-left:8px">
+              <div style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap">${item.type==='deposit'?'+':'-'}${amtStr}</div>
+            </div>
+          </div>
+        </div>`;
+      } else {
+        const tx=item;
+        const amt=tx.amount!=null?+tx.amount:tx.type==='Sell'?(+tx.qty)*(+tx.price)-(+tx.fee||0):(+tx.qty)*(+tx.price)+(+tx.fee||0);
+        const amtStr=amt>0?fc(amt,tx.ccy):'—';
+        const col=TYPE_COL[tx.type]||'#888';
+        const av=TYPE_AVATAR[tx.type]||{letter:'?',bg:'#1f2937',border:'#6b7280'};
+        const ds=((tx.stock||'').toLowerCase()+' '+tx.type.toLowerCase()+' '+(tx.note||'').toLowerCase()+' '+tx.date).replace(/"/g,'');
+        const safeId=tx.id.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+        const {day,mon}=fmtDayLabel(tx.date);
+        const hasQtyPrice=tx.qty>0&&tx.price>0;
+        html+=`<div data-search="${ds}" onclick="openTxDetail('${safeId}')"
+          style="display:flex;align-items:stretch;gap:0;cursor:pointer;margin-bottom:6px">
+          <!-- Date column -->
+          <div style="display:flex;flex-direction:column;align-items:center;width:46px;flex-shrink:0;padding-top:6px">
+            <div style="font-size:16px;font-weight:700;color:rgba(255,255,255,0.85);line-height:1">${day}</div>
+            <div style="font-size:9px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:.5px">${mon}</div>
+            ${!isLast?`<div style="flex:1;width:1px;background:rgba(255,255,255,0.08);margin-top:6px;min-height:12px"></div>`:''}
+          </div>
+          <!-- Avatar -->
+          <div style="display:flex;flex-direction:column;align-items:center;width:38px;flex-shrink:0;padding-top:4px">
+            <div style="width:32px;height:32px;border-radius:50%;background:${av.bg};border:1.5px solid ${av.border};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">${av.letter}</div>
+          </div>
+          <!-- Content card -->
+          <div style="flex:1;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-top:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;min-width:0;margin-left:4px;margin-bottom:2px">
+            <div style="min-width:0">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                <span style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px">${tx.stock||'—'}</span>
+                <span style="font-size:9px;font-weight:600;color:${col};background:${col}18;padding:1px 6px;border-radius:6px;border:1px solid ${col}33;white-space:nowrap">${tx.type}</span>
+              </div>
+              ${hasQtyPrice?`<div style="font-size:10px;color:rgba(255,255,255,0.25)">Qty: ${(+tx.qty).toLocaleString()} · ${fc(tx.price,tx.ccy)}</div>`:''}
+            </div>
+            <div style="text-align:right;flex-shrink:0;margin-left:8px">
+              <div style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap">${amtStr}</div>
+              ${tx.note?`<div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px">${tx.note}</div>`:''}
+            </div>
+          </div>
+        </div>`;
+      }
+    });
+    html+='</div>'; // end timeline container
+  });
+
+  html+='</div>'; // end tx-table-wrap
 
   if(txs.length===0)html+='<div class="m" style="text-align:center;padding:2rem;font-size:12px">No transactions found.</div>';
   return html;
