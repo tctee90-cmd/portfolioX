@@ -2618,6 +2618,25 @@ function filterTxTable(){
     r.style.display=show?'flex':'none';
     if(show)visible++;
   });
+  // Hide month sections with no visible rows
+  const wrap=document.getElementById('tx-table-wrap');
+  if(wrap){
+    const children=[...wrap.children];
+    let i=0;
+    while(i<children.length){
+      const el=children[i];
+      if(!el.dataset.search){
+        const nextEl=children[i+1];
+        if(nextEl&&nextEl.querySelector&&nextEl.querySelector('[data-search]')){
+          const hasVisible=[...nextEl.querySelectorAll('[data-search]')].some(r=>r.style.display!=='none');
+          el.style.display=hasVisible?'':'none';
+          nextEl.style.display=hasVisible?'':'none';
+          i+=2; continue;
+        }
+      }
+      i++;
+    }
+  }
   if(cnt)cnt.textContent=visible+' TRANSACTIONS';
 }
 
