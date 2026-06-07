@@ -413,6 +413,8 @@ body.privacy-on .pv-hide{height:auto;overflow:visible}
 body.privacy-on svg .pv-val{display:block!important;visibility:hidden!important}
 body.privacy-on svg .pv-hide{display:block!important;visibility:visible!important}
 /* Blur ALL financial numbers across all tabs */
+/* Privacy: numbers/percentages masked via pv-val, pv-num, pv-hide classes */
+
 body.privacy-on .pv-num,
 body.privacy-on .kv,
 body.privacy-on .tbl tbody td,
@@ -433,37 +435,7 @@ body.privacy-on .kc > div:last-child *{
   filter:blur(5px);
   user-select:none;
 }
-/* Blur inline currency values, % badges, bold numbers throughout */
-body.privacy-on #mn span[style*="font-size:18px"],
-body.privacy-on #mn span[style*="font-size:22px"],
-body.privacy-on #mn span[style*="font-size:26px"],
-body.privacy-on #mn div[style*="font-size:18px"],
-body.privacy-on #mn div[style*="font-size:22px"],
-body.privacy-on #mn div[style*="font-size:26px"],
-body.privacy-on #mn div[style*="font-size:20px"],
-body.privacy-on #mn span[style*="font-size:20px"],
-body.privacy-on #mn span[style*="font-size:10px"][style*="color"],
-body.privacy-on #mn span[style*="font-weight:600"],
-body.privacy-on #mn span[style*="font-weight:700"],
-body.privacy-on #mn span[style*="font-weight:800"],
-body.privacy-on #mn span[style*="font-weight:900"],
-body.privacy-on #mn div[style*="font-weight:600"],
-body.privacy-on #mn div[style*="font-weight:700"],
-body.privacy-on #mn div[style*="font-weight:800"],
-body.privacy-on #mn div[style*="font-weight:900"],
-body.privacy-on #mn span[style*="color:var(--green)"],
-body.privacy-on #mn span[style*="color:var(--red)"],
-body.privacy-on #mn span[style*="color:#4caf"],
-body.privacy-on #mn span[style*="color:#f060"],
-body.privacy-on #mn span[style*="color:#00e676"],
-body.privacy-on #mn span[style*="color:#ff4d6d"],
-body.privacy-on #mn div[style*="color:#00e676"],
-body.privacy-on #mn div[style*="color:#ff4d6d"]{
-  color:transparent!important;
-  text-shadow:0 0 7px rgba(180,180,180,0.6);
-  filter:blur(5px);
-  user-select:none;
-}
+/* Privacy: all financial values use pv-val/pv-hide/pv-num classes — see rules above */
 
 /* Tab bar — fixed below header */
 #tb-wrap{background:rgba(2,2,10,0.98);border-bottom:1px solid rgba(255,255,255,0.05);position:fixed;left:0;right:0;z-index:99;backdrop-filter:blur(10px);}
@@ -515,6 +487,12 @@ body.privacy-on #mn div[style*="color:#ff4d6d"]{
 .cash-modal h4{font-size:13px;font-weight:600;margin-bottom:1rem;color:var(--amber)}
 .cash-ccy-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .cash-ccy-row label{font-size:11px;color:var(--t2);min-width:38px}
+
+/* Performance optimisations */
+#ct{-webkit-overflow-scrolling:touch;transform:translateZ(0);}
+.bnav-btn{-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+#bottom-nav{transform:translateZ(0);}
+#tx-table-wrap>div{contain:layout;}
 </style>
 </head>
 <body>
@@ -705,7 +683,7 @@ let journeyFilter=null; // {ccy, yr} for drill from journey
 
 function load(){try{const d=localStorage.getItem(SK);const p=d?JSON.parse(d):defData();if(p.portfolios)p.portfolios.forEach(function(pf,idx){pf.color=PFPAL[idx%PFPAL.length];if(!pf.cashBalances)pf.cashBalances={};if(!pf.deposits)pf.deposits=[];// Ensure all transactions have an id
 if(pf.transactions)pf.transactions.forEach(function(t){if(!t.id)t.id=uid();});});if(!p.pieImages)p.pieImages={};p.portfolios.forEach(pf=>{if(!pf.optionTrades)pf.optionTrades=[];});if(p.optionTrades&&p.optionTrades.length&&p.portfolios.length){p.portfolios[0].optionTrades=p.optionTrades;delete p.optionTrades;}return p;}catch{return defData();}}
-function save(){try{localStorage.setItem(SK,JSON.stringify(S));const t=$('toast');t.classList.add('show');clearTimeout(TT);TT=setTimeout(()=>t.classList.remove('show'),1800);}catch(e){alert('Save failed — localStorage may be full. Try clearing old data.');}}
+function save(){_txCache={key:null,html:null};try{localStorage.setItem(SK,JSON.stringify(S));const t=$('toast');t.classList.add('show');clearTimeout(TT);TT=setTimeout(()=>t.classList.remove('show'),1800);}catch(e){alert('Save failed — localStorage may be full. Try clearing old data.');}}
 function pf(){return S.portfolios.find(p=>p.id===S.activeId)||S.portfolios[0];}
 function stockDict(){const d={};pf().transactions.filter(t=>t.stock&&t.type==='Buy').forEach(t=>{d[t.stock]=t.ccy;});return d;}
 
@@ -1526,8 +1504,10 @@ function renderDashboard(){
       <polyline points="0,8 4,8 6,2 8,10 10,1 12,8 15,8 18,8 20,5 22,8 30,8"
         fill="none" stroke="#00d4ff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
-    <div style="font-size:18px;font-weight:200;color:#fff;line-height:1;letter-spacing:-0.5px">${Math.round(hp)}%</div>
-    <div style="font-size:8px;font-weight:700;color:#00d4ff;letter-spacing:1.5px;text-transform:uppercase">${hlbl}</div>
+    <div class="pv-val" style="font-size:18px;font-weight:200;color:#fff;line-height:1;letter-spacing:-0.5px">${Math.round(hp)}%</div>
+    <div class="pv-hide" style="font-size:18px;color:rgba(255,255,255,0.3);line-height:1">••••</div>
+    <div class="pv-val" style="font-size:8px;font-weight:700;color:#00d4ff;letter-spacing:1.5px;text-transform:uppercase">${hlbl}</div>
+    <div class="pv-hide" style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:1.5px">••••</div>
   </div>`;
 
   // HERO — net worth LEFT, health card RIGHT, minicards below
@@ -1542,7 +1522,7 @@ function renderDashboard(){
           </div>
           <div style="width:24px;height:1px;background:rgba(180,140,50,0.35);margin-top:8px"></div>
         </div>
-        <button onclick="togglePrivacy()" style="background:none;border:none;cursor:pointer;padding:4px;opacity:0.55;line-height:0;flex-shrink:0">
+        <button id="priv-btn" onclick="togglePrivacy()" style="background:none;border:none;cursor:pointer;padding:4px;opacity:0.55;line-height:0;flex-shrink:0;position:relative;z-index:9999">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(200,160,60,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
           </svg>
@@ -1862,8 +1842,10 @@ function renderOverview(p){
       <polyline points="0,8 4,8 6,2 8,10 10,1 12,8 15,8 18,8 20,5 22,8 30,8"
         fill="none" stroke="#00d4ff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
-    <div style="font-size:18px;font-weight:200;color:#fff;line-height:1;letter-spacing:-0.5px">${Math.round(ovHp)}%</div>
-    <div style="font-size:8px;font-weight:700;color:#00d4ff;letter-spacing:1.5px;text-transform:uppercase">${ovHlbl}</div>
+    <div class="pv-val" style="font-size:18px;font-weight:200;color:#fff;line-height:1;letter-spacing:-0.5px">${Math.round(ovHp)}%</div>
+    <div class="pv-hide" style="font-size:18px;color:rgba(255,255,255,0.3);line-height:1">••••</div>
+    <div class="pv-val" style="font-size:8px;font-weight:700;color:#00d4ff;letter-spacing:1.5px;text-transform:uppercase">${ovHlbl}</div>
+    <div class="pv-hide" style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:1.5px">••••</div>
   </div>`;
 
   const topCard=`<div style="margin:0;padding:0 0 12px">
@@ -1876,7 +1858,7 @@ function renderOverview(p){
         </div>
         <div style="width:24px;height:1px;background:rgba(180,140,50,0.35);margin-top:8px"></div>
       </div>
-      <button onclick="togglePrivacy()" style="background:none;border:none;cursor:pointer;padding:4px;opacity:0.55;line-height:0;flex-shrink:0">
+      <button id="priv-btn" onclick="togglePrivacy()" style="background:none;border:none;cursor:pointer;padding:4px;opacity:0.55;line-height:0;flex-shrink:0;position:relative;z-index:9999">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="rgba(200,160,60,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
         </svg>
@@ -1963,11 +1945,22 @@ function renderOverview(p){
         <span style="font-size:11px;font-weight:700;color:${col}">${h.stock.charAt(0).toUpperCase()}</span>
       </div>
       <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:600;color:#fff">${h.stock}</div>
-        <div class="pv-val" style="font-size:10px;color:${tCol};margin-top:1px;white-space:nowrap">${tot2>=0?'+':''}${fc(tot2,h.ccy)}${pct2!==null?' ('+pct2.toFixed(1)+'%)':''}</div>
+        <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:2px">${h.stock}</div>
+        <div style="display:flex;align-items:center;gap:5px;margin-bottom:1px;flex-wrap:wrap">
+          <span style="font-size:9px;color:rgba(255,255,255,0.3)">Avg</span>
+          <span class="pv-val" style="font-size:10px;font-weight:500;color:rgba(255,255,255,0.55);white-space:nowrap">${h.avg>0?fc(h.avg,h.mktCcy||h.ccy):'—'}</span>
+          <span class="pv-hide" style="font-size:10px;color:rgba(255,255,255,0.3)">••</span>
+          <span style="font-size:9px;color:rgba(255,255,255,0.2)">·</span>
+          <span style="font-size:9px;color:rgba(255,255,255,0.3)">Last</span>
+          <span class="pv-val" style="font-size:10px;font-weight:500;color:rgba(255,255,255,0.55);white-space:nowrap">${h.mktP>0?fc(h.mktP,h.mktCcy||h.ccy):'—'}</span>
+          <span class="pv-hide" style="font-size:10px;color:rgba(255,255,255,0.3)">••</span>
+        </div>
+        <div class="pv-val" style="font-size:10px;color:${tCol};white-space:nowrap">${tot2>=0?'+':''}${fc(tot2,h.ccy)}${pct2!==null?' ('+pct2.toFixed(1)+'%)':''}</div>
         <div class="pv-hide" style="font-size:10px;color:${tCol}">••••</div>
       </div>
       <div style="text-align:right;flex-shrink:0">
+        <div class="pv-val" style="font-size:10px;color:rgba(255,255,255,0.35);white-space:nowrap;margin-bottom:1px">${(+h.qty).toLocaleString()} shares</div>
+        <div class="pv-hide" style="font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:1px">••</div>
         <div class="pv-val" style="font-size:13px;font-weight:600;color:#fff;white-space:nowrap">${fc(h.mktVal,h.mktCcy||h.ccy)}</div>
         <div class="pv-hide" style="font-size:13px;color:#fff">••••</div>
         ${h.ccy!=='MYR'?`<div class="pv-val" style="font-size:10px;color:rgba(255,255,255,0.35);margin-top:1px;white-space:nowrap">RM ${myrVal.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div><div class="pv-hide" style="font-size:10px;color:rgba(255,255,255,0.35)">••••</div>`:''}
@@ -2277,7 +2270,7 @@ function renderTx(p,filterYrCcy){
   } else {
     const typeFilterOpts=['','Buy','Sell','Dividend','P&L','Platform Fee','Closed Trades','Cash Flow'].map(t=>'<option value="'+t+'">'+(t||'All types')+'</option>').join('');
     html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:.75rem">'
-      +'<input id="tx-search" placeholder="Search stock, note…" oninput="filterTxTable()" style="flex:1">'
+      +'<input id="tx-search" placeholder="Search stock, note…" oninput="_debounceTx()" style="flex:1">'
       +'<select id="tx-type-filter" onchange="filterTxTable()" style="flex:1">'+typeFilterOpts+'</select>'
       +'<button class="pri sm" id="bat" onclick="omm(\'at\')" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;padding:0;font-size:18px;line-height:1;border-radius:50%;flex-shrink:0">+</button>'
       +'</div>'
@@ -2296,7 +2289,7 @@ function renderTx(p,filterYrCcy){
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:.75rem">'
     +'<div style="padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px">'
     +'<div style="font-size:9px;color:rgba(255,255,255,0.3);margin-bottom:3px">P&L Realized ('+ccy+')</div>'
-    +'<div style="font-size:13px;font-weight:700" class="'+sc(v.r)+'">'+sgn(v.r,ccy)+'</div></div>'
+    +'<div class="pv-val '+sc(v.r)+'" style="font-size:13px;font-weight:700">'+sgn(v.r,ccy)+'</div></div>'
     +'<div style="padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px">'
     +'<div style="font-size:9px;color:rgba(255,255,255,0.3);margin-bottom:3px">Dividends ('+ccy+')</div>'
     +'<div style="font-size:13px;font-weight:700;color:'+(v.d>0?'var(--green)':'var(--t3)')+'">'+( v.d>0?fc(v.d,ccy):'—')+'</div></div>'
@@ -2350,7 +2343,7 @@ function renderTx(p,filterYrCcy){
             <div style="font-size:10px;color:rgba(255,255,255,0.25)">${h.ccy}${h.divs>0?' · Div: '+fc(h.divs,h.ccy):''}</div>
           </div>
           <div style="text-align:right;flex-shrink:0;margin-left:8px">
-            <div style="font-size:13px;font-weight:700;color:${pnlCol};white-space:nowrap" class="pv-val">${sgn(tot,h.ccy)}</div>
+            <div class="pv-val" style="font-size:13px;font-weight:700;color:${pnlCol};white-space:nowrap">${sgn(tot,h.ccy)}</div>
             <div style="font-size:13px;color:${pnlCol}" class="pv-hide">••••</div>
             ${pct!==null?`<div style="font-size:10px;color:${pnlCol};opacity:0.8" class="pv-val">${pct>=0?'+':''}${fp(pct)}</div>`:''}
           </div>
@@ -2402,7 +2395,13 @@ function renderTx(p,filterYrCcy){
     return {day:d.getDate(), mon:mn[d.getMonth()]};
   }
 
-  html+='<div id="tx-table-wrap">';
+  // Use cache if data hasn't changed
+  const _ck=_txCacheKey(p);
+  if(_txCache.key===_ck){
+    html+=_txCache.html;
+  } else {
+    const _txStart=html.length;
+    html+='<div id="tx-table-wrap">';
 
   months.forEach(function(ym){
     // Month header
@@ -2445,7 +2444,7 @@ function renderTx(p,filterYrCcy){
               <div style="font-size:10px;color:rgba(255,255,255,0.25)">${item.ccy}</div>
             </div>
             <div style="text-align:right;flex-shrink:0;margin-left:8px">
-              <div style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap">${item.type==='deposit'?'+':'-'}${amtStr}</div>
+              <div class="pv-val" style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap">${item.type==='deposit'?'+':'-'}${amtStr}</div>
             </div>
           </div>
         </div>`;
@@ -2481,7 +2480,7 @@ function renderTx(p,filterYrCcy){
               ${hasQtyPrice?`<div style="font-size:10px;color:rgba(255,255,255,0.25)">Qty: ${(+tx.qty).toLocaleString()} · ${fc(tx.price,tx.ccy)}</div>`:''}
             </div>
             <div style="text-align:right;flex-shrink:0;margin-left:8px">
-              <div style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap">${amtStr}</div>
+              <div class="pv-val" style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap">${amtStr}</div>
               ${tx.note?`<div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:2px;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px">${tx.note}</div>`:''}
             </div>
           </div>
@@ -2492,6 +2491,8 @@ function renderTx(p,filterYrCcy){
   });
 
   html+='</div>'; // end tx-table-wrap
+    _txCache={key:_ck,html:html.slice(_txStart)};
+  }
 
   if(txs.length===0)html+='<div class="m" style="text-align:center;padding:2rem;font-size:12px">No transactions found.</div>';
   return html;
@@ -2618,6 +2619,19 @@ function filterSdTx(){
   if(c)c.textContent=visible+' transactions';
 }
 
+// Debounce tx search
+let _txDebTimer=null;
+function _debounceTx(){clearTimeout(_txDebTimer);_txDebTimer=setTimeout(filterTxTable,120);}
+
+// Tx render cache — keyed by portfolio id + data hash
+let _txCache={key:null,html:null};
+function _txCacheKey(p){
+  // Use txn count + last tx id + deposit count as a fast hash
+  const txs=p.transactions||[];
+  const deps=p.deposits||[];
+  return p.id+'|'+txs.length+'|'+(txs[txs.length-1]||{}).id+'|'+deps.length;
+}
+
 function filterTxTable(){
   const type=(document.getElementById('tx-type-filter')||{value:''}).value;
   const ct=document.getElementById('tx-closed-view');
@@ -2693,23 +2707,21 @@ function filterTxTable(){
     r.style.display=show?'flex':'none';
     if(show)visible++;
   });
-  // Hide month sections with no visible rows
+  // Hide month headers with no visible rows — batch DOM reads
   const wrap=document.getElementById('tx-table-wrap');
   if(wrap){
-    const children=[...wrap.children];
-    let i=0;
-    while(i<children.length){
-      const el=children[i];
-      if(!el.dataset.search){
-        const nextEl=children[i+1];
-        if(nextEl&&nextEl.querySelector&&nextEl.querySelector('[data-search]')){
-          const hasVisible=[...nextEl.querySelectorAll('[data-search]')].some(r=>r.style.display!=='none');
-          el.style.display=hasVisible?'':'none';
-          nextEl.style.display=hasVisible?'':'none';
-          i+=2; continue;
-        }
-      }
-      i++;
+    // Each month = header div + timeline div (pairs)
+    const ch=wrap.children;
+    for(let i=0;i<ch.length-1;i+=2){
+      const hdr=ch[i],tl=ch[i+1];
+      if(!tl||!tl.querySelector)continue;
+      // Check if any row in this timeline container is visible
+      let any=false;
+      const trows=tl.children;
+      for(let j=0;j<trows.length;j++){if(trows[j].style.display!=='none'){any=true;break;}}
+      const v=any?'':'none';
+      hdr.style.display=v;
+      tl.style.display=v;
     }
   }
   if(cnt)cnt.textContent=visible+' TRANSACTIONS';
@@ -2819,12 +2831,12 @@ function renderPnlInline(){
         </div>
         <div style="flex:1;min-width:0">
           <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:2px">Realized${r.pfYr>0?' · Fees: −'+fc(r.pfYr,ccy):''}  </div>
-          <div style="font-size:12px;font-weight:600;color:${r.realYr>=0?'#4ade80':'#f87171'}" class="pv-val">${r.realYr!==0?sgn(r.realYr,ccy):'—'}</div>
+          <div class="pv-val" style="font-size:12px;font-weight:600;color:${r.realYr>=0?'#4ade80':'#f87171'}">${r.realYr!==0?sgn(r.realYr,ccy):'—'}</div>
           <div style="font-size:12px;color:${r.realYr>=0?'#4ade80':'#f87171'}" class="pv-hide">••••</div>
         </div>
         <div style="text-align:right;flex-shrink:0">
           <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:2px">Net P&L</div>
-          <div style="font-size:13px;font-weight:700;color:${netCol}" class="pv-val">${sgn(net,ccy)}</div>
+          <div class="pv-val" style="font-size:13px;font-weight:700;color:${netCol}">${sgn(net,ccy)}</div>
           <div style="font-size:13px;color:${netCol}" class="pv-hide">••••</div>
         </div>
         <div style="color:rgba(255,255,255,0.15);font-size:12px;flex-shrink:0">›</div>
@@ -2974,9 +2986,9 @@ function renderClosed(p){
   const _clCards=Object.entries(_clByCcy).map(([c,v])=>{
     return '<div style="display:flex;gap:12px;padding:6px 12px;background:rgba(0,212,255,0.04);border-radius:var(--r);border:1px solid rgba(255,255,255,.15)">'
       +'<div><div style="font-size:10px;color:var(--t2);letter-spacing:.3px;margin-bottom:2px">'+c+' Realized</div>'
-      +'<div style="font-size:13px;font-weight:700" class="'+sc(v.r)+'">'+sgn(v.r,c)+'</div></div>'
+      +'<div class="pv-val '+sc(v.r)+'" style="font-size:13px;font-weight:700">'+sgn(v.r,c)+'</div></div>'
       +(v.d>0?'<div><div style="font-size:10px;color:var(--t2);letter-spacing:.3px;margin-bottom:2px">Dividends</div>'
-      +'<div style="font-size:13px;font-weight:700;color:var(--green)">'+fc(v.d,c)+'</div></div>':'')
+      +'<div class="pv-val" style="font-size:13px;font-weight:700;color:var(--green)">'+fc(v.d,c)+'</div></div>':'')
       +'</div>';
   }).join('');
   const _clSummary=_clCards?`<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:.75rem">${_clCards}</div>`:'';
@@ -3037,7 +3049,7 @@ function renderJourney(p){
           </div>
           <div style="flex:1;min-width:0">
             <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:2px">Dividends received</div>
-            <div style="font-size:13px;font-weight:700;color:#4ade80">+${fc(r.divYr,ccy)}</div>
+            <div class="pv-val" style="font-size:13px;font-weight:700;color:#4ade80">+${fc(r.divYr,ccy)}</div>
           </div>
           <div style="color:rgba(255,255,255,0.15);font-size:12px;flex-shrink:0">›</div>
         </div>`;
@@ -3071,7 +3083,7 @@ function renderJourney(p){
           </div>
           <div style="text-align:right;flex-shrink:0">
             <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:2px">Net P&L</div>
-            <div style="font-size:13px;font-weight:700;color:${netCol}">${sgn(net,ccy)}</div>
+            <div class="pv-val" style="font-size:13px;font-weight:700;color:${netCol}">${sgn(net,ccy)}</div>
           </div>
           <div style="color:rgba(255,255,255,0.15);font-size:12px;flex-shrink:0">›</div>
         </div>`;
@@ -3117,7 +3129,7 @@ function jDrill(mode,ccy,yr){
     const totalDiv=txs.reduce((s,t)=>s+(t.amount!=null?+t.amount:0),0);
     const banner='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:.75rem;padding:.75rem 1rem;background:rgba(0,230,118,0.06);border-radius:var(--r);border-left:3px solid rgba(0,230,118,0.5)">'
       +'<span style="font-size:13px;font-weight:600;color:var(--green)">Dividends — '+ccy+' '+yr+'</span>'
-      +'<span style="font-size:15px;font-weight:700;color:var(--green)">+'+fc(totalDiv,ccy)+'</span>'
+      +'<span class="pv-val" style="font-size:15px;font-weight:700;color:var(--green)">+'+fc(totalDiv,ccy)+'</span>'
       +'</div>';
 
     const timelineHtml=_jTimeline(txs,function(t,isLast){
@@ -3143,7 +3155,7 @@ function jDrill(mode,ccy,yr){
             ${t.note?`<div style="font-size:10px;color:rgba(255,255,255,0.25);font-style:italic">${t.note}</div>`:''}
           </div>
           <div style="text-align:right;flex-shrink:0;margin-left:8px">
-            <div style="font-size:13px;font-weight:700;color:#4ade80;white-space:nowrap">+${fc(amt,ccy)}</div>
+            <div class="pv-val" style="font-size:13px;font-weight:700;color:#4ade80;white-space:nowrap">+${fc(amt,ccy)}</div>
           </div>
         </div>
       </div>`;
@@ -3234,7 +3246,7 @@ function jDrill(mode,ccy,yr){
           ${t.note?`<div style="font-size:10px;color:rgba(255,255,255,0.2);font-style:italic;margin-top:1px">${t.note}</div>`:''}
         </div>
         <div style="text-align:right;flex-shrink:0;margin-left:8px">
-          <div style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap">${fc(amt,t.ccy)}</div>
+          <div class="pv-val" style="font-size:13px;font-weight:700;color:#fff;white-space:nowrap">${fc(amt,t.ccy)}</div>
         </div>
       </div>
     </div>`;
@@ -3631,7 +3643,7 @@ function renderOptions(){
 
   // Search + add button
   const toolbar=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-    <input id="opt-all-search" placeholder="Search ticker, note…" oninput="filterOptsAll()" style="flex:1">
+    <input id="opt-all-search" placeholder="Search ticker, note…" oninput="clearTimeout(window._optDeb);window._optDeb=setTimeout(filterOptsAll,120)" style="flex:1">
     <button class="pri sm" onclick="addOpt()" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;padding:0;font-size:18px;line-height:1;border-radius:50%;flex-shrink:0">+</button>
   </div>`;
 
@@ -3791,12 +3803,10 @@ function showOptDetail(i){
       ${fld('Open Date','Date trade was opened','openDate',t.openDate||'','date')}
       ${fld('Open Value','Received = negative · Paid = positive','openValue',t.openValue||'','number')}
       ${fld('Open Fee','Positive number (e.g. 6.69)','openFee',t.openFee||'','number')}
-      ${isOpen
-        ? fld('Market Value','Current mkt value · positive or negative','mktValue',t.mktValue||'','number')
-        : fld('Close Date','Date trade was closed','closeDate',t.closeDate||'','date')
-          + fld('Close Value','Paid to close = negative','closeValue',t.closeValue||'','number')
-          + fld('Close Fee','Positive number (e.g. 6.69)','closeFee',t.closeFee||'','number')
-      }
+      ${fld('Market Value','Current mkt value (open trades)','mktValue',t.mktValue||'','number')}
+      ${fld('Close Date','Date trade was closed','closeDate',t.closeDate||'','date')}
+      ${fld('Close Value','Received = positive · Paid = negative','closeValue',t.closeValue||'','number')}
+      ${fld('Close Fee','Positive number (e.g. 6.69)','closeFee',t.closeFee||'','number')}
       ${fld('Note','Expiry date, strategy, memo','note',t.note||'')}
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
@@ -4599,16 +4609,11 @@ let _privacyOn=false;
 function togglePrivacy(){
   _privacyOn=!_privacyOn;
   document.body.classList.toggle('privacy-on',_privacyOn);
-  // Also update eye icon stroke to show state
-  const eyeBtn=document.querySelector('button[title="Toggle privacy"] svg');
-  if(eyeBtn){
-    if(_privacyOn){
-      // Show eye-off (crossed out)
-      eyeBtn.innerHTML='<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
-    } else {
-      eyeBtn.innerHTML='<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-    }
-  }
+  document.querySelectorAll('button[id="priv-btn"] svg').forEach(function(svg){
+    svg.innerHTML=_privacyOn
+      ?'<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+      :'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  });
 }
 // Privacy toggle - only on the 2 main cards (gauge + person)
 function toggleMini(id){
@@ -4761,57 +4766,63 @@ showWelcomeIfFirstLoad();
   window.goBack=function(){if(window._navStack.length){const fn=window._navStack.pop();fn();}};
 
   const TAB_ORDER=['dashboard','overview','transactions','options','settings'];
-  let _tx=0,_ty=0,_target=null,_tMoved=false;
+  let _tx=0,_ty=0,_target=null,_active=false;
+
   document.addEventListener('touchstart',function(e){
+    if(e.touches.length!==1)return; // ignore multi-touch
     _tx=e.touches[0].clientX;
     _ty=e.touches[0].clientY;
     _target=e.target;
-    _tMoved=false;
+    _active=true;
   },{passive:true});
-  document.addEventListener('touchmove',function(e){
-    _tMoved=true;
-  },{passive:true});
+
   document.addEventListener('touchcancel',function(){
-    _tx=0;_ty=0;_target=null;_tMoved=false;
+    _active=false;_tx=0;_ty=0;_target=null;
   },{passive:true});
+
   document.addEventListener('touchend',function(e){
-    const dx=e.changedTouches[0].clientX-_tx;
-    const dy=e.changedTouches[0].clientY-_ty;
-    // Reset state immediately
+    if(!_active)return;
+    const ex=e.changedTouches[0].clientX;
+    const ey=e.changedTouches[0].clientY;
+    const dx=ex-_tx;
+    const dy=ey-_ty;
+    const adx=Math.abs(dx);
+    const ady=Math.abs(dy);
     const target=_target;
-    _tx=0;_ty=0;_target=null;
-    if(!_tMoved)return; // tap, not swipe
-    _tMoved=false;
-    if(Math.abs(dx)<60||Math.abs(dy)>Math.abs(dx)*0.5)return;
-    // Don't swipe if settings panel is open — swipe right to close it
+    _active=false;_tx=0;_ty=0;_target=null;
+
+    // Must be clearly horizontal: min 50px, and more horizontal than vertical
+    if(adx<50||ady>adx*0.6)return;
+
+    // Don't swipe if touch ended over bottom nav
+    const bn=document.getElementById('bottom-nav');
+    if(bn&&ey>=bn.getBoundingClientRect().top)return;
+
+    // Settings panel open — swipe right closes it
     const sp=document.getElementById('settings-panel');
     if(sp&&sp.style.display!=='none'){
       if(dx>0){closeSettings();TAB='options';renderContent();}
       return;
     }
-    // Don't swipe if touch ended over bottom nav
-    const bn=document.getElementById('bottom-nav');
-    if(bn){
-      const r=bn.getBoundingClientRect();
-      const ey=e.changedTouches[0].clientY;
-      if(ey>=r.top)return;
-    }
-    // Swipe right = go back (nav stack first, then VIEW, then tab)
-    if(dx>0&&window._navStack&&window._navStack.length){window.goBack();return;}
-    if(VIEW&&dx>0){VIEW=null;render();return;}
+
     // Check if touch started inside a horizontally scrollable container
     let el=target;
     while(el&&el!==document.body){
-      const style=window.getComputedStyle(el);
-      const overflowX=style.overflowX;
-      if(overflowX==='auto'||overflowX==='scroll'){
-        const canScrollLeft=el.scrollLeft>0;
-        const canScrollRight=el.scrollLeft+el.clientWidth<el.scrollWidth-1;
-        if(dx<0&&canScrollRight)return;
-        if(dx>0&&canScrollLeft)return;
+      const ovx=window.getComputedStyle(el).overflowX;
+      if(ovx==='auto'||ovx==='scroll'){
+        const canLeft=el.scrollLeft>0;
+        const canRight=el.scrollLeft+el.clientWidth<el.scrollWidth-1;
+        if(dx<0&&canRight)return;
+        if(dx>0&&canLeft)return;
         break;
       }
       el=el.parentElement;
+    }
+
+    // Swipe RIGHT — back navigation (nav stack → VIEW → tab switch)
+    if(dx>0){
+      if(window._navStack&&window._navStack.length){window.goBack();return;}
+      if(VIEW){VIEW=null;render();return;}
     }
     const curTab=TAB==='settings'?'settings':TAB;
     const idx=TAB_ORDER.indexOf(curTab);
@@ -4869,7 +4880,6 @@ function fixLayout(){
 fixLayout();
 window.addEventListener('resize',fixLayout);
 setTimeout(fixLayout,200);
-setTimeout(fixLayout,500);
 renderTabMenu();
 setTimeout(function(){document.querySelectorAll('#bottom-nav button[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===TAB));},100);
 function matchScanLine(){
@@ -4881,7 +4891,7 @@ setTimeout(matchScanLine,300);
 </script>
 
 <!-- Bottom tab bar -->
-<div id="bottom-nav" style="position:fixed;bottom:0;left:0;right:0;z-index:250;
+<div id="bottom-nav" style="will-change:transform;position:fixed;bottom:0;left:0;right:0;z-index:250;
   background:rgba(4,4,10,0.96);
   backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);
   border-top:1px solid rgba(255,255,255,0.08);
