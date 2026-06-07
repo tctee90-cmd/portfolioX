@@ -358,12 +358,7 @@ button.ghost{border-color:rgba(255,255,255,0.06);color:var(--t2);background:tran
 
 /* ── Architectural sphere animations ── */
 /* Orb float — disabled per user request */
-.orb-float-0,.orb-float-1,.orb-float-2{animation:none}
-@keyframes orbGlowPulse{0%,100%{opacity:0.85}50%{opacity:1}}
-.orb-float-0 > div{animation:orbGlowPulse 4s 0s ease-in-out infinite}
-.orb-float-1 > div{animation:orbGlowPulse 5s 1.2s ease-in-out infinite}
-.orb-float-2 > div{animation:orbGlowPulse 6s 0.6s ease-in-out infinite}
-@keyframes orbPulse{0%,100%{opacity:0.5}50%{opacity:1}}
+
 @keyframes coreBreath{0%,100%{opacity:0.7}50%{opacity:1}}
 @keyframes orbRingScan{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 @keyframes svgShine0{0%,100%{transform:translateX(-140%) rotate(38deg)}50%{transform:translateX(200%) rotate(38deg)}}
@@ -401,8 +396,7 @@ body.privacy-on .pv-networth-wrap .pv-hide{visibility:visible}
 body.privacy-on .pv-val:not(.pv-networth-wrap .pv-val){visibility:hidden!important}
 body.privacy-on .pv-hide:not(.pv-networth-wrap .pv-hide){visibility:visible!important}
 body.privacy-on span.pv-hide:not(.pv-networth-wrap .pv-hide){visibility:visible!important}
-body.privacy-on .orb-num.pv-val{visibility:hidden!important}
-body.privacy-on .orb-num.pv-hide{visibility:visible!important}
+
 /* pv-hide always takes up space but is invisible by default */
 .pv-hide{visibility:hidden;height:0;overflow:hidden;margin:0;padding:0}
 body.privacy-on .pv-hide{height:auto;overflow:visible}
@@ -487,6 +481,16 @@ body.privacy-on .kc > div:last-child *{
 .cash-modal h4{font-size:13px;font-weight:600;margin-bottom:1rem;color:var(--amber)}
 .cash-ccy-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .cash-ccy-row label{font-size:11px;color:var(--t2);min-width:38px}
+
+/* Dashboard card animations */
+@keyframes dashPip0{0%,100%{box-shadow:0 0 4px #00c8ff,0 0 8px #00c8ff}50%{box-shadow:0 0 10px #00c8ff,0 0 24px #00c8ff,0 0 40px #00c8ff}}
+@keyframes dashPip1{0%,100%{box-shadow:0 0 4px rgba(226,232,240,.8),0 0 8px rgba(226,232,240,.8)}50%{box-shadow:0 0 10px rgba(226,232,240,.8),0 0 20px rgba(226,232,240,.8)}}
+@keyframes dashPip2{0%,100%{box-shadow:0 0 4px rgba(100,116,139,.9),0 0 8px rgba(100,116,139,.9)}50%{box-shadow:0 0 10px rgba(100,116,139,.9),0 0 20px rgba(100,116,139,.9)}}
+@keyframes dashPip3{0%,100%{box-shadow:0 0 4px #f59e0b,0 0 8px #f59e0b}50%{box-shadow:0 0 10px #f59e0b,0 0 24px #f59e0b,0 0 40px #f59e0b}}
+@keyframes pnlFlash0{0%,100%{opacity:1}50%{opacity:.6}}
+@keyframes pnlFlash1{0%,100%{opacity:1}45%{opacity:.6}}
+@keyframes pnlFlash2{0%,100%{opacity:1}40%{opacity:.6}}
+@keyframes pnlFlash3{0%,100%{opacity:1}55%{opacity:.6}}
 
 /* Performance optimisations */
 #ct{-webkit-overflow-scrolling:touch;transform:translateZ(0);}
@@ -1327,162 +1331,118 @@ function renderDashboard(){
     },
   ];
 
-  function makeOrb(d,idx,sz){
-    const t=THEMES[idx%THEMES.length];
-    const fPct=sz>=200?46:sz>=145?31:23;
-    const fName=sz>=200?10:9;
-    const fRm=sz>=200?11:sz>=145?10:9;
-    const uid=`o${idx}${sz}`;
-    const pct=[0,11,24,40,58,76,100];
-    const stops=t.g.map((c,i)=>`<stop offset="${pct[i]}%" stop-color="${c}"/>`).join('');
+  // ── Style D: Gauge / Dial Cards ──
+  const GAUGE_ACCENTS=['#f59e0b','#4ade80','#818cf8','#f87171','#00d4ff','#fb923c'];
+  const CIRC=2*Math.PI*26; // circumference of r=26 circle
 
-    const gnd=`
-      <div style="position:absolute;bottom:-${Math.round(sz*.04)}px;left:50%;transform:translateX(-50%);
-        width:${Math.round(sz*.5)}px;height:${Math.round(sz*.03)}px;
-        background:radial-gradient(ellipse,rgba(0,0,0,0.9) 0%,transparent 70%);
-        pointer-events:none"></div>
-      <div style="position:absolute;bottom:-${Math.round(sz*.2)}px;left:50%;transform:translateX(-50%);
-        width:${Math.round(sz*1.1)}px;height:${Math.round(sz*.16)}px;
-        background:radial-gradient(ellipse,rgba(${t.gRgb},0.4) 0%,transparent 60%);
-        pointer-events:none"></div>`;
+  // ── NEW DASHBOARD — WOW strip design ──
+  const STRIP_ACCENTS=[
+    {c:'#00c8ff',c2:'#0088ff',gr:'linear-gradient(150deg,#7dd3fc,#00c8ff,#0066ff)',pip:'rgba(0,200,255,.8)',neg:true},
+    {c:'rgba(226,232,240,.8)',c2:'#94a3b8',gr:'linear-gradient(150deg,#fff,#e2e8f0,#94a3b8)',pip:'rgba(226,232,240,.6)',neg:false},
+    {c:'rgba(100,116,139,.9)',c2:'#334155',gr:'linear-gradient(150deg,#94a3b8,#64748b,#334155)',pip:'rgba(100,116,139,.7)',neg:false},
+    {c:'#f59e0b',c2:'#f97316',gr:'linear-gradient(150deg,#fbbf24,#f59e0b,#f97316)',pip:'rgba(245,158,11,.8)',neg:false},
+  ];
 
-    // SVG sphere with maximum contrast — brightest spec, deepest shadow
-    const svg=`<svg xmlns="http://www.w3.org/2000/svg"
-      width="${sz}" height="${sz}" viewBox="0 0 100 100"
-      style="position:absolute;inset:0;display:block;border-radius:50%">
-      <defs>
-        <!-- Main body: extreme contrast, bright top-left to near-black -->
-        <radialGradient id="b${uid}" cx="32%" cy="26%" r="82%">${stops}</radialGradient>
-        <!-- Shadow: deep black bottom-right hemisphere -->
-        <radialGradient id="s${uid}" cx="70%" cy="72%" r="66%">
-          <stop offset="0%"  stop-color="${t.shadow}"/>
-          <stop offset="22%" stop-color="rgba(0,0,0,0.8)"/>
-          <stop offset="45%" stop-color="${t.shadow2}"/>
-          <stop offset="72%" stop-color="rgba(0,0,0,0.08)"/>
-          <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
-        </radialGradient>
-        <!-- Specular: pure white pinpoint top-left -->
-        <radialGradient id="h${uid}" cx="27%" cy="21%" r="22%">
-          <stop offset="0%"  stop-color="${t.spec}"/>
-          <stop offset="25%" stop-color="${t.spec}"/>
-          <stop offset="55%" stop-color="${t.spec2}"/>
-          <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
-        </radialGradient>
-        <!-- Secondary fill light left edge -->
-        <radialGradient id="f${uid}" cx="12%" cy="54%" r="30%">
-          <stop offset="0%"  stop-color="rgba(${t.gRgb},0.28)"/>
-          <stop offset="60%" stop-color="rgba(${t.gRgb},0.06)"/>
-          <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
-        </radialGradient>
-        <!-- Rim: bright thin edge all around -->
-        <radialGradient id="r${uid}" cx="50%" cy="50%" r="50%">
-          <stop offset="70%" stop-color="rgba(0,0,0,0)"/>
-          <stop offset="86%" stop-color="${t.rim2}"/>
-          <stop offset="94%" stop-color="${t.rim}"/>
-          <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
-        </radialGradient>
-        <clipPath id="c${uid}"><circle cx="50" cy="50" r="49.5"/></clipPath>
-      </defs>
-      <g clip-path="url(#c${uid})">
-        <circle cx="50" cy="50" r="50" fill="url(#b${uid})"/>
-        <circle cx="50" cy="50" r="50" fill="url(#s${uid})"/>
-        <circle cx="50" cy="50" r="50" fill="url(#f${uid})"/>
-        <circle cx="50" cy="50" r="50" fill="url(#h${uid})"/>
-        <circle cx="50" cy="50" r="50" fill="url(#r${uid})"/>
-      </g>
-      <!-- Outer precision bevel -->
-      <circle cx="50" cy="50" r="49.3" fill="none" stroke="${t.rim}" stroke-width="0.7" opacity="0.75"/>
-      <circle cx="50" cy="50" r="48.4" fill="none" stroke="rgba(0,0,0,0.6)" stroke-width="0.5"/>
-    </svg>`;
+  function makeCard(d,idx){
+    const A=STRIP_ACCENTS[idx%STRIP_ACCENTS.length];
+    const sum=getSummary(d.pf0);
+    const holdings=getHoldings(d.pf0,true);
+    const ccys=Object.keys(sum.mktVal).sort((a,b)=>(sum.mktVal[b]||0)-(sum.mktVal[a]||0));
+    const ccy=ccys[0]||'MYR';
+    const mv=sum.mktVal[ccy]||0;
+    const co=sum.cost[ccy]||0;
+    const unreal=(sum.unreal||{})[ccy]||0;
+    const divs=(sum.divs||{})[ccy]||0;
+    const real=(sum.realized||{})[ccy]||0;
+    const pf=(sum.platformFees||{})[ccy]||0;
+    const netPnl=Math.round((unreal+divs+real-pf)*100)/100;
+    const pct=co>0?netPnl/co*100:null;
+    const cash=(d.pf0.cashBalances&&d.pf0.cashBalances[ccy])||0;
+    const total=mv+cash;
+    const alloc=Math.min(d.alloc,100);
+    const retCol=netPnl>=0?'#86efac':'#fca5a5';
 
-    // Icon: pixel-sharp filled shapes
-    const iSz=sz>=200?24:sz>=145?18:15;
-    const icon=`<svg width="${iSz}" height="${iSz}" viewBox="0 0 24 24"
-      style="display:block;margin:0 auto ${sz>=200?7:4}px;flex-shrink:0;
-        filter:drop-shadow(0 1px 2px rgba(0,0,0,1))">
-      <circle cx="12" cy="8" r="4" fill="#fff"/>
-      <path d="M4 21 C4 15.5 7.6 12.5 12 12.5 C16.4 12.5 20 15.5 20 21 Z" fill="#fff"/>
-    </svg>`;
+    // Arc: full circle, alloc fill
+    const R=19,CIRC2=2*Math.PI*R;
+    const filled=(alloc/100)*CIRC2;
 
-    return `<div class="orb-float-${idx%3}" style="position:relative;flex-shrink:0">
-      ${gnd}
-      <div onclick="goPortfolio('${d.pf0.id}')"
-        style="cursor:pointer;width:${sz}px;height:${sz}px;border-radius:50%;
-          position:relative;overflow:visible;
-          display:flex;flex-direction:column;align-items:center;justify-content:center;
-          -webkit-tap-highlight-color:transparent;
-          background:${t.bg};
-          box-shadow:
-            0 0 ${Math.round(sz*.2)}px rgba(${t.gRgb},0.5),
-            0 0 ${Math.round(sz*.45)}px rgba(${t.gRgb},0.22),
-            0 ${Math.round(sz*.05)}px ${Math.round(sz*.12)}px rgba(0,0,0,1),
-            0 ${Math.round(sz*.12)}px ${Math.round(sz*.28)}px rgba(0,0,0,0.85),
-            0 ${Math.round(sz*.22)}px ${Math.round(sz*.45)}px rgba(0,0,0,0.55),
-            inset 0 0 ${Math.round(sz*.3)}px rgba(0,0,0,0.7);"
-        onmousedown="this.style.transform='scale(0.95)';this.style.transition='transform 0.1s ease'"
-        ontouchstart="this.style.transform='scale(0.95)';this.style.transition='transform 0.1s ease'"
-        onmouseup="this.style.transform='scale(1)';this.style.transition='transform 0.45s cubic-bezier(0.34,1.4,0.64,1)'"
-        ontouchend="this.style.transform='scale(1)';this.style.transition='transform 0.45s cubic-bezier(0.34,1.4,0.64,1)'">
-        ${svg}
-        <div style="position:relative;z-index:10;text-align:center;width:80%;box-sizing:border-box">
-          ${icon}
-          <div style="font-size:${fName}px;font-weight:600;
-            color:rgba(255,255,255,0.95);
-            letter-spacing:2.5px;text-transform:uppercase;
-            font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;
-            margin-bottom:${sz>=200?3:2}px;
-            text-shadow:0 1px 0 rgba(0,0,0,1),0 2px 12px rgba(0,0,0,1)">${d.pf0.name}</div>
-          <div style="position:relative;line-height:1;text-align:center">
-            <div class="pv-val orb-num" style="
-              font-size:${fPct}px;font-weight:200;color:#fff;
-              line-height:1;letter-spacing:-1.5px;
-              font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Helvetica Neue',sans-serif;
-              text-shadow:0 2px 0 rgba(0,0,0,1),0 4px 16px rgba(0,0,0,0.9)">${d.alloc.toFixed(1)}%</div>
-            <div class="pv-hide orb-num" style="font-size:${fPct}px;color:#fff;font-weight:200;letter-spacing:-1.5px">••••</div>
+    return `<div onclick="goPortfolio('${d.pf0.id}')"
+      style="display:flex;align-items:center;gap:12px;
+        border-radius:14px;padding:11px 14px;cursor:pointer;
+        position:relative;overflow:hidden;
+        background:rgba(255,255,255,.025);
+        border:1px solid rgba(255,255,255,.1);
+        margin-bottom:8px;
+        -webkit-tap-highlight-color:transparent;
+        transition:transform .18s cubic-bezier(.34,1.56,.64,1);margin-bottom:6px"
+      onmousedown="this.style.background='rgba(255,255,255,.05)'"
+      ontouchstart="this.style.background='rgba(255,255,255,.05)'"
+      onmouseup="this.style.background='rgba(255,255,255,.025)'"
+      ontouchend="this.style.background='rgba(255,255,255,.025)'">
+      <!-- top line -->
+      <div style="position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,${A.c} 0%,${A.c2} 50%,transparent 100%);opacity:.9"></div>
+      <!-- bottom edge -->
+      <div style="position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,${A.c},transparent 40%);opacity:.2"></div>
+      <!-- left glow bar -->
+      <div style="position:absolute;top:0;bottom:0;left:0;width:2.5px;background:${A.c};box-shadow:0 0 8px ${A.c},0 0 20px ${A.c}"></div>
+      <!-- corner brackets -->
+      <div style="position:absolute;top:4px;left:6px;width:8px;height:8px;border-top:1.5px solid ${A.c};border-left:1.5px solid ${A.c};opacity:.7"></div>
+      <div style="position:absolute;bottom:4px;right:6px;width:8px;height:8px;border-bottom:1.5px solid ${A.c};border-right:1.5px solid ${A.c};opacity:.7"></div>
+
+      <!-- rank -->
+      <div style="width:22px;flex-shrink:0;font-size:10px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:.5px;text-align:center;position:relative;z-index:1">${String(idx+1).padStart(2,'0')}</div>
+
+      <!-- arc gauge -->
+      <div style="position:relative;width:46px;height:46px;flex-shrink:0;z-index:1">
+        <svg width="46" height="46" viewBox="0 0 46 46">
+          <circle cx="23" cy="23" r="19" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="5"/>
+          <circle cx="23" cy="23" r="19" fill="none" stroke="${A.c}" stroke-width="5"
+            stroke-linecap="round" transform="rotate(-90 23 23)"
+            stroke-dasharray="${filled.toFixed(1)} ${(CIRC2-filled).toFixed(1)}"/>
+          <circle cx="23" cy="23" r="12" fill="rgba(0,0,0,.2)" stroke="${A.c}" stroke-width=".4" stroke-opacity=".2"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <div class="pv-val" style="font-size:10px;font-weight:900;color:${A.c};line-height:1">${alloc.toFixed(0)}%</div>
+          <div class="pv-hide" style="font-size:10px;color:${A.c}">••</div>
+          
+        </div>
+      </div>
+
+      <!-- info -->
+      <div style="flex:1;min-width:0;z-index:1">
+        <div style="font-size:18px;font-weight:900;letter-spacing:-.8px;color:#fff;line-height:1;margin-bottom:3px">${d.pf0.name}</div>
+        <!-- Value -->
+        <div class="pv-val" style="font-size:13px;font-weight:600;color:rgba(255,255,255,.75);letter-spacing:-.2px">${fc(total,ccy)}</div>
+        <div class="pv-hide" style="font-size:13px;color:rgba(255,255,255,.4)">••••••</div>
+
+        <!-- animated allocation bar -->
+        <div style="height:2px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:9px;position:relative;overflow:visible">
+          <div class="pv-val dash-bar" data-w="${alloc.toFixed(1)}"
+            style="height:100%;border-radius:2px;width:0;background:linear-gradient(90deg,${A.c}55,${A.c});position:relative;transition:width 1.2s cubic-bezier(.4,0,.2,1)">
+            <div style="position:absolute;right:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:${A.c};border:1.5px solid #04040c;animation:dashPip${idx} 2s ease-in-out infinite"></div>
           </div>
-          <div style="width:${sz>=200?22:15}px;height:1px;margin:${sz>=200?7:4}px auto;
-            background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent);
-            box-shadow:0 0 8px rgba(255,255,255,0.4)"></div>
-          <div style="position:relative;text-align:center">
-            <div class="pv-val orb-num" style="
-              font-size:${fRm}px;font-weight:500;
-              color:rgba(255,255,255,0.88);
-              font-family:-apple-system,'Helvetica Neue',monospace;
-              letter-spacing:0.2px;
-              text-shadow:0 1px 0 rgba(0,0,0,1)">
-              RM ${d.pfMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}
-            </div>
-            <div class="pv-hide orb-num" style="font-size:${fRm}px;color:rgba(255,255,255,0.88)">••••••</div>
-          </div>
+        </div>
+      </div>
+
+      <!-- right: % badge + holdings -->
+      <div style="text-align:right;flex-shrink:0;z-index:1;min-width:56px;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;height:100%">
+        <div>
+          <div class="pv-val" style="font-size:${pct!==null&&Math.abs(pct)>=10?'17':'20'}px;font-weight:900;letter-spacing:-1px;line-height:1;color:${retCol};animation:pnlFlash${idx} 3s ease-in-out infinite">${pct!==null?(pct>=0?'+':'')+pct.toFixed(1)+'%':'—'}</div>
+          <div class="pv-hide" style="font-size:17px;color:rgba(255,255,255,.3)">••••</div>
+          <div style="font-size:7px;color:rgba(255,255,255,.18);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px">return</div>
+        </div>
+        <div>
+          <div style="height:1px;background:${A.c};opacity:.2;margin-bottom:5px"></div>
+          <div style="font-size:19px;font-weight:900;color:rgba(255,255,255,.9);letter-spacing:-.8px;line-height:1">${holdings.length}</div>
+          <div style="font-size:7px;color:rgba(255,255,255,.18);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px">holdings</div>
         </div>
       </div>
     </div>`;
   }
 
-
-  const bigOrb = pfData[0] ? makeOrb(pfData[0],0,210) : '';
-  const orb2   = pfData[1] ? makeOrb(pfData[1],1,152) : '';
-  const orb3   = pfData[2] ? makeOrb(pfData[2],2,132) : '';
-  const extras = pfData.slice(3).map((d,i)=>makeOrb(d,i+3,105)).join('<div style="height:10px"></div>');
+  const orbSection=`<div style="padding:2px 0 0">${pfData.map((d,i)=>makeCard(d,i)).join('')}</div>`;
 
 
-  const icoW=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M16 3l-4 4-4-4"/><circle cx="17" cy="13" r="1.5" fill="currentColor" stroke="none"/></svg>`;
-  const icoS=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 12l10 5 10-5"/><path d="M2 17l10 5 10-5"/></svg>`;
-  const icoP=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>`;
-  const icoT=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>`;
-  function fs2(v){return 'RM '+Math.abs(v).toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0});}
-  const cashStr='RM '+grandCash.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});
-  const invStr='RM '+grandInv.toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0});
-
-  // Orb accent colors for ball bearing — matches THEMES order
-  const orbColors=pfData.slice(0,3+extras.length).map((_,i)=>['#e8a800','#00d864','#8888e0','#e02040'][i%4]);
-
-  const orbSection=`<div id="orb-scene" data-orb-colors="${orbColors.join(',')}" style="position:relative;flex:1;display:flex;align-items:flex-start;justify-content:center;gap:16px;margin:0 -16px 0;padding:16px 16px 0;overflow:hidden">
-    <div style="flex-shrink:0">${bigOrb}</div>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:14px">
-      ${orb2}${orb3}${extras?`<div style="height:2px"></div>${extras}`:''}
-    </div>
-  </div>`;
 
   // PORTFOLIO HEALTH — same card style as overview
   const hp=Math.max(5,Math.min(95,50+(grandPct||0)*2));
@@ -1498,7 +1458,7 @@ function renderDashboard(){
     border-radius:12px;
     padding:10px 12px;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
-    min-width:80px;text-align:center;
+    width:80px;height:80px;text-align:center;
     box-shadow:0 0 12px rgba(0,212,255,0.12)">
     <svg width="30" height="11" viewBox="0 0 30 11" style="display:block">
       <polyline points="0,8 4,8 6,2 8,10 10,1 12,8 15,8 18,8 20,5 22,8 30,8"
@@ -1510,10 +1470,48 @@ function renderDashboard(){
     <div class="pv-hide" style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);letter-spacing:1.5px">••••</div>
   </div>`;
 
+  // Icon SVGs for minicards
+  const icoW=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M16 3l-4 4-4-4"/><circle cx="17" cy="13" r="1.5" fill="currentColor" stroke="none"/></svg>`;
+  const icoS=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 12l10 5 10-5"/><path d="M2 17l10 5 10-5"/></svg>`;
+  const icoP=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>`;
+  const icoT=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>`;
+  function fs2(v){return 'RM '+Math.abs(v).toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0});}
+  const cashStr='RM '+grandCash.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const invStr='RM '+grandInv.toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0});
+
+  // Donut SVG for hero
+  const donutSvg=(()=>{
+    const TOTAL=pfData.reduce((s,d)=>s+d.alloc,0)||100;
+    let cumAngle=-90;
+    const COLS=['#00c8ff','rgba(226,232,240,.8)','rgba(100,116,139,.8)','#f59e0b'];
+    const arcs=pfData.map((d,i)=>{
+      const sweep=(d.alloc/100)*360;
+      const R=33,CX=43,CY=43,CIRC=2*Math.PI*R;
+      const filled=(d.alloc/100)*CIRC;
+      const rot=cumAngle;
+      cumAngle+=sweep;
+      return `<circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="${COLS[i%COLS.length]}" stroke-width="9"
+        stroke-linecap="butt" transform="rotate(${rot} ${CX} ${CY})"
+        stroke-dasharray="${filled.toFixed(1)} ${(CIRC-filled).toFixed(1)}"
+        filter="url(#dgf)" opacity=".92">
+        <animate attributeName="stroke-dasharray" from="0 ${CIRC.toFixed(1)}" to="${filled.toFixed(1)} ${(CIRC-filled).toFixed(1)}" dur="${.8+i*.18}s" begin="${.3+i*.2}s" fill="freeze" calcMode="spline" keySplines=".4 0 .2 1"/>
+      </circle>
+      <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="#04040c" stroke-width="11"
+        stroke-dasharray="1.5 ${CIRC.toFixed(1)}" transform="rotate(${rot-1} ${CX} ${CY})"/>`;
+    }).join('');
+    return `<svg width="60" height="60" viewBox="0 0 86 86" style="display:block">
+      <defs>
+        <filter id="dgf"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <circle cx="43" cy="43" r="33" fill="none" stroke="rgba(255,255,255,.04)" stroke-width="9"/>
+      ${arcs}
+      <circle cx="43" cy="43" r="22" fill="rgba(0,0,0,.35)" stroke="rgba(255,255,255,.06)" stroke-width=".5"/>
+    </svg>`;
+  })();
+
   // HERO — net worth LEFT, health card RIGHT, minicards below
-  const heroSection=`<div style="margin-bottom:12px">
-    <div style="margin-bottom:8px">
-      <div style="font-size:8.5px;font-weight:700;color:rgba(180,140,50,0.7);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Net Worth &nbsp;<span style="color:rgba(180,140,50,0.4);font-weight:400">— All Portfolios (${S.portfolios.length})</span></div>
+  const heroSection=`<div style="margin:0;padding:0 0 12px">
+      <div style="font-size:8.5px;font-weight:700;color:rgba(180,140,50,0.7);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px">Net Worth &nbsp;<span style="color:rgba(180,140,50,0.4);font-weight:400">· All Portfolios (${S.portfolios.length})</span></div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
         <div style="flex:1;min-width:0">
           <div class="pv-networth-wrap">
@@ -1527,9 +1525,25 @@ function renderDashboard(){
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
           </svg>
         </button>
-        ${healthCard}
+        <div style="
+          flex-shrink:0;
+          background:rgba(0,180,220,0.08);
+          border:1px solid rgba(0,212,255,0.2);
+          border-left:2px solid #00d4ff;
+          border-radius:12px;
+          padding:10px 12px;
+          display:flex;align-items:center;justify-content:center;
+          width:80px;height:80px;
+          box-shadow:0 0 12px rgba(0,212,255,0.12)">
+          <div style="position:relative;display:flex;align-items:center;justify-content:center">
+            ${donutSvg}
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+              <div class="pv-val" style="font-size:16px;font-weight:900;color:#fff;line-height:1">${S.portfolios.length}</div>
+              <div class="pv-hide" style="font-size:16px;font-weight:900;color:rgba(255,255,255,.3);line-height:1;position:absolute">•</div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
     <!-- 4 minicards below net worth -->
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:4px">
       ${[
@@ -1550,15 +1564,22 @@ function renderDashboard(){
     </div>
   </div>`;
 
-  return `<div style="padding:14px 16px 0;display:flex;flex-direction:column;min-height:calc(100vh - 120px);overflow:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
-    background:radial-gradient(ellipse at 25% 58%,rgba(120,80,10,0.06) 0%,transparent 42%),
-    radial-gradient(ellipse at 72% 42%,rgba(8,80,40,0.04) 0%,transparent 38%),#020202;">
+
+  return `<div style="padding:14px 16px 0;display:flex;flex-direction:column;height:100%;overflow:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;background:#04040c">
     ${heroSection}
-    ${orbSection}
+    <!-- Strips -->
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-start;min-height:0;padding-top:4px">${orbSection}</div>
   </div>`;
 }
 
-function drawDashboardCharts(){}
+function drawDashboardCharts(){
+  // Animate allocation bars
+  setTimeout(()=>{
+    document.querySelectorAll('.dash-bar').forEach(el=>{
+      el.style.width=(el.dataset.w||'0')+'%';
+    });
+  }, 200);
+}
 
 function initOrbEffects(){
   const scene=document.getElementById('orb-scene');
@@ -1760,7 +1781,7 @@ function renderContent(){
     setDateBar((p?p.name:'')+'  — '+VIEW.ccy+' Holdings');
     $('ct').innerHTML=renderCcyDetail(p,VIEW.ccy);fixLayout();return;
   }
-  if(TAB==='dashboard'){$('ct').style.padding='0';$('ct').style.overflow='hidden';$('ct').style.height='calc(100vh - 120px)';document.body.style.overflow='hidden';setDateBar('Dashboard &nbsp;<span style="color:rgba(180,140,50,0.55);font-size:10px;letter-spacing:1px">· All Portfolios</span>');$('ct').innerHTML=renderDashboard();setTimeout(drawDashboardCharts,50);setTimeout(initOrbEffects,150);}
+  if(TAB==='dashboard'){$('ct').style.padding='0';$('ct').style.overflow='hidden';$('ct').style.height='calc(100vh - 110px)';document.body.style.overflow='hidden';setDateBar('Dashboard &nbsp;<span style="color:rgba(180,140,50,0.55);font-size:10px;letter-spacing:1px">· All Portfolios</span>');$('ct').innerHTML=renderDashboard();setTimeout(drawDashboardCharts,50);}
   else if(TAB==='overview'){
     $('ct').style.padding='0';$('ct').style.overflow='';$('ct').style.height='';
     setDateBar((p?p.name:'')+'  — Overview');
@@ -1836,7 +1857,7 @@ function renderOverview(p){
     border-radius:12px;
     padding:10px 12px;
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
-    min-width:80px;text-align:center;
+    width:80px;height:80px;text-align:center;
     box-shadow:0 0 12px rgba(0,212,255,0.12)">
     <svg width="30" height="11" viewBox="0 0 30 11" style="display:block">
       <polyline points="0,8 4,8 6,2 8,10 10,1 12,8 15,8 18,8 20,5 22,8 30,8"
