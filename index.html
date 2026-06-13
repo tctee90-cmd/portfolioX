@@ -488,10 +488,10 @@ body.privacy-on .kc > div:last-child *{
 @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(.7)}}
 @keyframes cardEntrance{0%{opacity:0;transform:translateX(-20px)}100%{opacity:1;transform:translateX(0)}}
 @keyframes glowPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4) saturate(1.3)}}
-@keyframes dashPip0{0%,100%{box-shadow:0 0 4px #00c8ff,0 0 8px #00c8ff}50%{box-shadow:0 0 10px #00c8ff,0 0 24px #00c8ff,0 0 40px #00c8ff}}
+@keyframes dashPip0{0%,100%{box-shadow:0 0 4px #00e5ff,0 0 8px #00e5ff}50%{box-shadow:0 0 10px #00e5ff,0 0 24px #00e5ff,0 0 40px #00e5ff}}
 @keyframes dashPip1{0%,100%{box-shadow:0 0 4px rgba(226,232,240,.8),0 0 8px rgba(226,232,240,.8)}50%{box-shadow:0 0 10px rgba(226,232,240,.8),0 0 20px rgba(226,232,240,.8)}}
 @keyframes dashPip2{0%,100%{box-shadow:0 0 4px rgba(100,116,139,.9),0 0 8px rgba(100,116,139,.9)}50%{box-shadow:0 0 10px rgba(100,116,139,.9),0 0 20px rgba(100,116,139,.9)}}
-@keyframes dashPip3{0%,100%{box-shadow:0 0 4px #f59e0b,0 0 8px #f59e0b}50%{box-shadow:0 0 10px #f59e0b,0 0 24px #f59e0b,0 0 40px #f59e0b}}
+@keyframes dashPip3{0%,100%{box-shadow:0 0 4px #69f0ae,0 0 8px #69f0ae}50%{box-shadow:0 0 10px #69f0ae,0 0 24px #69f0ae,0 0 40px #69f0ae}}
 @keyframes pnlFlash0{0%,100%{opacity:1}50%{opacity:.6}}
 @keyframes pnlFlash1{0%,100%{opacity:1}45%{opacity:.6}}
 @keyframes pnlFlash2{0%,100%{opacity:1}40%{opacity:.6}}
@@ -1341,11 +1341,12 @@ function renderDashboard(){
   const CIRC=2*Math.PI*26; // circumference of r=26 circle
 
   // ── NEW DASHBOARD — WOW strip design ──
+  // Premium palette — electric cyan · violet · rose gold · emerald
   const STRIP_ACCENTS=[
-    {c:'#00c8ff',c2:'#0088ff',gr:'linear-gradient(150deg,#7dd3fc,#00c8ff,#0066ff)',pip:'rgba(0,200,255,.8)',neg:true},
-    {c:'rgba(226,232,240,.8)',c2:'#94a3b8',gr:'linear-gradient(150deg,#fff,#e2e8f0,#94a3b8)',pip:'rgba(226,232,240,.6)',neg:false},
-    {c:'rgba(100,116,139,.9)',c2:'#334155',gr:'linear-gradient(150deg,#94a3b8,#64748b,#334155)',pip:'rgba(100,116,139,.7)',neg:false},
-    {c:'#f59e0b',c2:'#f97316',gr:'linear-gradient(150deg,#fbbf24,#f59e0b,#f97316)',pip:'rgba(245,158,11,.8)',neg:false},
+    {c:'#00e5ff',c2:'#2979ff',gr:'linear-gradient(135deg,#00e5ff,#2979ff)',pip:'rgba(0,229,255,.85)'},
+    {c:'#b388ff',c2:'#7c4dff',gr:'linear-gradient(135deg,#b388ff,#7c4dff)',pip:'rgba(179,136,255,.85)'},
+    {c:'#ffd740',c2:'#ff9100',gr:'linear-gradient(135deg,#ffd740,#ff9100)',pip:'rgba(255,215,64,.85)'},
+    {c:'#69f0ae',c2:'#00bfa5',gr:'linear-gradient(135deg,#69f0ae,#00bfa5)',pip:'rgba(105,240,174,.85)'},
   ];
 
   function makeCard(d,idx){
@@ -1386,6 +1387,8 @@ function renderDashboard(){
       ontouchend="this.style.background='rgba(255,255,255,.025)'">
       <!-- top line -->
       <div class="dash-foil" style="position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,${A.c} 0%,${A.c2} 50%,transparent 100%);opacity:.9"></div>
+      <!-- Dark tint with colour accent -->
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 5% 50%,${A.c}12 0%,transparent 70%);pointer-events:none;border-radius:16px"></div>
       <!-- bottom edge -->
       <div style="position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,${A.c},transparent 40%);opacity:.2"></div>
       <!-- left glow bar -->
@@ -1420,7 +1423,7 @@ function renderDashboard(){
           <div class="dash-pulse" style="width:5px;height:5px;border-radius:50%;background:${A.c};box-shadow:0 0 6px ${A.c};flex-shrink:0"></div>
         </div>
         <!-- Value -->
-        <div class="pv-val" style="font-size:13px;font-weight:600;color:rgba(255,255,255,.75);letter-spacing:-.2px">RM ${d.pfMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+        <div class="pv-val" style="font-size:14px;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:-.3px">RM ${d.pfMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
         <div class="pv-hide" style="font-size:13px;color:rgba(255,255,255,.4)">••••••</div>
 
         <!-- animated allocation bar -->
@@ -1440,9 +1443,10 @@ function renderDashboard(){
           <div style="font-size:7px;color:rgba(255,255,255,.18);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px">return</div>
         </div>
         <div>
-          <div style="height:1px;background:${A.c};opacity:.2;margin-bottom:5px"></div>
-          <div style="font-size:19px;font-weight:900;color:rgba(255,255,255,.9);letter-spacing:-.8px;line-height:1">${holdings.length}</div>
-          <div style="font-size:7px;color:rgba(255,255,255,.18);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px">holdings</div>
+          <div style="height:1px;background:${A.c};opacity:.25;margin-bottom:5px;box-shadow:0 0 4px ${A.c}"></div>
+          <div style="font-size:22px;font-weight:900;color:rgba(255,255,255,.85);letter-spacing:-1px;line-height:1;
+            background:linear-gradient(135deg,#fff,rgba(255,255,255,.6));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${holdings.length}</div>
+          <div style="font-size:7px;color:rgba(255,255,255,.18);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px">HLD</div>
         </div>
       </div>
     </div>`;
@@ -1575,24 +1579,25 @@ function renderDashboard(){
   </div>`;
 
 
-  return `<div style="padding:14px 16px 0;display:flex;flex-direction:column;height:100%;overflow:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;background:#04040c">
+  return `<div style="padding:14px 16px 0;display:flex;flex-direction:column;height:100%;overflow:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;background:#000">
     ${heroSection}
     <!-- Strips -->
     <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-start;min-height:0;padding-top:4px">
     <div style="height:18px;overflow:hidden;margin-bottom:4px;position:relative">
       <div class="dash-ticker" style="display:flex;flex-direction:column;gap:0">
-        ${pfData.map(d=>`<div class="dash-tick-item" style="font-size:7px;font-family:'Courier New',monospace;color:rgba(0,200,255,.35);letter-spacing:1.5px;height:22px;display:flex;align-items:center;gap:8px;white-space:nowrap">
-          <span style="color:rgba(0,200,255,.5)">${d.pf0.name}</span>
-          <span style="color:rgba(255,255,255,.15)">·</span>
-          <span>${(d.alloc).toFixed(1)}% ALLOC</span>
-          <span style="color:rgba(255,255,255,.1)">///</span>
-        </div>`).join('')}
-        ${pfData.map(d=>`<div class="dash-tick-item" style="font-size:7px;font-family:'Courier New',monospace;color:rgba(0,200,255,.35);letter-spacing:1.5px;height:22px;display:flex;align-items:center;gap:8px;white-space:nowrap">
-          <span style="color:rgba(0,200,255,.5)">${d.pf0.name}</span>
-          <span style="color:rgba(255,255,255,.15)">·</span>
-          <span>${(d.alloc).toFixed(1)}% ALLOC</span>
-          <span style="color:rgba(255,255,255,.1)">///</span>
-        </div>`).join('')}
+        ${[...pfData,...pfData].map(d=>{
+          const sum2=getSummary(d.pf0);
+          const ccy2=Object.keys(sum2.mktVal).sort((a,b)=>(sum2.mktVal[b]||0)-(sum2.mktVal[a]||0))[0]||'MYR';
+          const netP=(((sum2.unreal||{})[ccy2]||0)+((sum2.divs||{})[ccy2]||0)+((sum2.realized||{})[ccy2]||0)-((sum2.platformFees||{})[ccy2]||0));
+          const pct2=((sum2.cost||{})[ccy2]||0)>0?netP/((sum2.cost||{})[ccy2]||1)*100:0;
+          const col2=pct2>=0?'rgba(105,240,174,.6)':'rgba(255,100,100,.6)';
+          return `<div class="dash-tick-item" style="font-size:7px;font-family:'Courier New',monospace;color:rgba(0,200,255,.3);letter-spacing:1.5px;height:22px;display:flex;align-items:center;gap:6px;white-space:nowrap">
+            <span style="color:rgba(0,229,255,.6);font-weight:700">${d.pf0.name}</span>
+            <span style="color:rgba(255,255,255,.1)">|</span>
+            <span style="color:${col2}">${pct2>=0?'+':''}${pct2.toFixed(1)}%</span>
+            <span style="color:rgba(255,255,255,.08)">///</span>
+          </div>`;
+        }).join('')}
       </div>
     </div>${orbSection}</div>
   </div>`;
@@ -1612,7 +1617,7 @@ function drawDashboardCharts(){
 
   const W=ct.offsetWidth||390, H=ct.offsetHeight||780;
   const COLS=[[0,200,255],[180,210,240],[90,110,140],[245,158,11]];
-  const HEXCOLS=['#00c8ff','rgba(180,210,240,.9)','rgba(90,110,140,.9)','#f59e0b'];
+  const HEXCOLS=['#00e5ff','#b388ff','#ffd740','#69f0ae'];
   let T=0;
 
   /* ═══════════════════════════════════════
@@ -1629,9 +1634,9 @@ function drawDashboardCharts(){
     col:Math.random()>.8?`rgba(0,200,255,`:`rgba(255,255,255,`
   }));
   const nebulas=[
-    {x:.5,y:.35,rx:.7,ry:.4,c:[0,160,255],t:0,st:.0003},
-    {x:.1,y:.7,rx:.45,ry:.3,c:[0,100,200],t:1.5,st:.0005},
-    {x:.9,y:.2,rx:.4,ry:.25,c:[0,140,220],t:3,st:.0004},
+    {x:.5,y:.35,rx:.7,ry:.4,c:[0,220,255],t:0,st:.0003},
+    {x:.1,y:.7,rx:.45,ry:.3,c:[140,80,255],t:1.5,st:.0005},
+    {x:.9,y:.2,rx:.4,ry:.25,c:[255,200,50],t:3,st:.0004},
   ];
 
   /* ═══════════════════════════════════════
@@ -1668,7 +1673,7 @@ function drawDashboardCharts(){
      LAYER 3 — MATRIX RAIN (right edge)
   ═══════════════════════════════════════ */
   const matCv=document.createElement('canvas');
-  matCv.style.cssText='position:absolute;top:0;right:0;width:44px;bottom:0;pointer-events:none;z-index:1;opacity:.1';
+  matCv.style.cssText='position:absolute;top:0;right:0;width:44px;bottom:0;pointer-events:none;z-index:1;opacity:.06';
   matCv.width=44;matCv.height=H;ct.appendChild(matCv);
   const mat=matCv.getContext('2d');
   const mDrops=Array(4).fill(0).map(()=>Math.random()*-50);
@@ -1678,7 +1683,7 @@ function drawDashboardCharts(){
      LAYER 4 — SCANLINE
   ═══════════════════════════════════════ */
   const sl=document.createElement('div');
-  sl.style.cssText='position:absolute;left:0;right:0;height:60px;pointer-events:none;z-index:6;background:linear-gradient(180deg,transparent,rgba(0,200,255,.016),transparent)';
+  sl.style.cssText='position:absolute;left:0;right:0;height:80px;pointer-events:none;z-index:6;background:linear-gradient(180deg,transparent,rgba(0,200,255,.008),transparent)';
   ct.appendChild(sl);
   let slY=0;
 
@@ -2071,7 +2076,7 @@ function drawDashboardCharts(){
       const r2=card.getBoundingClientRect();const cr=ct.getBoundingClientRect();
       const cx=r2.left-cr.left+r2.width*.5,cy=r2.top-cr.top+r2.height*.5;
       const [pr,pg,pb]=COLS[i%COLS.length];
-      const intensity=.025+.015*Math.sin(T*.01+i*1.4);
+      const intensity=.012+.008*Math.sin(T*.01+i*1.4);
       const grd=plasma.createRadialGradient(cx,cy,0,cx,cy,r2.width*.7);
       grd.addColorStop(0,`rgba(${pr},${pg},${pb},${intensity})`);
       grd.addColorStop(1,`rgba(${pr},${pg},${pb},0)`);
@@ -2130,9 +2135,9 @@ function drawDashboardCharts(){
     /* Breathing glow */
     breathT+=.012;
     ct.querySelectorAll('.dash-card').forEach((card,i)=>{
-      const it=.032+.022*Math.sin(breathT+i*1.5);
+      const it=.018+.012*Math.sin(breathT+i*1.5);
       const co=GLOWS[i%GLOWS.length];
-      card.style.boxShadow=`0 0 ${(15+8*Math.sin(breathT+i)).toFixed(0)}px ${co},${it.toFixed(3)}),inset 0 0 14px ${co},${(it*.22).toFixed(3)})`;
+      card.style.boxShadow=`0 0 ${(12+6*Math.sin(breathT+i)).toFixed(0)}px ${co},${it.toFixed(3)}),inset 0 0 8px ${co},${(it*.15).toFixed(3)})`;
     });
 
     /* Donut box glow */
