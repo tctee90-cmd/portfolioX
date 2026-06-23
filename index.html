@@ -488,7 +488,8 @@ body.privacy-on .kc > div:last-child *{
 @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(.7)}}
 @keyframes cardEntrance{0%{opacity:0;transform:translateX(-20px)}100%{opacity:1;transform:translateX(0)}}
 @keyframes glowPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4) saturate(1.3)}}
-@keyframes dashPip0{0%,100%{box-shadow:0 0 4px #00e5ff,0 0 8px #00e5ff}50%{box-shadow:0 0 10px #00e5ff,0 0 24px #00e5ff,0 0 40px #00e5ff}}
+@keyframes aiSpin{to{transform:rotate(360deg)}}
+  @keyframes dashPip0{0%,100%{box-shadow:0 0 4px #00e5ff,0 0 8px #00e5ff}50%{box-shadow:0 0 10px #00e5ff,0 0 24px #00e5ff,0 0 40px #00e5ff}}
 @keyframes dashPip1{0%,100%{box-shadow:0 0 4px rgba(226,232,240,.8),0 0 8px rgba(226,232,240,.8)}50%{box-shadow:0 0 10px rgba(226,232,240,.8),0 0 20px rgba(226,232,240,.8)}}
 @keyframes dashPip2{0%,100%{box-shadow:0 0 4px rgba(100,116,139,.9),0 0 8px rgba(100,116,139,.9)}50%{box-shadow:0 0 10px rgba(100,116,139,.9),0 0 20px rgba(100,116,139,.9)}}
 @keyframes dashPip3{0%,100%{box-shadow:0 0 4px #69f0ae,0 0 8px #69f0ae}50%{box-shadow:0 0 10px #69f0ae,0 0 24px #69f0ae,0 0 40px #69f0ae}}
@@ -1376,8 +1377,8 @@ function renderDashboard(){
       style="display:flex;align-items:center;gap:12px;
         border-radius:14px;padding:11px 14px;cursor:pointer;
         position:relative;overflow:hidden;
-        background:rgba(255,255,255,.025);
-        border:1px solid rgba(255,255,255,.1);
+        background:#09090f;
+        border:1px solid rgba(255,255,255,.07);
         margin-bottom:8px;
         -webkit-tap-highlight-color:transparent;
         transition:transform .18s cubic-bezier(.34,1.56,.64,1);margin-bottom:6px"
@@ -1385,17 +1386,8 @@ function renderDashboard(){
       ontouchstart="this.style.background='rgba(255,255,255,.05)'"
       onmouseup="this.style.background='rgba(255,255,255,.025)'"
       ontouchend="this.style.background='rgba(255,255,255,.025)'">
-      <!-- top line -->
-      <div class="dash-foil" style="position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,${A.c} 0%,${A.c2} 50%,transparent 100%);opacity:.9"></div>
-      <!-- Dark tint with colour accent -->
-      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 5% 50%,${A.c}12 0%,transparent 70%);pointer-events:none;border-radius:16px"></div>
-      <!-- bottom edge -->
-      <div style="position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,${A.c},transparent 40%);opacity:.2"></div>
-      <!-- left glow bar -->
-      <div style="position:absolute;top:0;bottom:0;left:0;width:2.5px;background:${A.c};box-shadow:0 0 8px ${A.c},0 0 20px ${A.c}"></div>
-      <!-- corner brackets -->
-      <div style="position:absolute;top:4px;left:6px;width:8px;height:8px;border-top:1.5px solid ${A.c};border-left:1.5px solid ${A.c};opacity:.7"></div>
-      <div style="position:absolute;bottom:4px;right:6px;width:8px;height:8px;border-bottom:1.5px solid ${A.c};border-right:1.5px solid ${A.c};opacity:.7"></div>
+      <!-- left accent bar only -->
+      <div style="position:absolute;top:0;bottom:0;left:0;width:3px;background:${A.c};border-radius:3px 0 0 3px;opacity:.7"></div>
 
       <!-- rank -->
       <div class="dash-rank" style="width:22px;flex-shrink:0;font-size:10px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:.5px;text-align:center;position:relative;z-index:1;border:1px solid rgba(255,255,255,.08);border-radius:5px;padding:2px 0">${String(idx+1).padStart(2,'0')}</div>
@@ -1602,8 +1594,256 @@ function renderDashboard(){
           </div>`;
         }).join('')}
       </div>
-    </div>${orbSection}</div>
+    </div>
+    <!-- AI Analyst bar -->
+    <div id="ai-analyst-bar" onclick="openAiPage()" style="margin-bottom:8px;background:rgba(0,200,255,0.04);border:1px solid rgba(0,200,255,0.12);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:9px;min-height:38px;cursor:pointer;position:relative;overflow:hidden">
+      <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,200,255,0.03),transparent);pointer-events:none"></div>
+      <!-- animated AI orb -->
+      <div id="ai-orb" style="flex-shrink:0;width:22px;height:22px;border-radius:50%;position:relative">
+        <svg width="22" height="22" viewBox="0 0 22 22" style="position:absolute;inset:0">
+          <defs>
+            <radialGradient id="orbg" cx="40%" cy="35%" r="60%">
+              <stop offset="0%" stop-color="#80ffff" stop-opacity="0.9"/>
+              <stop offset="50%" stop-color="#00c8ff" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#7850ff" stop-opacity="0.8"/>
+            </radialGradient>
+          </defs>
+          <circle cx="11" cy="11" r="10" fill="url(#orbg)" opacity="0.9"/>
+          <circle cx="11" cy="11" r="10" fill="none" stroke="rgba(0,200,255,0.4)" stroke-width="0.5"/>
+          <circle cx="7" cy="8" r="2.5" fill="rgba(255,255,255,0.25)"/>
+          <text x="11" y="15" text-anchor="middle" font-size="7" font-weight="800" font-family="system-ui" fill="rgba(0,0,0,0.7)">AI</text>
+        </svg>
+      </div>
+      <div id="ai-analyst-text" style="font-size:11px;color:rgba(255,255,255,0.5);flex:1;line-height:1.4;font-style:italic">Analysing your portfolio…</div>
+      <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
+        <div id="ai-analyst-spin" style="width:10px;height:10px;border:1.5px solid rgba(0,200,255,0.2);border-top-color:rgba(0,200,255,0.7);border-radius:50%"></div>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(0,200,255,0.3)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+    ${orbSection}</div>
   </div>`;
+}
+
+async function refreshAiAnalyst(){
+  const txt=document.getElementById('ai-analyst-text');
+  const spin=document.getElementById('ai-analyst-spin');
+  if(!txt)return;
+  txt.textContent='Thinking…';
+  txt.style.fontStyle='italic';
+  if(spin){spin.style.animation='aiSpin 0.8s linear infinite';}
+
+  const lines=S.portfolios.map(function(p){
+    const sum=getSummary(p);
+    const allC=[...new Set(Object.keys(sum.mktVal))];
+    let mvMYR=0,costMYR=0;
+    allC.forEach(function(c){mvMYR+=toMYR((sum.mktVal[c]||0)+((p.cashBalances&&p.cashBalances[c])||0),c);costMYR+=toMYR(sum.cost[c]||0,c);});
+    const pct=costMYR>0?((mvMYR-costMYR)/costMYR*100).toFixed(1):'n/a';
+    const holdings=getHoldings(p,true).sort((a,b)=>b.mktVal-a.mktVal).slice(0,3).map(function(h){return h.stock;}).join(', ');
+    return p.name+': RM '+mvMYR.toFixed(0)+', '+pct+'% return, top: '+holdings;
+  }).join('; ');
+
+  const grandMYR2=S.portfolios.reduce(function(s,p){
+    const sum=getSummary(p);
+    Object.keys(sum.mktVal).forEach(function(c){s+=toMYR((sum.mktVal[c]||0)+((p.cashBalances&&p.cashBalances[c])||0),c);});
+    return s;
+  },0);
+
+  const prompt='Portfolio: '+lines+'. Net worth RM '+grandMYR2.toFixed(0)+'. Write one sharp sentence (max 18 words) of insight about this portfolio. Be blunt and specific, mention stock names.';
+
+  try{
+    const k1=getAiKey();if(!k1){txt.textContent='API key required — tap to enter';if(spin)spin.style.animation='';return;}
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':k1,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:80,messages:[{role:'user',content:prompt}]})
+    });
+    if(!res.ok){const err=await res.text();throw new Error('HTTP '+res.status+' '+err.slice(0,80));}
+    const data=await res.json();
+    const insight=data.content&&data.content[0]&&data.content[0].text?data.content[0].text.trim():'No response.';
+    txt.textContent=insight;
+    txt.style.fontStyle='normal';
+    txt.style.color='rgba(255,255,255,0.65)';
+  }catch(e){
+    txt.textContent='Tap to retry ('+String(e).slice(0,40)+')';
+  }
+  if(spin)spin.style.animation='';
+}
+
+
+// ── AI key management ────────────────────────────────────────────────────────
+window._aiKey='';
+function getAiKey(){
+  if(window._aiKey)return window._aiKey;
+  var k=prompt('Enter your Anthropic API key to enable AI analysis (get one at console.anthropic.com):');
+  if(k&&k.trim().startsWith('sk-')){window._aiKey=k.trim();return window._aiKey;}
+  return null;
+}
+
+// ── AI Analysis Full Page ─────────────────────────────────────────────────────
+function openAiPage(){
+  if(window.pushNav)window.pushNav(function(){var p=document.getElementById('ai-page');if(p)p.style.display='none';});
+  var pg=document.getElementById('ai-page');
+  if(pg){pg.style.display='flex';renderAiPage();animateAiLogo();return;}
+
+  // Build page without nested template literals
+  var div=document.createElement('div');
+  div.id='ai-page';
+  div.style.cssText='position:fixed;inset:0;background:#030308;z-index:250;display:flex;flex-direction:column;overflow:hidden';
+
+  // Header
+  var hdr=document.createElement('div');
+  hdr.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0';
+
+  var backBtn=document.createElement('div');
+  backBtn.style.cssText='display:flex;align-items:center;gap:6px;cursor:pointer;color:rgba(255,255,255,0.5);font-size:13px';
+  backBtn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Back';
+  backBtn.onclick=function(){var p=document.getElementById('ai-page');if(p)p.style.display='none';};
+
+  var logoWrap=document.createElement('div');
+  logoWrap.style.cssText='display:flex;align-items:center;gap:10px';
+  logoWrap.innerHTML=''
+    +'<svg id="ai-logo-svg" width="36" height="36" viewBox="0 0 36 36">'
+    +'<defs>'
+    +'<radialGradient id="lg1" cx="38%" cy="32%" r="65%">'
+    +'<stop offset="0%" stop-color="#a0ffff"/>'
+    +'<stop offset="50%" stop-color="#00c8ff"/>'
+    +'<stop offset="100%" stop-color="#5020ff"/>'
+    +'</radialGradient>'
+    +'<filter id="lglow"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+    +'</defs>'
+    +'<circle id="ai-logo-ring" cx="18" cy="18" r="16" fill="url(#lg1)" opacity="0.95" filter="url(#lglow)"/>'
+    +'<circle cx="18" cy="18" r="16" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>'
+    +'<circle cx="13" cy="12" r="4" fill="rgba(255,255,255,0.18)"/>'
+    +'<circle cx="13" cy="12" r="2" fill="rgba(255,255,255,0.3)"/>'
+    +'<ellipse id="ai-orbit" cx="18" cy="18" rx="16" ry="5.5" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="0.8" transform="rotate(-20 18 18)"/>'
+    +'<text x="18" y="23" text-anchor="middle" font-size="10" font-weight="900" font-family="system-ui" fill="rgba(0,0,40,0.8)">AI</text>'
+    +'</svg>'
+    +'<div>'
+    +'<div style="font-size:14px;font-weight:700;color:#fff;letter-spacing:-0.3px">AI Analyst</div>'
+    +'<div style="font-size:9px;color:rgba(0,200,255,0.5);letter-spacing:1px;text-transform:uppercase">Portfolio X</div>'
+    +'</div>';
+
+  var refreshBtn=document.createElement('div');
+  refreshBtn.style.cssText='cursor:pointer;font-size:9px;color:rgba(0,200,255,0.4);letter-spacing:1px;text-transform:uppercase;border:1px solid rgba(0,200,255,0.15);border-radius:6px;padding:4px 8px';
+  refreshBtn.textContent='↺ Refresh';
+  refreshBtn.onclick=renderAiPage;
+
+  hdr.appendChild(backBtn);
+  hdr.appendChild(logoWrap);
+  hdr.appendChild(refreshBtn);
+
+  // Body
+  var body=document.createElement('div');
+  body.id='ai-page-body';
+  body.style.cssText='flex:1;overflow-y:auto;padding:16px';
+  body.innerHTML='<div style="text-align:center;padding:3rem 0;color:rgba(255,255,255,0.2);font-size:13px">Generating analysis…</div>';
+
+  div.appendChild(hdr);
+  div.appendChild(body);
+  document.body.appendChild(div);
+  renderAiPage();
+  animateAiLogo();
+}
+
+function animateAiLogo(){
+  const ring=document.getElementById('ai-logo-ring');
+  const orbit=document.getElementById('ai-orbit');
+  if(!ring)return;
+  let t=0;
+  function tick(){
+    t+=0.02;
+    // Pulse the orb color between blue and gold
+    const hue=180+Math.sin(t)*60;
+    ring.style.opacity=0.85+Math.sin(t*1.3)*0.1;
+    if(orbit)orbit.setAttribute('transform','rotate('+(t*30%360)+' 16 16)');
+    if(document.getElementById('ai-logo-svg'))requestAnimationFrame(tick);
+  }
+  tick();
+}
+
+async function renderAiPage(){
+  const body=document.getElementById('ai-page-body');
+  if(!body)return;
+
+  // Build full portfolio context
+  const pfSnapshots=S.portfolios.map(function(p){
+    const sum=getSummary(p);
+    const allC=[...new Set(Object.keys(sum.mktVal))];
+    let mvMYR=0,costMYR=0,unrealMYR=0,divMYR=0;
+    allC.forEach(function(c){
+      mvMYR+=toMYR((sum.mktVal[c]||0)+((p.cashBalances&&p.cashBalances[c])||0),c);
+      costMYR+=toMYR(sum.cost[c]||0,c);
+      unrealMYR+=toMYR(sum.unreal[c]||0,c);
+      divMYR+=toMYR(sum.divs[c]||0,c);
+    });
+    const holdings=getHoldings(p,true).sort((a,b)=>b.mktVal-a.mktVal);
+    const hStr=holdings.map(function(h){
+      const col=h.unreal>=0?'gain':'loss';
+      return h.stock+'('+h.ccy+' '+( h.unreal>=0?'+':'')+h.unreal.toFixed(0)+' '+col+')';
+    }).join(', ');
+    return p.name+': value RM'+mvMYR.toFixed(0)+', cost RM'+costMYR.toFixed(0)+', unrealized RM'+unrealMYR.toFixed(0)+', dividends RM'+divMYR.toFixed(0)+', holdings: '+hStr;
+  }).join(' | ');
+
+  const grandMYR2=S.portfolios.reduce(function(s,p){
+    const sum=getSummary(p);
+    Object.keys(sum.mktVal).forEach(function(c){s+=toMYR((sum.mktVal[c]||0)+((p.cashBalances&&p.cashBalances[c])||0),c);});
+    return s;
+  },0);
+
+  // Show skeleton cards while loading
+  const sections=['Overall Health','Biggest Risk','Best Performer','Diversification','Action to Consider'];
+  body.innerHTML=sections.map(function(s){
+    return '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:14px 16px;margin-bottom:10px">'
+      +'<div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,200,255,0.4);margin-bottom:8px">'+s+'</div>'
+      +'<div class="ai-skeleton" style="height:12px;background:rgba(255,255,255,0.05);border-radius:6px;margin-bottom:6px"></div>'
+      +'<div class="ai-skeleton" style="height:12px;background:rgba(255,255,255,0.05);border-radius:6px;width:80%"></div>'
+      +'</div>';
+  }).join('');
+
+  const cardDefs=[
+    {key:'overall', label:'Overall Health',        col:'#00c8ff', icon:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',                                                                                              q:'In 1-2 sentences what is the overall health of this portfolio? Use specific numbers.'},
+    {key:'risk',    label:'Biggest Risk',           col:'#ff4d6d', icon:'M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01',                              q:'In 1-2 sentences what is the single biggest risk right now? Name the specific stock.'},
+    {key:'best',    label:'Best Performer',         col:'#00e676', icon:'M23 6l-9.5 9.5-5-5L1 18M17 6h6v6',                                                                                                         q:'In 1-2 sentences which holding is performing best and why?'},
+    {key:'diversification', label:'Diversification',col:'#f59e0b', icon:'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z',            q:'In 1-2 sentences how well diversified is this portfolio across sectors and currencies?'},
+    {key:'action',  label:'Action to Consider',     col:'#a78bfa', icon:'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5',                                                                                   q:'In 1-2 sentences what is one specific action the investor should consider doing now?'},
+  ];
+
+  const ctx='Investor portfolio data: '+pfSnapshots+'. Total net worth: RM '+grandMYR2.toFixed(0)+'. ';
+
+  try{
+    const results=await Promise.all(cardDefs.map(async function(c){
+      const k2=window._aiKey;if(!k2)throw new Error('No API key');
+      const r=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':k2,'anthropic-version':'2023-06-01'},
+        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:120,messages:[{role:'user',content:ctx+c.q}]})
+      });
+      if(!r.ok){const t=await r.text();throw new Error('HTTP '+r.status+' '+t.slice(0,80));}
+      const d=await r.json();
+      return d.content&&d.content[0]&&d.content[0].text?d.content[0].text.trim():'—';
+    }));
+
+    const now=new Date();
+    const ts=now.toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'});
+    body.innerHTML='<div style="font-size:9px;color:rgba(255,255,255,0.15);letter-spacing:1.5px;text-align:right;margin-bottom:12px;font-family:Courier New,monospace">GENERATED '+ts+' · TAP ↺ TO REFRESH</div>'
+      +cardDefs.map(function(c,i){
+        return '<div style="background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-left:3px solid '+c.col+';border-radius:12px;padding:14px 16px;margin-bottom:10px">'
+          +'<div style="display:flex;align-items:center;gap:7px;margin-bottom:8px">'
+          +'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="'+c.col+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="'+c.icon+'"/></svg>'
+          +'<div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:'+c.col+'">'+c.label+'</div>'
+          +'</div>'
+          +'<div style="font-size:13px;color:rgba(255,255,255,0.75);line-height:1.6">'+results[i]+'</div>'
+          +'</div>';
+      }).join('')
+      +'<div style="text-align:center;padding:8px 0 4px;font-size:9px;color:rgba(255,255,255,0.1);letter-spacing:1px">AI analysis is informational only · Not financial advice</div>';
+
+  }catch(e){
+    body.innerHTML='<div style="padding:2rem 1rem">'
+      +'<div style="color:rgba(255,100,100,0.7);font-size:13px;margin-bottom:12px">Failed to load analysis.</div>'
+      +'<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px;font-size:10px;color:rgba(255,255,255,0.25);font-family:Courier New,monospace;word-break:break-all;margin-bottom:16px">'+String(e)+'</div>'
+      +'<div onclick="renderAiPage()" style="text-align:center;color:rgba(0,200,255,0.5);cursor:pointer;font-size:13px">Tap to retry</div>'
+      +'</div>';
+  }
 }
 
 function drawDashboardCharts(){
@@ -1841,7 +2081,7 @@ function renderContent(){
     $('ct').innerHTML=renderCcyDetail(p,VIEW.ccy);fixLayout();return;
   }
   if(window._dashRAF){cancelAnimationFrame(window._dashRAF);window._dashRAF=null;}
-if(TAB==='dashboard'){$('ct').style.padding='0';$('ct').style.overflow='hidden';$('ct').style.height='calc(100vh - 110px)';document.body.style.overflow='hidden';setDateBar('Dashboard &nbsp;<span style="color:rgba(180,140,50,0.55);font-size:10px;letter-spacing:1px">· All Portfolios</span>');$('ct').innerHTML=renderDashboard();setTimeout(drawDashboardCharts,50);}
+if(TAB==='dashboard'){$('ct').style.padding='0';$('ct').style.overflow='hidden';$('ct').style.height='calc(100vh - 110px)';document.body.style.overflow='hidden';setDateBar('Dashboard &nbsp;<span style="color:rgba(180,140,50,0.55);font-size:10px;letter-spacing:1px">· All Portfolios</span>');$('ct').innerHTML=renderDashboard();setTimeout(drawDashboardCharts,50);setTimeout(refreshAiAnalyst,200);}
   if(window._dashRAF){cancelAnimationFrame(window._dashRAF);window._dashRAF=null;}
   else if(TAB==='overview'){
     $('ct').style.padding='0';$('ct').style.overflow='';$('ct').style.height='';
