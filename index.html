@@ -488,8 +488,7 @@ body.privacy-on .kc > div:last-child *{
 @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(.7)}}
 @keyframes cardEntrance{0%{opacity:0;transform:translateX(-20px)}100%{opacity:1;transform:translateX(0)}}
 @keyframes glowPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4) saturate(1.3)}}
-@keyframes aiSpin{to{transform:rotate(360deg)}}
-  @keyframes dashPip0{0%,100%{box-shadow:0 0 4px #00e5ff,0 0 8px #00e5ff}50%{box-shadow:0 0 10px #00e5ff,0 0 24px #00e5ff,0 0 40px #00e5ff}}
+@keyframes dashPip0{0%,100%{box-shadow:0 0 4px #00e5ff,0 0 8px #00e5ff}50%{box-shadow:0 0 10px #00e5ff,0 0 24px #00e5ff,0 0 40px #00e5ff}}
 @keyframes dashPip1{0%,100%{box-shadow:0 0 4px rgba(226,232,240,.8),0 0 8px rgba(226,232,240,.8)}50%{box-shadow:0 0 10px rgba(226,232,240,.8),0 0 20px rgba(226,232,240,.8)}}
 @keyframes dashPip2{0%,100%{box-shadow:0 0 4px rgba(100,116,139,.9),0 0 8px rgba(100,116,139,.9)}50%{box-shadow:0 0 10px rgba(100,116,139,.9),0 0 20px rgba(100,116,139,.9)}}
 @keyframes dashPip3{0%,100%{box-shadow:0 0 4px #69f0ae,0 0 8px #69f0ae}50%{box-shadow:0 0 10px #69f0ae,0 0 24px #69f0ae,0 0 40px #69f0ae}}
@@ -608,7 +607,7 @@ const SK='pfx_v6';
 const CCYS=['MYR','SGD','USD','HKD','GBP','EUR'];
 const TYPES=['Buy','Sell','Dividend','Platform Fee','Deposit','Withdraw'];
 const PAL=['#4fc3f7','#66bb6a','#ffb74d','#ce93d8','#ef9a9a','#80deea','#f48fb1','#a5d6a7','#90caf9','#ffcc02'];
-const PFPAL=['#00d4ff','#00e676','#ff4d6d','#ffaa00','#bf5af2','#ff6b35','#00fff0','#ff2d78','#7b61ff','#39ff14','#ff007f','#00b4d8'];
+const PFPAL=['#d4a847','#6aa3c8','#a87fd4','#d4714a','#4aad8a','#d4c44a','#4a7ad4','#d44a8a','#4ad48a','#d4a44a','#7a4ad4','#d4784a'];
 const SYM={MYR:'RM',SGD:'S$',USD:'US$',HKD:'HK$',GBP:'£',EUR:'€'};
 const uid=()=>Math.random().toString(36).slice(2,9);
 const $=id=>document.getElementById(id);
@@ -1344,10 +1343,10 @@ function renderDashboard(){
   // ── NEW DASHBOARD — WOW strip design ──
   // Premium palette — electric cyan · violet · rose gold · emerald
   const STRIP_ACCENTS=[
-    {c:'#00e5ff',c2:'#2979ff',gr:'linear-gradient(135deg,#00e5ff,#2979ff)',pip:'rgba(0,229,255,.85)'},
-    {c:'#ff4d8d',c2:'#ff1f6d',gr:'linear-gradient(135deg,#ff4d8d,#ff1f6d)',pip:'rgba(255,77,141,.85)'},
-    {c:'#ffd740',c2:'#ff9100',gr:'linear-gradient(135deg,#ffd740,#ff9100)',pip:'rgba(255,215,64,.85)'},
-    {c:'#69f0ae',c2:'#00bfa5',gr:'linear-gradient(135deg,#69f0ae,#00bfa5)',pip:'rgba(105,240,174,.85)'},
+    {c:'#c9a96e',c2:'#a07840',gr:'linear-gradient(135deg,#c9a96e,#a07840)',pip:'rgba(201,169,110,.85)'},
+    {c:'#8fb8d4',c2:'#5a8aaa',gr:'linear-gradient(135deg,#8fb8d4,#5a8aaa)',pip:'rgba(143,184,212,.85)'},
+    {c:'#b896c8',c2:'#8a5aaa',gr:'linear-gradient(135deg,#b896c8,#8a5aaa)',pip:'rgba(184,150,200,.85)'},
+    {c:'#d4a0a0',c2:'#a86060',gr:'linear-gradient(135deg,#d4a0a0,#a86060)',pip:'rgba(212,160,160,.85)'},
   ];
 
   function makeCard(d,idx){
@@ -1374,74 +1373,109 @@ function renderDashboard(){
     const filled=(alloc/100)*CIRC2;
 
     return `<div onclick="goPortfolio('${d.pf0.id}')"
-      style="display:flex;align-items:center;gap:12px;
-        border-radius:14px;padding:11px 14px;cursor:pointer;
-        position:relative;overflow:hidden;
-        background:#09090f;
-        border:1px solid rgba(255,255,255,.07);
-        margin-bottom:8px;
+      style="position:relative;overflow:hidden;border-radius:18px;margin-bottom:10px;cursor:pointer;
+        background:linear-gradient(155deg,#0d0d0d 0%,#080808 100%);
+        border:1px solid rgba(255,255,255,0.07);
+        border-top:1px solid rgba(255,255,255,0.13);
         -webkit-tap-highlight-color:transparent;
-        transition:transform .18s cubic-bezier(.34,1.56,.64,1);margin-bottom:6px"
-      onmousedown="this.style.background='rgba(255,255,255,.05)'"
-      ontouchstart="this.style.background='rgba(255,255,255,.05)'"
-      onmouseup="this.style.background='rgba(255,255,255,.025)'"
-      ontouchend="this.style.background='rgba(255,255,255,.025)'">
-      <!-- left accent bar only -->
-      <div style="position:absolute;top:0;bottom:0;left:0;width:3px;background:${A.c};border-radius:3px 0 0 3px;opacity:.7"></div>
+        transition:transform .18s cubic-bezier(.34,1.56,.64,1)"
+      ontouchstart="this.style.transform='scale(0.982)'"
+      ontouchend="this.style.transform=''">
 
-      <!-- rank -->
-      <div class="dash-rank" style="width:22px;flex-shrink:0;font-size:10px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:.5px;text-align:center;position:relative;z-index:1;border:1px solid rgba(255,255,255,.08);border-radius:5px;padding:2px 0">${String(idx+1).padStart(2,'0')}</div>
+      <!-- colour wash from left -->
+      <div style="position:absolute;top:0;bottom:0;left:0;width:60%;pointer-events:none;
+        background:linear-gradient(90deg,${A.c} 0%,transparent 100%);opacity:0.045"></div>
 
-      <!-- arc gauge -->
-      <div style="position:relative;width:46px;height:46px;flex-shrink:0;z-index:1">
-        <svg width="46" height="46" viewBox="0 0 46 46">
-          <circle cx="23" cy="23" r="19" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="5"/>
-          <circle cx="23" cy="23" r="19" fill="none" stroke="${A.c}" stroke-width="5"
-            stroke-linecap="round" transform="rotate(-90 23 23)"
-            class="dash-arc-animate" data-target-da="${filled.toFixed(1)} ${(CIRC2-filled).toFixed(1)}" stroke-dasharray="0 ${CIRC2.toFixed(1)}"/>
-          <circle cx="23" cy="23" r="12" fill="rgba(0,0,0,.2)" stroke="${A.c}" stroke-width=".4" stroke-opacity=".2"/>
-        </svg>
-        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
-          <div class="pv-val dash-alloc-flicker" data-real="${alloc.toFixed(2)}%" style="font-size:10px;font-weight:900;color:${A.c};line-height:1;position:relative;left:-8px">${alloc.toFixed(2)}%</div>
-          <div class="pv-hide" style="font-size:10px;color:${A.c}">••</div>
-          
-        </div>
-      </div>
+      <!-- foil top edge -->
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;
+        background:linear-gradient(90deg,transparent 0%,${A.c} 30%,rgba(255,255,255,0.5) 50%,${A.c} 70%,transparent 100%);
+        opacity:0.5;pointer-events:none"></div>
 
-      <!-- info -->
-      <div style="flex:1;min-width:0;z-index:1">
-        <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">
-          <div style="font-size:18px;font-weight:900;letter-spacing:-.8px;color:#fff;line-height:1">${d.pf0.name}</div>
-          <div class="dash-pulse" style="width:5px;height:5px;border-radius:50%;background:${A.c};box-shadow:0 0 6px ${A.c};flex-shrink:0"></div>
-        </div>
-        <!-- Value -->
-        <div class="pv-val" style="font-size:14px;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:-.3px">RM ${d.pfMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
-        <div class="pv-hide" style="font-size:13px;color:rgba(255,255,255,.4)">••••••</div>
-        <div class="pv-val" style="font-size:9px;color:rgba(255,255,255,0.25);margin-top:2px;letter-spacing:1px;text-transform:uppercase;font-weight:600">MYR Equivalent</div>
-        <div class="pv-hide" style="font-size:9px;color:rgba(255,255,255,.3)">••••</div>
+      <!-- left accent stripe -->
+      <div style="position:absolute;top:0;bottom:0;left:0;width:3px;
+        background:linear-gradient(180deg,${A.c}cc,${A.c},${A.c}66);border-radius:3px 0 0 3px"></div>
 
-        <!-- animated allocation bar -->
-        <div style="height:2px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:9px;position:relative;overflow:visible">
-          <div class="pv-val dash-bar" data-w="${alloc.toFixed(1)}"
-            style="height:100%;border-radius:2px;width:0;background:linear-gradient(90deg,${A.c}55,${A.c});position:relative;transition:width 1.2s cubic-bezier(.4,0,.2,1)">
-            <div style="position:absolute;right:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:${A.c};border:1.5px solid #04040c;animation:dashPip${idx} 2s ease-in-out infinite"></div>
+      <!-- corner marks -->
+      <div style="position:absolute;top:10px;left:10px;width:10px;height:10px;
+        border-top:1px solid ${A.c};border-left:1px solid ${A.c};opacity:0.3;border-radius:2px 0 0 0"></div>
+      <div style="position:absolute;bottom:10px;right:10px;width:10px;height:10px;
+        border-bottom:1px solid ${A.c};border-right:1px solid ${A.c};opacity:0.3;border-radius:0 0 2px 0"></div>
+
+      <!-- alloc bg fill -->
+      <div style="position:absolute;top:0;bottom:0;left:0;width:${alloc.toFixed(1)}%;
+        background:${A.c};opacity:0.03;border-radius:18px 0 0 18px;pointer-events:none"></div>
+
+      <div style="position:relative;z-index:2;padding:16px 16px 14px 20px">
+
+        <!-- ROW 1: name + tag + live dot -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="font-size:26px;font-weight:900;letter-spacing:-1.2px;color:#fff;line-height:1">${d.pf0.name}</div>
+            <div class="dash-pulse" style="width:5px;height:5px;border-radius:50%;margin-top:2px;
+              background:${A.c};box-shadow:0 0 6px ${A.c};flex-shrink:0"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+            <div style="font-size:7px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
+              padding:3px 8px;border-radius:20px;border:1px solid ${A.c}33;
+              color:${A.c};background:${A.c}0d">${String(idx+1).padStart(2,'0')}</div>
           </div>
         </div>
-      </div>
 
-      <!-- right: % badge + holdings -->
-      <div style="text-align:right;flex-shrink:0;z-index:1;min-width:74px;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;height:100%">
-        <div>
-          <div class="pv-val dash-ret-val" data-val="${pct!==null?pct.toFixed(2):'0'}" style="font-size:${pct!==null&&Math.abs(pct)>=10?'15':'18'}px;font-weight:900;letter-spacing:-.5px;line-height:1;color:${retCol};white-space:nowrap;animation:pnlFlash${idx} 3s ease-in-out infinite">${pct!==null?(pct>=0?'+':'')+pct.toFixed(2)+'%':'—'}</div>
-          <div class="pv-hide" style="font-size:17px;color:rgba(255,255,255,.3)">••••</div>
-          <div style="font-size:7px;color:rgba(255,255,255,.18);letter-spacing:1.5px;text-transform:uppercase;margin-top:3px">return</div>
+        <!-- ROW 2: value + return side by side -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px">
+          <div>
+            <div class="pv-val" style="font-size:22px;font-weight:300;color:rgba(255,255,255,0.85);letter-spacing:-0.8px;line-height:1">RM ${d.pfMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+            <div class="pv-hide" style="font-size:22px;color:rgba(255,255,255,.3)">••••••</div>
+            <div class="pv-val" style="font-size:8px;color:rgba(255,255,255,0.38);letter-spacing:2px;text-transform:uppercase;margin-top:3px;font-weight:500">MYR Equivalent</div>
+            <div class="pv-hide" style="font-size:8px;color:rgba(255,255,255,.2)">••••</div>
+          </div>
+          <div style="text-align:right">
+            <div class="pv-val dash-ret-val" data-val="${pct!==null?pct.toFixed(2):'0'}"
+              style="font-size:20px;font-weight:800;letter-spacing:-0.5px;line-height:1;color:${retCol};white-space:nowrap;
+              animation:pnlFlash${idx} 3s ease-in-out infinite">${pct!==null?(pct>=0?'+':'')+pct.toFixed(2)+'%':'—'}</div>
+            <div class="pv-hide" style="font-size:20px;color:rgba(255,255,255,.3)">••••</div>
+            <div style="font-size:7px;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;margin-top:3px">Return</div>
+          </div>
         </div>
-        <div>
-          <div style="height:1px;background:${A.c};opacity:.25;margin-bottom:5px;box-shadow:0 0 4px ${A.c}"></div>
-          <div style="font-size:22px;font-weight:900;color:rgba(255,255,255,.85);letter-spacing:-1px;line-height:1;
-            background:linear-gradient(135deg,#fff,rgba(255,255,255,.6));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${holdings.length}</div>
-          <div style="font-size:7px;color:rgba(255,255,255,.18);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px">HLD</div>
+
+        <!-- ROW 3: allocation bar -->
+        <div style="border-top:1px solid rgba(255,255,255,0.05);padding-top:11px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+            <div style="font-size:7px;color:rgba(255,255,255,0.32);letter-spacing:2.5px;text-transform:uppercase">Portfolio Weight</div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="font-size:7px;color:rgba(255,255,255,0.32);letter-spacing:1px">${holdings.length} HLD</div>
+              <div style="display:flex;align-items:center;gap:3px;color:${A.c}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg><div style="font-size:12px;font-weight:700;letter-spacing:-0.3px">${alloc.toFixed(2)}%</div></div>
+            </div>
+          </div>
+          <!-- track with tick marks -->
+          <div style="height:4px;background:rgba(255,255,255,0.05);border-radius:4px;position:relative">
+            <!-- ticks at 25/50/75 -->
+            <div style="position:absolute;left:25%;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.06)"></div>
+            <div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.06)"></div>
+            <div style="position:absolute;left:75%;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.06)"></div>
+            <!-- fill -->
+            <div class="pv-val dash-bar" data-w="${alloc.toFixed(1)}"
+              style="position:absolute;top:0;bottom:0;left:0;border-radius:4px;width:0;
+                background:linear-gradient(90deg,${A.c}44,${A.c});
+                transition:width 1.2s cubic-bezier(.4,0,.2,1)">
+              <!-- jewel cap -->
+              <div style="position:absolute;right:-5px;top:50%;transform:translateY(-50%);
+                width:10px;height:10px;border-radius:50%;
+                background:${A.c};border:2px solid #080808;
+                box-shadow:0 0 6px ${A.c},0 0 14px ${A.c};
+                animation:dashPip${idx} 2s ease-in-out infinite"></div>
+            </div>
+          </div>
+          <!-- tick labels -->
+          <div style="display:flex;justify-content:space-between;margin-top:4px">
+            <span style="font-size:6px;color:rgba(255,255,255,0.2);font-family:Courier New,monospace">0</span>
+            <span style="font-size:6px;color:rgba(255,255,255,0.2);font-family:Courier New,monospace">25%</span>
+            <span style="font-size:6px;color:rgba(255,255,255,0.2);font-family:Courier New,monospace">50%</span>
+            <span style="font-size:6px;color:rgba(255,255,255,0.2);font-family:Courier New,monospace">75%</span>
+            <span style="font-size:6px;color:rgba(255,255,255,0.2);font-family:Courier New,monospace">100%</span>
+          </div>
         </div>
+
       </div>
     </div>`;
   }
@@ -1523,7 +1557,8 @@ function renderDashboard(){
           <div class="dash-aurora" style="position:absolute;inset:0;pointer-events:none;border-radius:12px"></div>
           <div class="pv-val dash-nw" data-val="${grandMYR.toFixed(2)}" data-fmt="RM" style="font-size:34px;font-weight:300;color:#fff;letter-spacing:-1px;line-height:1;white-space:nowrap">RM ${grandMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
           <div class="pv-hide" style="font-size:34px;color:#fff;font-weight:300;line-height:1;white-space:nowrap">••••••••</div>
-          <div class="pv-val" style="font-size:10px;color:rgba(255,255,255,0.25);margin-top:5px;letter-spacing:1px;text-transform:uppercase;font-weight:600">MYR Equivalent</div>
+          <div class="pv-val" style="font-size:10px;color:rgba(255,255,255,0.25);margin-top:4px;letter-spacing:1px;text-transform:uppercase;font-weight:600">MYR Equivalent</div>
+          <div class="pv-hide" style="font-size:10px;color:rgba(255,255,255,0.2);margin-top:4px">••••</div>
           <div class="dash-nw-underline" style="height:1px;background:linear-gradient(90deg,rgba(0,200,255,.6),rgba(180,140,50,.4),transparent);margin-top:6px;width:0"></div>
         </div>
         <button id="priv-btn" onclick="togglePrivacy()" style="background:none;border:none;cursor:pointer;padding:4px;opacity:0.55;line-height:0;flex-shrink:0;position:relative;z-index:9999">
@@ -1574,277 +1609,14 @@ function renderDashboard(){
   </div>`;
 
 
-  return `<div style="padding:14px 16px 0;display:flex;flex-direction:column;height:100%;overflow:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;background:#000">
+  return `<div style="padding:14px 16px 0;display:flex;flex-direction:column;min-height:100%;overflow-y:auto;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;background:#000">
     ${heroSection}
     <!-- Strips -->
-    <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-start;min-height:0;padding-top:4px">
-    <div style="height:18px;overflow:hidden;margin-bottom:4px;position:relative">
-      <div class="dash-ticker" style="display:flex;flex-direction:column;gap:0">
-        ${[...pfData,...pfData].map(d=>{
-          const sum2=getSummary(d.pf0);
-          const ccy2=Object.keys(sum2.mktVal).sort((a,b)=>(sum2.mktVal[b]||0)-(sum2.mktVal[a]||0))[0]||'MYR';
-          const netP=(((sum2.unreal||{})[ccy2]||0)+((sum2.divs||{})[ccy2]||0)+((sum2.realized||{})[ccy2]||0)-((sum2.platformFees||{})[ccy2]||0));
-          const pct2=((sum2.cost||{})[ccy2]||0)>0?netP/((sum2.cost||{})[ccy2]||1)*100:0;
-          const col2=pct2>=0?'rgba(105,240,174,.6)':'rgba(255,100,100,.6)';
-          return `<div class="dash-tick-item" style="font-size:7px;font-family:'Courier New',monospace;color:rgba(0,200,255,.3);letter-spacing:1.5px;height:22px;display:flex;align-items:center;gap:6px;white-space:nowrap">
-            <span style="color:rgba(0,229,255,.6);font-weight:700">${d.pf0.name}</span>
-            <span style="color:rgba(255,255,255,.1)">|</span>
-            <span style="color:${col2}">${pct2>=0?'+':''}${pct2.toFixed(2)}%</span>
-            <span style="color:rgba(255,255,255,.08)">///</span>
-          </div>`;
-        }).join('')}
-      </div>
-    </div>
-    <!-- AI Analyst bar -->
-    <div id="ai-analyst-bar" onclick="openAiPage()" style="margin-bottom:8px;background:rgba(0,200,255,0.04);border:1px solid rgba(0,200,255,0.12);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:9px;min-height:38px;cursor:pointer;position:relative;overflow:hidden">
-      <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,200,255,0.03),transparent);pointer-events:none"></div>
-      <!-- animated AI orb -->
-      <div id="ai-orb" style="flex-shrink:0;width:22px;height:22px;border-radius:50%;position:relative">
-        <svg width="22" height="22" viewBox="0 0 22 22" style="position:absolute;inset:0">
-          <defs>
-            <radialGradient id="orbg" cx="40%" cy="35%" r="60%">
-              <stop offset="0%" stop-color="#80ffff" stop-opacity="0.9"/>
-              <stop offset="50%" stop-color="#00c8ff" stop-opacity="0.6"/>
-              <stop offset="100%" stop-color="#7850ff" stop-opacity="0.8"/>
-            </radialGradient>
-          </defs>
-          <circle cx="11" cy="11" r="10" fill="url(#orbg)" opacity="0.9"/>
-          <circle cx="11" cy="11" r="10" fill="none" stroke="rgba(0,200,255,0.4)" stroke-width="0.5"/>
-          <circle cx="7" cy="8" r="2.5" fill="rgba(255,255,255,0.25)"/>
-          <text x="11" y="15" text-anchor="middle" font-size="7" font-weight="800" font-family="system-ui" fill="rgba(0,0,0,0.7)">AI</text>
-        </svg>
-      </div>
-      <div id="ai-analyst-text" style="font-size:11px;color:rgba(255,255,255,0.5);flex:1;line-height:1.4;font-style:italic">Analysing your portfolio…</div>
-      <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
-        <div id="ai-analyst-spin" style="width:10px;height:10px;border:1.5px solid rgba(0,200,255,0.2);border-top-color:rgba(0,200,255,0.7);border-radius:50%"></div>
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(0,200,255,0.3)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-      </div>
-    </div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-start;padding-top:4px;padding-bottom:60px">
     ${orbSection}</div>
   </div>`;
 }
 
-async function refreshAiAnalyst(){
-  const txt=document.getElementById('ai-analyst-text');
-  const spin=document.getElementById('ai-analyst-spin');
-  if(!txt)return;
-  txt.textContent='Thinking…';
-  txt.style.fontStyle='italic';
-  if(spin){spin.style.animation='aiSpin 0.8s linear infinite';}
-
-  const lines=S.portfolios.map(function(p){
-    const sum=getSummary(p);
-    const allC=[...new Set(Object.keys(sum.mktVal))];
-    let mvMYR=0,costMYR=0;
-    allC.forEach(function(c){mvMYR+=toMYR((sum.mktVal[c]||0)+((p.cashBalances&&p.cashBalances[c])||0),c);costMYR+=toMYR(sum.cost[c]||0,c);});
-    const pct=costMYR>0?((mvMYR-costMYR)/costMYR*100).toFixed(1):'n/a';
-    const holdings=getHoldings(p,true).sort((a,b)=>b.mktVal-a.mktVal).slice(0,3).map(function(h){return h.stock;}).join(', ');
-    return p.name+': RM '+mvMYR.toFixed(0)+', '+pct+'% return, top: '+holdings;
-  }).join('; ');
-
-  const grandMYR2=S.portfolios.reduce(function(s,p){
-    const sum=getSummary(p);
-    Object.keys(sum.mktVal).forEach(function(c){s+=toMYR((sum.mktVal[c]||0)+((p.cashBalances&&p.cashBalances[c])||0),c);});
-    return s;
-  },0);
-
-  const prompt='Portfolio: '+lines+'. Net worth RM '+grandMYR2.toFixed(0)+'. Write one sharp sentence (max 18 words) of insight about this portfolio. Be blunt and specific, mention stock names.';
-
-  try{
-    const k1=getAiKey();if(!k1){txt.textContent='API key required — tap to enter';if(spin)spin.style.animation='';return;}
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':k1,'anthropic-version':'2023-06-01'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:80,messages:[{role:'user',content:prompt}]})
-    });
-    if(!res.ok){const err=await res.text();throw new Error('HTTP '+res.status+' '+err.slice(0,80));}
-    const data=await res.json();
-    const insight=data.content&&data.content[0]&&data.content[0].text?data.content[0].text.trim():'No response.';
-    txt.textContent=insight;
-    txt.style.fontStyle='normal';
-    txt.style.color='rgba(255,255,255,0.65)';
-  }catch(e){
-    txt.textContent='Tap to retry ('+String(e).slice(0,40)+')';
-  }
-  if(spin)spin.style.animation='';
-}
-
-
-// ── AI key management ────────────────────────────────────────────────────────
-window._aiKey='';
-function getAiKey(){
-  if(window._aiKey)return window._aiKey;
-  var k=prompt('Enter your Anthropic API key to enable AI analysis (get one at console.anthropic.com):');
-  if(k&&k.trim().startsWith('sk-')){window._aiKey=k.trim();return window._aiKey;}
-  return null;
-}
-
-// ── AI Analysis Full Page ─────────────────────────────────────────────────────
-function openAiPage(){
-  if(window.pushNav)window.pushNav(function(){var p=document.getElementById('ai-page');if(p)p.style.display='none';});
-  var pg=document.getElementById('ai-page');
-  if(pg){pg.style.display='flex';renderAiPage();animateAiLogo();return;}
-
-  // Build page without nested template literals
-  var div=document.createElement('div');
-  div.id='ai-page';
-  div.style.cssText='position:fixed;inset:0;background:#030308;z-index:250;display:flex;flex-direction:column;overflow:hidden';
-
-  // Header
-  var hdr=document.createElement('div');
-  hdr.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0';
-
-  var backBtn=document.createElement('div');
-  backBtn.style.cssText='display:flex;align-items:center;gap:6px;cursor:pointer;color:rgba(255,255,255,0.5);font-size:13px';
-  backBtn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Back';
-  backBtn.onclick=function(){var p=document.getElementById('ai-page');if(p)p.style.display='none';};
-
-  var logoWrap=document.createElement('div');
-  logoWrap.style.cssText='display:flex;align-items:center;gap:10px';
-  logoWrap.innerHTML=''
-    +'<svg id="ai-logo-svg" width="36" height="36" viewBox="0 0 36 36">'
-    +'<defs>'
-    +'<radialGradient id="lg1" cx="38%" cy="32%" r="65%">'
-    +'<stop offset="0%" stop-color="#a0ffff"/>'
-    +'<stop offset="50%" stop-color="#00c8ff"/>'
-    +'<stop offset="100%" stop-color="#5020ff"/>'
-    +'</radialGradient>'
-    +'<filter id="lglow"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
-    +'</defs>'
-    +'<circle id="ai-logo-ring" cx="18" cy="18" r="16" fill="url(#lg1)" opacity="0.95" filter="url(#lglow)"/>'
-    +'<circle cx="18" cy="18" r="16" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>'
-    +'<circle cx="13" cy="12" r="4" fill="rgba(255,255,255,0.18)"/>'
-    +'<circle cx="13" cy="12" r="2" fill="rgba(255,255,255,0.3)"/>'
-    +'<ellipse id="ai-orbit" cx="18" cy="18" rx="16" ry="5.5" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="0.8" transform="rotate(-20 18 18)"/>'
-    +'<text x="18" y="23" text-anchor="middle" font-size="10" font-weight="900" font-family="system-ui" fill="rgba(0,0,40,0.8)">AI</text>'
-    +'</svg>'
-    +'<div>'
-    +'<div style="font-size:14px;font-weight:700;color:#fff;letter-spacing:-0.3px">AI Analyst</div>'
-    +'<div style="font-size:9px;color:rgba(0,200,255,0.5);letter-spacing:1px;text-transform:uppercase">Portfolio X</div>'
-    +'</div>';
-
-  var refreshBtn=document.createElement('div');
-  refreshBtn.style.cssText='cursor:pointer;font-size:9px;color:rgba(0,200,255,0.4);letter-spacing:1px;text-transform:uppercase;border:1px solid rgba(0,200,255,0.15);border-radius:6px;padding:4px 8px';
-  refreshBtn.textContent='↺ Refresh';
-  refreshBtn.onclick=renderAiPage;
-
-  hdr.appendChild(backBtn);
-  hdr.appendChild(logoWrap);
-  hdr.appendChild(refreshBtn);
-
-  // Body
-  var body=document.createElement('div');
-  body.id='ai-page-body';
-  body.style.cssText='flex:1;overflow-y:auto;padding:16px';
-  body.innerHTML='<div style="text-align:center;padding:3rem 0;color:rgba(255,255,255,0.2);font-size:13px">Generating analysis…</div>';
-
-  div.appendChild(hdr);
-  div.appendChild(body);
-  document.body.appendChild(div);
-  renderAiPage();
-  animateAiLogo();
-}
-
-function animateAiLogo(){
-  const ring=document.getElementById('ai-logo-ring');
-  const orbit=document.getElementById('ai-orbit');
-  if(!ring)return;
-  let t=0;
-  function tick(){
-    t+=0.02;
-    // Pulse the orb color between blue and gold
-    const hue=180+Math.sin(t)*60;
-    ring.style.opacity=0.85+Math.sin(t*1.3)*0.1;
-    if(orbit)orbit.setAttribute('transform','rotate('+(t*30%360)+' 16 16)');
-    if(document.getElementById('ai-logo-svg'))requestAnimationFrame(tick);
-  }
-  tick();
-}
-
-async function renderAiPage(){
-  const body=document.getElementById('ai-page-body');
-  if(!body)return;
-
-  // Build full portfolio context
-  const pfSnapshots=S.portfolios.map(function(p){
-    const sum=getSummary(p);
-    const allC=[...new Set(Object.keys(sum.mktVal))];
-    let mvMYR=0,costMYR=0,unrealMYR=0,divMYR=0;
-    allC.forEach(function(c){
-      mvMYR+=toMYR((sum.mktVal[c]||0)+((p.cashBalances&&p.cashBalances[c])||0),c);
-      costMYR+=toMYR(sum.cost[c]||0,c);
-      unrealMYR+=toMYR(sum.unreal[c]||0,c);
-      divMYR+=toMYR(sum.divs[c]||0,c);
-    });
-    const holdings=getHoldings(p,true).sort((a,b)=>b.mktVal-a.mktVal);
-    const hStr=holdings.map(function(h){
-      const col=h.unreal>=0?'gain':'loss';
-      return h.stock+'('+h.ccy+' '+( h.unreal>=0?'+':'')+h.unreal.toFixed(0)+' '+col+')';
-    }).join(', ');
-    return p.name+': value RM'+mvMYR.toFixed(0)+', cost RM'+costMYR.toFixed(0)+', unrealized RM'+unrealMYR.toFixed(0)+', dividends RM'+divMYR.toFixed(0)+', holdings: '+hStr;
-  }).join(' | ');
-
-  const grandMYR2=S.portfolios.reduce(function(s,p){
-    const sum=getSummary(p);
-    Object.keys(sum.mktVal).forEach(function(c){s+=toMYR((sum.mktVal[c]||0)+((p.cashBalances&&p.cashBalances[c])||0),c);});
-    return s;
-  },0);
-
-  // Show skeleton cards while loading
-  const sections=['Overall Health','Biggest Risk','Best Performer','Diversification','Action to Consider'];
-  body.innerHTML=sections.map(function(s){
-    return '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:14px 16px;margin-bottom:10px">'
-      +'<div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(0,200,255,0.4);margin-bottom:8px">'+s+'</div>'
-      +'<div class="ai-skeleton" style="height:12px;background:rgba(255,255,255,0.05);border-radius:6px;margin-bottom:6px"></div>'
-      +'<div class="ai-skeleton" style="height:12px;background:rgba(255,255,255,0.05);border-radius:6px;width:80%"></div>'
-      +'</div>';
-  }).join('');
-
-  const cardDefs=[
-    {key:'overall', label:'Overall Health',        col:'#00c8ff', icon:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',                                                                                              q:'In 1-2 sentences what is the overall health of this portfolio? Use specific numbers.'},
-    {key:'risk',    label:'Biggest Risk',           col:'#ff4d6d', icon:'M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01',                              q:'In 1-2 sentences what is the single biggest risk right now? Name the specific stock.'},
-    {key:'best',    label:'Best Performer',         col:'#00e676', icon:'M23 6l-9.5 9.5-5-5L1 18M17 6h6v6',                                                                                                         q:'In 1-2 sentences which holding is performing best and why?'},
-    {key:'diversification', label:'Diversification',col:'#f59e0b', icon:'M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z',            q:'In 1-2 sentences how well diversified is this portfolio across sectors and currencies?'},
-    {key:'action',  label:'Action to Consider',     col:'#a78bfa', icon:'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5',                                                                                   q:'In 1-2 sentences what is one specific action the investor should consider doing now?'},
-  ];
-
-  const ctx='Investor portfolio data: '+pfSnapshots+'. Total net worth: RM '+grandMYR2.toFixed(0)+'. ';
-
-  try{
-    const results=await Promise.all(cardDefs.map(async function(c){
-      const k2=window._aiKey;if(!k2)throw new Error('No API key');
-      const r=await fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','x-api-key':k2,'anthropic-version':'2023-06-01'},
-        body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:120,messages:[{role:'user',content:ctx+c.q}]})
-      });
-      if(!r.ok){const t=await r.text();throw new Error('HTTP '+r.status+' '+t.slice(0,80));}
-      const d=await r.json();
-      return d.content&&d.content[0]&&d.content[0].text?d.content[0].text.trim():'—';
-    }));
-
-    const now=new Date();
-    const ts=now.toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'});
-    body.innerHTML='<div style="font-size:9px;color:rgba(255,255,255,0.15);letter-spacing:1.5px;text-align:right;margin-bottom:12px;font-family:Courier New,monospace">GENERATED '+ts+' · TAP ↺ TO REFRESH</div>'
-      +cardDefs.map(function(c,i){
-        return '<div style="background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-left:3px solid '+c.col+';border-radius:12px;padding:14px 16px;margin-bottom:10px">'
-          +'<div style="display:flex;align-items:center;gap:7px;margin-bottom:8px">'
-          +'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="'+c.col+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="'+c.icon+'"/></svg>'
-          +'<div style="font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:'+c.col+'">'+c.label+'</div>'
-          +'</div>'
-          +'<div style="font-size:13px;color:rgba(255,255,255,0.75);line-height:1.6">'+results[i]+'</div>'
-          +'</div>';
-      }).join('')
-      +'<div style="text-align:center;padding:8px 0 4px;font-size:9px;color:rgba(255,255,255,0.1);letter-spacing:1px">AI analysis is informational only · Not financial advice</div>';
-
-  }catch(e){
-    body.innerHTML='<div style="padding:2rem 1rem">'
-      +'<div style="color:rgba(255,100,100,0.7);font-size:13px;margin-bottom:12px">Failed to load analysis.</div>'
-      +'<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:10px;font-size:10px;color:rgba(255,255,255,0.25);font-family:Courier New,monospace;word-break:break-all;margin-bottom:16px">'+String(e)+'</div>'
-      +'<div onclick="renderAiPage()" style="text-align:center;color:rgba(0,200,255,0.5);cursor:pointer;font-size:13px">Tap to retry</div>'
-      +'</div>';
-  }
-}
 
 function drawDashboardCharts(){
   const ct=document.getElementById('ct');
@@ -2081,7 +1853,7 @@ function renderContent(){
     $('ct').innerHTML=renderCcyDetail(p,VIEW.ccy);fixLayout();return;
   }
   if(window._dashRAF){cancelAnimationFrame(window._dashRAF);window._dashRAF=null;}
-if(TAB==='dashboard'){$('ct').style.padding='0';$('ct').style.overflow='hidden';$('ct').style.height='calc(100vh - 110px)';document.body.style.overflow='hidden';setDateBar('Dashboard &nbsp;<span style="color:rgba(180,140,50,0.55);font-size:10px;letter-spacing:1px">· All Portfolios</span>');$('ct').innerHTML=renderDashboard();setTimeout(drawDashboardCharts,50);setTimeout(refreshAiAnalyst,200);}
+if(TAB==='dashboard'){$('ct').style.padding='0';$('ct').style.overflow='auto';$('ct').style.height='calc(100vh - 110px)';$('ct').style.paddingBottom='60px';document.body.style.overflow='hidden';setDateBar('Dashboard &nbsp;<span style="color:rgba(180,140,50,0.55);font-size:10px;letter-spacing:1px">· All Portfolios</span>');$('ct').innerHTML=renderDashboard();setTimeout(function(){var ct=$('ct');if(ct){ct.scrollTop=0;ct.scrollLeft=0;}window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;},0);setTimeout(drawDashboardCharts,50);}
   if(window._dashRAF){cancelAnimationFrame(window._dashRAF);window._dashRAF=null;}
   else if(TAB==='overview'){
     $('ct').style.padding='0';$('ct').style.overflow='';$('ct').style.height='';
@@ -2320,7 +2092,7 @@ function showBreakdown(type, portfolioId, ccy){
   let title='',rows='',total=0;
 
   // ── shared row builder ───────────────────────────────────────────────────────
-  function bdRow(avatarLetter,avatarBg,avatarBorder,title,sub1,sub2,amountStr,amountCol,onclick){
+  function bdRow(avatarLetter,avatarBg,avatarBorder,title,sub1,sub2,amountStr,amountCol,onclick,pctStr){
     return '<div'+(onclick?' onclick="'+onclick+'" style="display:flex;align-items:center;gap:10px;padding:9px 12px;margin-bottom:4px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:9px;cursor:pointer"':' style="display:flex;align-items:center;gap:10px;padding:9px 12px;margin-bottom:4px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:9px"')+'>'
       +'<div style="width:36px;height:36px;border-radius:50%;background:'+avatarBg+';border:1.5px solid '+avatarBorder+';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0">'+avatarLetter+'</div>'
       +'<div style="flex:1;min-width:0">'
@@ -2330,6 +2102,7 @@ function showBreakdown(type, portfolioId, ccy){
       +'</div>'
       +'<div style="text-align:right;flex-shrink:0">'
       +'<div style="font-size:13px;font-weight:700;color:'+amountCol+';white-space:nowrap">'+amountStr+'</div>'
+      +(pctStr?'<div style="font-size:11px;font-weight:600;color:'+amountCol+';opacity:0.75;margin-top:2px;white-space:nowrap">'+pctStr+'</div>':'')
       +'</div>'
       +'</div>';
   }
@@ -2388,14 +2161,15 @@ function showBreakdown(type, portfolioId, ccy){
         const avatarBg=h.unreal>=0?'#1a3a2a':'#3a1a1a';
         const avatarBorder=h.unreal>=0?'#00e676':'#ff4d6d';
         const amtStr=(h.unreal>=0?'+':'')+fc2(h.unreal,ccy);
-        const pctStr=pct!==null?' ('+( pct>=0?'+':'')+pct.toFixed(2)+'%)':'';
+        const pctStr=pct!==null?(pct>=0?'+':'')+pct.toFixed(2)+'%':'';
         const safeStock=h.stock.replace(/'/g,"\'");
         rows+=bdRow(letter, avatarBg, avatarBorder,
-          h.stock,
-          (h.qty).toLocaleString()+' shares · avg '+fc2(h.avg,ccy)+' · now '+fc2(h.mktP,ccy),
-          'Value: '+fc2(h.mktVal,ccy),
-          amtStr+pctStr, col,
-          'closeBreakdownOv();drillStock(\'' +safeStock+ '\',\'' +ccy+ '\')');
+          h.stock+' <span style="font-size:10px;font-weight:400;color:rgba(255,255,255,0.3)">'+h.qty.toLocaleString()+' shares</span>',
+          'Avg '+fc2(h.avg,ccy)+' · Now '+fc2(h.mktP,ccy),
+          'Value '+fc2(h.mktVal,ccy),
+          amtStr, col,
+          'closeBreakdownOv();drillStock(\'' +safeStock+ '\',\'' +ccy+ '\')',
+          pctStr);
       });
     }
 
@@ -2579,7 +2353,7 @@ function renderCcyDetail(p,ccy){
       <div style="font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px">${p.name} · ${ccy} Portfolio</div>
       <div class="pv-val" style="font-size:22px;font-weight:700;color:#fff;line-height:1;letter-spacing:-0.3px">${fc(mvWithCash,ccy)}</div>
       <div class="pv-hide" style="font-size:22px;font-weight:700;color:#fff">••••••</div>
-      ${ccy!=='MYR'?`<div class="pv-val" style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:3px;letter-spacing:.3px">≈ ${mvWithCashMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+      ${ccy!=='MYR'?`<div class="pv-val" style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:3px;letter-spacing:.3px">≈ RM ${mvWithCashMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
       <div class="pv-hide" style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:3px">••••</div>`:''}
     </div>
   </div>`;
@@ -4073,7 +3847,7 @@ function doRestore(e){
 
 // ── Actions ────────────────────────────────────────────────────────────────────
 function swPf(id){S.activeId=id;TAB='overview';VIEW=null;journeyFilter=null;save();render();}
-function swTab(t){if(window._navStack)window._navStack=[];
+function swTab(t){if(window._navStack)window._navStack=[];$('ct').scrollTop=0;
   closeSettings();
   TAB=t;VIEW=null;journeyFilter=null;
   // Update nav instantly
@@ -5355,7 +5129,18 @@ showWelcomeIfFirstLoad();
   // ── Nav stack for back-swipe ──
   window._navStack=[];
   window.pushNav=function(backFn){window._navStack.push(backFn);};
-  window.goBack=function(){if(window._navStack.length){const fn=window._navStack.pop();fn();}};
+  window.goBack=function(){
+    if(window._navStack.length){
+      const fn=window._navStack.pop();
+      fn();
+      // Always reset scroll after going back
+      var ct=document.getElementById('ct');
+      if(ct){ct.scrollTop=0;}
+      window.scrollTo(0,0);
+      document.documentElement.scrollTop=0;
+      document.body.scrollTop=0;
+    }
+  };
 
   const TAB_ORDER=['dashboard','overview','transactions','options','settings'];
   let _tx=0,_ty=0,_target=null,_active=false;
