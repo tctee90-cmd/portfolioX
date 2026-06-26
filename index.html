@@ -198,6 +198,20 @@ button.ghost{border-color:rgba(255,255,255,0.06);color:var(--t2);background:tran
 .kv{font-size:14px;font-weight:700}
 
 /* ── Portfolio cards (dashboard/overview) ── */
+@keyframes pricespin{to{transform:rotate(360deg)}}
+@keyframes ptr-spin{to{transform:rotate(360deg)}}
+#ptr-indicator{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  height:0;overflow:hidden;
+  background:rgba(0,0,0,0.9);
+  font-size:11px;color:rgba(0,200,255,0.6);letter-spacing:1.5px;text-transform:uppercase;
+  transition:height .2s ease;
+  pointer-events:none;
+}
+#ptr-indicator.visible{height:44px;}
+#ptr-spinner{width:14px;height:14px;border:2px solid rgba(0,200,255,0.2);border-top-color:rgba(0,200,255,0.8);border-radius:50%;}
+#ptr-spinner.spin{animation:ptr-spin .7s linear infinite;}
 .pf-card{
   position:relative;overflow:hidden;
   background:linear-gradient(135deg,#050508,#08080d);
@@ -505,6 +519,7 @@ body.privacy-on .kc > div:last-child *{
 </style>
 </head>
 <body>
+<div id="ptr-indicator"><div id="ptr-spinner"></div><span id="ptr-text">Pull down to refresh</span></div>
 <div id="welcome-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,17,23,.97);z-index:9999;align-items:center;justify-content:center">
   <div style="background:#050508;border-radius:12px;padding:2.5rem;max-width:460px;width:90%;box-shadow:0 24px 64px rgba(0,0,0,.6);border:1px solid #2a3350">
     <div style="font-size:22px;font-weight:700;color:#e8eaf0;margin-bottom:.5rem">Welcome to PortfolioX</div>
@@ -673,11 +688,36 @@ async function fetchFXAndFill(){
 
 async function fetchFX(){
   try{
-    const ccys=Object.keys(_fx).filter(c=>c!=='MYR');
-    const r=await fetch('https://api.frankfurter.app/latest?from=MYR&to='+ccys.join(','));
-    if(!r.ok)return;
-    const d=await r.json();
-    Object.entries(d.rates||{}).forEach(([ccy,rate])=>{if(rate>0)_fx[ccy]=Math.round((1/rate)*10000)/10000;});
+    const ccys=Object.keys(_fx).filter(function(c){return c!=='MYR';});
+    if(!ccys.length)return;
+    // Try frankfurter.app (free, no key needed, covers SGD/USD/GBP/HKD)
+    const proxies=[
+      'https://api.frankfurter.app/latest?from=MYR&to='+ccys.join(','),
+      'https://corsproxy.io/?'+encodeURIComponent('https://api.frankfurter.app/latest?from=MYR&to='+ccys.join(',')),
+    ];
+    let updated=false;
+    for(const url of proxies){
+      try{
+        const r=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(6000)});
+        if(!r.ok)continue;
+        const d=await r.json();
+        Object.entries(d.rates||{}).forEach(function([ccy,rate]){
+          if(rate>0){
+            _fx[ccy]=Math.round((1/rate)*10000)/10000;
+            // Update settings inputs if visible
+            const el=document.getElementById('sfx-'+ccy);
+            if(el)el.value=_fx[ccy].toFixed(4);
+          }
+        });
+        updated=true;
+        break;
+      }catch(e2){continue;}
+    }
+    if(updated){
+      // Save to localStorage and re-render so values update immediately
+      if(S){S.fx=Object.assign({},_fx);save();}
+      render();
+    }
   }catch(e){}
 }
 fetchFX();setInterval(fetchFX,10*60*1000); // refresh every 10 mins
@@ -1040,52 +1080,47 @@ function renderSettingsPx(){
       }
     });
   });
-  const CCY_ORDER=['MYR','SGD','USD'];
-  const byCcy={};
-  allStocks.forEach(function(s){if(!byCcy[s.ccy])byCcy[s.ccy]=[];byCcy[s.ccy].push(s);});
-  Object.keys(byCcy).forEach(function(c){byCcy[c].sort(function(a,b){return b.mktVal-a.mktVal;});});
-  const ccyOrder=[...CCY_ORDER.filter(function(c){return byCcy[c];}),...Object.keys(byCcy).filter(function(c){return CCY_ORDER.indexOf(c)<0;})];
-  const CCY_ACCENT=CCY_COLORS;
-  let rowsHtml='';
-  if(allStocks.length){
-    // Single header row at top
-    rowsHtml='<div style="display:grid;grid-template-columns:1fr 66px 82px;gap:4px;padding:3px 2px;margin-bottom:3px;border-bottom:1px solid var(--b1)">'
-      +'<span style="font-size:9px;color:var(--t3);letter-spacing:.5px;text-transform:uppercase">Stock</span>'
-      +'<span style="font-size:9px;color:var(--t3);letter-spacing:.5px;text-align:center;text-transform:uppercase">CCY</span>'
-      +'<span style="font-size:9px;color:var(--t3);letter-spacing:.5px;text-align:center;text-transform:uppercase">Price</span>'
-      +'</div>';
-    ccyOrder.forEach(function(ccy){
-      const group=byCcy[ccy];const accent=CCY_ACCENT[ccy]||'#4fc3f7';
-      rowsHtml+='<div style="font-size:9px;font-weight:800;color:'+accent+';margin:2px 0 1px;padding:1px 5px;border-left:2px solid '+accent+';background:'+accent+'12;border-radius:0 3px 3px 0;letter-spacing:.5px">'+ccy+' — '+group.length+' stock'+(group.length!==1?'s':'')+'</div>';
-      group.forEach(function(item){
-        const k=item.stock.replace(/[^a-z0-9]/gi,'_');
-        const opts=CCYS.map(function(c){return'<option '+(item.ccy===c?'selected':'')+'>'+c+'</option>';}).join('');
-        const pfBadges=item.pfIds.map(function(pid){const pf0=S.portfolios.find(function(x){return x.id===pid;})||{};return'<span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:'+(pf0.color||'#888')+'"></span>';}).join('');
-        rowsHtml+='<div style="display:grid;grid-template-columns:1fr 66px 82px;gap:4px;margin-bottom:2px;align-items:center">'
-          +'<div style="display:flex;align-items:center;gap:3px;min-width:0"><span style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;color:var(--t1)">'+item.stock+'</span>'+pfBadges+'</div>'
-          +'<div style="overflow:hidden;height:26px"><select id="spc-'+k+'" style="font-size:16px;transform:scale(0.75);transform-origin:top center;padding:0;text-align:center;text-align-last:center;width:133%;height:34px;margin-left:-17%;border-radius:7px">'+opts+'</select></div>'
-          +'<div style="overflow:hidden;height:26px"><input type="number" id="spp-'+k+'" step="0.0001" value="'+item.price+'" style="text-align:center;font-size:16px;transform:scale(0.75);transform-origin:top center;padding:0 2px;width:133%;height:34px;margin-left:-17%;border-radius:7px"></div>'
-          +'</div>';
-      });
-    });
-  } else {rowsHtml='<p class="m" style="font-size:11px">No active holdings.</p>';}
+
+  // Show live price status + fetch button instead of manual inputs
   const pxList=document.getElementById('settings-px-list');
-  if(pxList)pxList.innerHTML=rowsHtml;
+  if(pxList){
+    const lastFetch=_lastPriceFetch?new Date(_lastPriceFetch).toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'}):'Never';
+    const stockCount=allStocks.length;
+    pxList.innerHTML=''
+      +'<div style="display:flex;flex-direction:column;gap:6px;padding:4px 0">'
+      +'<div style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:.5px">'+stockCount+' active holdings · Last updated: '+lastFetch+'</div>'
+      +'<div style="font-size:10px;color:rgba(0,200,255,0.4);letter-spacing:1px">↓ Pull down on dashboard to refresh · Auto-refreshes every 5 min</div>'
+      +'<div id="settings-live-status" style="font-size:10px;color:rgba(255,255,255,0.2);text-align:center"></div>'
+      // Show current prices as read-only list
+      +'<div style="margin-top:4px;border-top:1px solid rgba(255,255,255,0.05);padding-top:6px">'
+      +allStocks.map(function(item){
+        const mp=item.price>0?item.ccy+' '+item.price.toFixed(4):'—';
+        const pfBadges=item.pfIds.map(function(pid){const pf0=S.portfolios.find(function(x){return x.id===pid;})||{};return'<span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:'+(pf0.color||'#888')+'"></span>';}).join('');
+        const hasTicker=!!LIVE_TICKERS[item.stock];
+        return'<div style="display:flex;align-items:center;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04)">'
+          +'<div style="display:flex;align-items:center;gap:4px"><span style="font-size:11px;color:rgba(255,255,255,0.6)">'+item.stock+'</span>'+pfBadges+(hasTicker?'<span style="font-size:8px;color:rgba(0,200,255,0.4);background:rgba(0,200,255,0.08);border-radius:3px;padding:1px 4px">LIVE</span>':'<span style="font-size:8px;color:rgba(255,150,0,0.4);background:rgba(255,150,0,0.08);border-radius:3px;padding:1px 4px">MANUAL</span>')+'</div>'
+          +'<span style="font-size:11px;font-weight:600;color:rgba(255,255,255,0.5)">'+mp+'</span>'
+          +'</div>';
+      }).join('')
+      +'</div>'
+      +'</div>';
+  }
+
+  // Keep FX rates
   const usedFxCcys=[...new Set(allStocks.map(function(s){return s.ccy;}))].filter(function(c){return c&&c!=='MYR';});
   const fxList=document.getElementById('settings-fx-list');
   if(fxList&&usedFxCcys.length){
-    fxList.innerHTML='<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-top:2px;padding-top:3px;border-top:1px solid var(--b1)">'
-      +'<span style="font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap">FX→MYR</span>'
+    fxList.innerHTML='<div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.05)">'
+      +'<div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">FX Rates · Auto-updated</div>'
       +usedFxCcys.map(function(ccy){
-        return'<div style="display:flex;align-items:center;gap:2px;flex:1;min-width:70px">'
-          +'<span style="font-size:10px;color:var(--t2);white-space:nowrap">'+ccy+'=</span>'
-          +'<div style="overflow:hidden;height:22px;flex:1;min-width:0"><input type="number" id="sfx-'+ccy+'" step="0.01" value="'+(_fx[ccy]||0).toFixed(2)+'" style="text-align:center;font-size:16px;transform:scale(0.75);transform-origin:top center;width:133%;height:29px;margin-left:-17%;border-radius:7px;padding:0 2px"></div>'
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04)">'
+          +'<span style="font-size:11px;color:rgba(255,255,255,0.4)">1 '+ccy+' → MYR</span>'
+          +'<span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.6)">'+(_fx[ccy]||0).toFixed(4)+'</span>'
           +'</div>';
       }).join('')
-      +'<button onclick="spxFromSettings()" class="pri" style="height:24px;font-size:11px;padding:0 10px;flex-shrink:0;margin-left:auto">Save</button>'
+      +'<div style="font-size:9px;color:rgba(255,255,255,0.15);margin-top:5px;font-style:italic">Rates from frankfurter.app · refreshes every 10 min</div>'
       +'</div>';
   } else if(fxList){fxList.innerHTML='';}
-  // Store for save
   window._settingsStocks=allStocks;window._settingsFxCcys=usedFxCcys;
 }
 function spxFromSettings(){
@@ -1603,7 +1638,8 @@ function renderDashboard(){
           :`<div style="font-size:8px;color:${m.col};margin-top:2px;opacity:0.75;font-weight:500">${m.sub}</div>`}
       </div>`).join('')}
     </div>
-  </div>`;
+  </div>
+  <div id="price-status-bar" style="font-size:9px;color:rgba(255,255,255,0.15);letter-spacing:1px;padding:4px 0 0;text-align:center;font-style:italic"></div>`;
 
 
   return `<div style="padding:14px 16px 0;display:flex;flex-direction:column;min-height:100%;overflow-y:auto;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;background:#000">
@@ -1800,6 +1836,168 @@ function goPortfolioCcy(id,ccy){
   render();
 }
 
+// ── Pull-to-Refresh ──────────────────────────────────────────────────────────
+(function(){
+  var startY=0, pulling=false, threshold=70, ind, spinner, txt;
+  function getInd(){ind=document.getElementById('ptr-indicator');spinner=document.getElementById('ptr-spinner');txt=document.getElementById('ptr-text');}
+  document.addEventListener('touchstart',function(e){
+    // Only trigger if scrolled to very top
+    var ct=document.getElementById('ct');
+    var scrollTop=(ct&&ct.scrollTop)||window.scrollY||0;
+    if(scrollTop<=2){startY=e.touches[0].clientY;pulling=true;}
+    else{pulling=false;}
+  },{passive:true});
+  document.addEventListener('touchmove',function(e){
+    if(!pulling)return;
+    var dy=e.touches[0].clientY-startY;
+    if(dy<0){pulling=false;return;}
+    getInd();
+    if(dy>20&&ind){
+      ind.classList.add('visible');
+      if(dy>threshold){
+        if(txt)txt.textContent='Release to refresh prices';
+        if(spinner)spinner.classList.add('spin');
+      } else {
+        if(txt)txt.textContent='Pull down to refresh prices';
+        if(spinner)spinner.classList.remove('spin');
+      }
+    }
+  },{passive:true});
+  document.addEventListener('touchend',function(e){
+    if(!pulling)return;
+    pulling=false;
+    var dy=e.changedTouches[0].clientY-startY;
+    getInd();
+    if(dy>threshold){
+      if(txt)txt.textContent='Updating prices…';
+      if(spinner)spinner.classList.add('spin');
+      fetchLivePrices(true).then(function(){
+        if(txt)txt.textContent='✓ Updated';
+        if(spinner)spinner.classList.remove('spin');
+        setTimeout(function(){if(ind)ind.classList.remove('visible');},1000);
+      }).catch(function(){
+        if(txt)txt.textContent='Failed — try again';
+        if(spinner)spinner.classList.remove('spin');
+        setTimeout(function(){if(ind)ind.classList.remove('visible');},1200);
+      });
+    } else {
+      if(ind)ind.classList.remove('visible');
+      if(spinner)spinner.classList.remove('spin');
+    }
+  },{passive:true});
+})();
+
+// ── Live Price Fetcher ────────────────────────────────────────────────────────
+const LIVE_TICKERS = {
+  // USD stocks
+  'AMD':'AMD','CRM':'CRM','DRAM ETF':'DRAM','IBIT':'IBIT',
+  'MSFT':'MSFT','NASA ETF':'ARKX','NOW':'NOW','NVDA':'NVDA',
+  'ORCL':'ORCL','Ondas':'ONDS','Opendoor':'OPEN','PLTR':'PLTR','TSLA':'TSLA',
+  // SGD stocks (.SI = Singapore Exchange)
+  'CapLand Ascendas':'A17U.SI','MapleTree':'ME8U.SI','TopGlove SG':'BVA.SI',
+  // MYR stocks (.KL = Bursa Malaysia)
+  'Harta':'5168.KL','Skyechip':'5357.KL','Alpha':'0255.KL'
+};
+const TICKER_CCY = {
+  'AMD':'USD','CRM':'USD','DRAM ETF':'USD','IBIT':'USD','MSFT':'USD',
+  'NASA ETF':'USD','NOW':'USD','NVDA':'USD','ORCL':'USD','Ondas':'USD',
+  'Opendoor':'USD','PLTR':'USD','TSLA':'USD',
+  'CapLand Ascendas':'SGD','MapleTree':'SGD','TopGlove SG':'SGD',
+  'Harta':'MYR','Skyechip':'MYR','Alpha':'MYR'
+};
+
+let _lastPriceFetch = 0;
+let _priceUpdateStatus = 'idle'; // idle | fetching | done | error
+
+async function fetchLivePrices(forceRefresh) {
+  const now = Date.now();
+  if (!forceRefresh && now - _lastPriceFetch < 30 * 1000) return;
+  _lastPriceFetch = now; // claim slot immediately to prevent double-fetch
+  _lastPriceFetch = now;
+  _priceUpdateStatus = 'fetching';
+  updatePriceStatusBar();
+
+  const stocks = Object.keys(LIVE_TICKERS);
+  let updated = 0, failed = [];
+  const debugLog = [];
+
+  await Promise.all(stocks.map(async function(name) {
+    const ticker = LIVE_TICKERS[name];
+    const ccy = TICKER_CCY[name];
+    try {
+      const ts2 = Date.now();
+      // Use Yahoo Finance v8 chart endpoint - more reliable through proxies
+      const url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + ticker + '?interval=1d&range=5d&_=' + ts2;
+      const proxies = [
+        'https://corsproxy.io/?' + encodeURIComponent(url),
+        'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+        'https://thingproxy.freeboard.io/fetch/' + url,
+      ];
+      let price = null;
+      let lastErr = '';
+      for (const p of proxies) {
+        try {
+          const r = await fetch(p, {signal: AbortSignal.timeout(8000), cache:'no-store'});
+          if (!r.ok){lastErr='HTTP'+r.status;continue;}
+          const txt = await r.text();
+          const d = JSON.parse(txt);
+          const meta = d.chart && d.chart.result && d.chart.result[0] && d.chart.result[0].meta;
+          if (meta && meta.regularMarketPrice > 0) {
+            price = meta.regularMarketPrice;
+            debugLog.push(name+'='+price+'✓');
+            break;
+          }
+          lastErr='no price in response';
+        } catch(e2){lastErr=String(e2).slice(0,40);continue;}
+      }
+      if (!price || price <= 0) throw new Error(lastErr||'no price');
+      // Update price in ALL portfolios that have this stock
+      S.portfolios.forEach(function(p) {
+        const holdings = getHoldings(p, true);
+        if (holdings.find(function(h) { return h.stock === name; })) {
+          if (!p.prices) p.prices = {};
+          p.prices[name] = {price: price, ccy: ccy};
+        }
+      });
+      updated++;
+    } catch(e) {
+      failed.push(name);
+    }
+  }));
+
+  if (updated > 0) {
+    save();
+    // Force re-render current view without resetting scroll
+    var ct = document.getElementById('ct');
+    var scrollPos = ct ? ct.scrollTop : 0;
+    render();
+    if (ct) setTimeout(function(){ ct.scrollTop = scrollPos; }, 50);
+  }
+  _priceUpdateStatus = failed.length === 0 ? 'done' : (updated > 0 ? 'partial' : 'error');
+  _lastPriceFetch = Date.now();
+  _lastDebugLog = debugLog.join(' | ') + (failed.length ? ' | FAIL:'+failed.join(',') : '');
+  updatePriceStatusBar();
+  setTimeout(function() { fetchLivePrices(true); }, 30 * 1000);
+}
+let _lastDebugLog = '';
+function showPriceDebug(){alert(_lastDebugLog||'No debug log yet');}
+
+function updatePriceStatusBar() {
+  const bar = document.getElementById('price-status-bar');
+  if (!bar) return;
+  const t = new Date(_lastPriceFetch);
+  const ts = _lastPriceFetch ? t.toLocaleTimeString('en', {hour:'2-digit', minute:'2-digit'}) : '';
+  if (_priceUpdateStatus === 'fetching') {
+    bar.innerHTML = '<span style="color:rgba(0,200,255,0.6);animation:spin 1s linear infinite;display:inline-block">↻</span> Fetching live prices…';
+  } else if (_priceUpdateStatus === 'done') {
+    bar.innerHTML = '✓ Prices updated · ' + ts + ' <span onclick="showPriceDebug()" style="cursor:pointer;color:rgba(0,200,255,0.3)">·detail</span> <span onclick="fetchLivePrices(true)" style="cursor:pointer;color:rgba(0,200,255,0.5)">↻</span>';
+  } else if (_priceUpdateStatus === 'partial') {
+    bar.innerHTML = '⚠ Partial · ' + ts + ' <span onclick="showPriceDebug()" style="cursor:pointer;color:rgba(255,200,0,0.5)">·detail</span> <span onclick="fetchLivePrices(true)" style="cursor:pointer;color:rgba(0,200,255,0.5)">↻ retry</span>';
+  } else if (_priceUpdateStatus === 'error') {
+    bar.innerHTML = '✕ Failed <span onclick="showPriceDebug()" style="cursor:pointer;color:rgba(255,100,100,0.5)">·detail</span> <span onclick="fetchLivePrices(true)" style="cursor:pointer;color:rgba(0,200,255,0.5)">↻ retry</span>';
+  }
+}
+
 function liveClock(){
   const el=document.getElementById('live-clock');
   const now=new Date();
@@ -1850,7 +2048,7 @@ function renderContent(){
     $('ct').innerHTML=renderCcyDetail(p,VIEW.ccy);fixLayout();return;
   }
   if(window._dashRAF){cancelAnimationFrame(window._dashRAF);window._dashRAF=null;}
-if(TAB==='dashboard'){$('ct').style.padding='0';$('ct').style.overflow='auto';$('ct').style.height='calc(100vh - 110px)';$('ct').style.paddingBottom='60px';document.body.style.overflow='hidden';setDateBar('Dashboard &nbsp;<span style="color:rgba(180,140,50,0.55);font-size:10px;letter-spacing:1px">· All Portfolios</span>');$('ct').innerHTML=renderDashboard();setTimeout(function(){var ct=$('ct');if(ct){ct.scrollTop=0;ct.scrollLeft=0;}window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;},0);setTimeout(drawDashboardCharts,50);}
+if(TAB==='dashboard'){$('ct').style.padding='0';$('ct').style.overflow='auto';$('ct').style.height='calc(100vh - 110px)';$('ct').style.paddingBottom='60px';document.body.style.overflow='hidden';setTimeout(function(){fetchLivePrices(false);},1000);setDateBar('Dashboard &nbsp;<span style="color:rgba(180,140,50,0.55);font-size:10px;letter-spacing:1px">· All Portfolios</span>');$('ct').innerHTML=renderDashboard();setTimeout(function(){var ct=$('ct');if(ct){ct.scrollTop=0;ct.scrollLeft=0;}window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;},0);setTimeout(drawDashboardCharts,50);}
   if(window._dashRAF){cancelAnimationFrame(window._dashRAF);window._dashRAF=null;}
   else if(TAB==='overview'){
     $('ct').style.padding='0';$('ct').style.overflow='';$('ct').style.height='';
@@ -5116,6 +5314,8 @@ $('brs').addEventListener('click',()=>$('restore-input').click());
 $('bxl').addEventListener('click',doExcel);
 $('restore-input').addEventListener('change',doRestore);
 render();
+// Auto-fetch prices on open
+setTimeout(function(){fetchLivePrices(true);},1800);
 showWelcomeIfFirstLoad();
 
 // ── Swipe left/right to switch tabs ──────────────────────────────
