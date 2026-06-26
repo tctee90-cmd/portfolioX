@@ -690,21 +690,26 @@ async function fetchFX(){
   try{
     const ccys=Object.keys(_fx).filter(function(c){return c!=='MYR';});
     if(!ccys.length)return;
-    // Try frankfurter.app (free, no key needed, covers SGD/USD/GBP/HKD)
+    // Use open.er-api.com with MYR base — supports MYR natively, free, no key
+    const url='https://open.er-api.com/v6/latest/MYR';
     const proxies=[
-      'https://api.frankfurter.app/latest?from=MYR&to='+ccys.join(','),
-      'https://corsproxy.io/?'+encodeURIComponent('https://api.frankfurter.app/latest?from=MYR&to='+ccys.join(',')),
+      url,
+      'https://corsproxy.io/?'+encodeURIComponent(url),
+      'https://api.allorigins.win/raw?url='+encodeURIComponent(url),
     ];
     let updated=false;
-    for(const url of proxies){
+    for(const p of proxies){
       try{
-        const r=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(6000)});
+        const r=await fetch(p,{cache:'no-store',signal:AbortSignal.timeout(8000)});
         if(!r.ok)continue;
         const d=await r.json();
-        Object.entries(d.rates||{}).forEach(function([ccy,rate]){
-          if(rate>0){
-            _fx[ccy]=Math.round((1/rate)*10000)/10000;
-            // Update settings inputs if visible
+        // d.rates gives MYR-per-X, so 1 USD = d.rates.USD MYR
+        const rates=d.rates||{};
+        ccys.forEach(function(ccy){
+          if(rates[ccy]&&rates[ccy]>0){
+            // rates[ccy] = how many of that ccy per 1 MYR
+            // So 1 ccy = 1/rates[ccy] MYR
+            _fx[ccy]=Math.round((1/rates[ccy])*10000)/10000;
             const el=document.getElementById('sfx-'+ccy);
             if(el)el.value=_fx[ccy].toFixed(4);
           }
@@ -714,13 +719,15 @@ async function fetchFX(){
       }catch(e2){continue;}
     }
     if(updated){
-      // Save to localStorage and re-render so values update immediately
       if(S){S.fx=Object.assign({},_fx);save();}
+      var ct=document.getElementById('ct');
+      var scrollPos=ct?ct.scrollTop:0;
       render();
+      if(ct)setTimeout(function(){ct.scrollTop=scrollPos;},50);
     }
   }catch(e){}
 }
-fetchFX();setInterval(fetchFX,10*60*1000); // refresh every 10 mins
+fetchFX();setInterval(fetchFX,30*1000); // refresh every 30 seconds
 
 function toMYR(amount,ccy){
   if(ccy==='MYR')return amount;
