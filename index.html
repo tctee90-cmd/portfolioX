@@ -717,14 +717,11 @@ async function fetchFX(){
     });
     if(updated){
       if(S){S.fx=Object.assign({},_fx);save();}
-      var ct=document.getElementById('ct');
-      var scrollPos=ct?ct.scrollTop:0;
-      render();
-      if(ct)setTimeout(function(){ct.scrollTop=scrollPos;},50);
+      // Don't render here — fetchLivePrices will render after both complete
     }
   }catch(e){}
 }
-fetchFX(); // fetch once on open only — pull-to-refresh triggers again
+// FX fetched together with prices on app open (see bottom of file)
 
 function toMYR(amount,ccy){
   if(ccy==='MYR')return amount;
@@ -2795,7 +2792,7 @@ function renderContent(){
     $('ct').innerHTML=renderCcyDetail(p,VIEW.ccy);fixLayout();return;
   }
   if(window._dashRAF){cancelAnimationFrame(window._dashRAF);window._dashRAF=null;}
-if(TAB==='dashboard'){$('ct').style.padding='0';$('ct').style.overflow='auto';$('ct').style.height='calc(100vh - 110px)';$('ct').style.paddingBottom='60px';document.body.style.overflow='hidden';setTimeout(function(){fetchLivePrices(false);},1000);setDateBar('Dashboard &nbsp;<span style="color:rgba(180,140,50,0.55);font-size:10px;letter-spacing:1px">· All Portfolios</span>');$('ct').innerHTML=renderDashboard();setTimeout(function(){var ct=$('ct');if(ct){ct.scrollTop=0;ct.scrollLeft=0;}window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;},0);setTimeout(drawDashboardCharts,50);}
+if(TAB==='dashboard'){$('ct').style.padding='0';$('ct').style.overflow='auto';$('ct').style.height='calc(100vh - 110px)';$('ct').style.paddingBottom='60px';document.body.style.overflow='hidden';setDateBar('Dashboard &nbsp;<span style="color:rgba(180,140,50,0.55);font-size:10px;letter-spacing:1px">· All Portfolios</span>');$('ct').innerHTML=renderDashboard();setTimeout(function(){var ct=$('ct');if(ct){ct.scrollTop=0;ct.scrollLeft=0;}window.scrollTo(0,0);document.documentElement.scrollTop=0;document.body.scrollTop=0;},0);setTimeout(drawDashboardCharts,50);}
   if(window._dashRAF){cancelAnimationFrame(window._dashRAF);window._dashRAF=null;}
   else if(TAB==='overview'){
     $('ct').style.padding='0';$('ct').style.overflow='';$('ct').style.height='';
@@ -6065,7 +6062,10 @@ $('restore-input').addEventListener('change',doRestore);
 render();
 // Auto-fetch prices on open
 window._allHistCache=null;window._pfHistCache={};window._stockHistCache={};window._histFxCache={};
-setTimeout(function(){fetchLivePrices(true);},1800);
+// Fetch FX and prices together once — single re-render at the end
+setTimeout(function(){
+  Promise.all([fetchFX(), fetchLivePrices(true)]);
+},1500);
 showWelcomeIfFirstLoad();
 
 // ── Swipe left/right to switch tabs ──────────────────────────────
