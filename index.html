@@ -199,6 +199,19 @@ button.ghost{border-color:rgba(255,255,255,0.06);color:var(--t2);background:tran
 
 /* ── Portfolio cards (dashboard/overview) ── */
 @keyframes pricespin{to{transform:rotate(360deg)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.sk{
+  background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.5s infinite;
+  border-radius:6px;
+  color:transparent!important;
+  user-select:none;
+  pointer-events:none;
+}
+.sk *{visibility:hidden!important;}
+.loading-values .blur-it,.loading-values .pv-val,.loading-values [data-val]{filter:blur(8px);transition:none;}
+.values-ready .blur-it,.values-ready .pv-val,.values-ready [data-val]{filter:none;transition:filter .5s ease;}
 @keyframes ptr-spin{to{transform:rotate(360deg)}}
 canvas{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
 #ptr-indicator{
@@ -691,45 +704,37 @@ async function fetchFX(){
   try{
     const ccys=Object.keys(_fx).filter(function(c){return c!=='MYR';});
     if(!ccys.length)return;
-    // Yahoo Finance only — USDMYR=X, SGDMYR=X (same as stock prices)
+    // FX via exchangerate.fun — direct CORS, no key, updated hourly
+    // Note: mid-market rate, may differ ~1-2% from bank/Google retail rate
     var fxResults={};
     var updated=false;
-    await Promise.all(ccys.map(async function(ccy){
-      var ticker=ccy+'MYR=X';
-      var ts=Date.now();
-      // Use v7 quote endpoint for FX — more reliable real-time rate
-      var url='https://query1.finance.yahoo.com/v7/finance/quote?symbols='+ticker+'&_='+ts;
-      var url2='https://query1.finance.yahoo.com/v8/finance/chart/'+ticker+'?interval=1m&range=1d&_='+ts;
-      var proxies=[
-        'https://corsproxy.io/?'+encodeURIComponent(url),
-        'https://api.allorigins.win/raw?url='+encodeURIComponent(url),
-        'https://corsproxy.io/?'+encodeURIComponent(url2),
-        'https://api.allorigins.win/raw?url='+encodeURIComponent(url2),
-      ];
-      for(var i=0;i<proxies.length;i++){
-        try{
-          var r=await fetch(proxies[i],{cache:'no-store',signal:AbortSignal.timeout(8000)});
-          if(!r.ok)continue;
-          var d=await r.json();
-          // v7 quote response
-          var q=d.quoteResponse&&d.quoteResponse.result&&d.quoteResponse.result[0];
-          if(q&&q.regularMarketPrice>0){fxResults[ccy]=q.regularMarketPrice;break;}
-          // v8 chart response
-          var meta=d.chart&&d.chart.result&&d.chart.result[0]&&d.chart.result[0].meta;
-          if(meta&&meta.regularMarketPrice>0){fxResults[ccy]=meta.regularMarketPrice;break;}
-        }catch(e){}
+    try{
+      var r=await fetch('https://api.exchangerate.fun/latest?base=USD',{
+        cache:'no-store',signal:AbortSignal.timeout(8000)
+      });
+      if(r.ok){
+        var d=await r.json();
+        var rates=d.rates||{};
+        var usdMyr=rates['MYR']||0;
+        if(usdMyr>0){
+          ccys.forEach(function(ccy){
+            if(ccy==='USD'){fxResults['USD']=usdMyr;}
+            else if(rates[ccy]>0){
+              // Cross rate: 1 ccy = (MYR/USD) / (ccy/USD) MYR
+              fxResults[ccy]=Math.round((usdMyr/rates[ccy])*10000)/10000;
+            }
+          });
+        }
       }
-    }));
+    }catch(e){}
     ccys.forEach(function(ccy){
       if(fxResults[ccy]&&fxResults[ccy]>0){
         _fx[ccy]=Math.round(fxResults[ccy]*10000)/10000;
         updated=true;
       }
     });
-    if(updated){
-      if(S){S.fx=Object.assign({},_fx);save();}
-      // Don't render here — fetchLivePrices will render after both complete
-    }
+    // Just update _fx in memory — save() called once after both FX+prices done
+    if(updated&&S){S.fx=Object.assign({},_fx);}
   }catch(e){}
 }
 // FX fetched together with prices on app open (see bottom of file)
@@ -1152,7 +1157,16 @@ function renderSettingsPx(){
           +'<span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.6)">'+(_fx[ccy]||0).toFixed(4)+'</span>'
           +'</div>';
       }).join('')
-      +'<div style="font-size:9px;color:rgba(255,255,255,0.15);margin-top:5px;font-style:italic">Rates from Yahoo Finance (USDMYR=X) · updates on open/refresh</div>'
+      +'<div style="font-size:9px;color:rgba(255,255,255,0.15);margin-top:5px;font-style:italic">Mid-market rates · may differ slightly from Google/banks</div>'
+      +'<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">'
+      +usedFxCcys.map(function(ccy){
+        return'<div style="display:flex;align-items:center;gap:4px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:5px 8px">'
+          +'<span style="font-size:10px;color:rgba(255,255,255,0.35)">'+ccy+'</span>'
+          +'<input type="number" id="manual-fx-'+ccy+'" step="0.0001" value="'+(_fx[ccy]||0).toFixed(4)+'" style="width:60px;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px;font-weight:600;text-align:center;padding:2px 0" />'
+          +'</div>';
+      }).join('')
+      +'<button onclick="(function(){'+usedFxCcys.map(function(ccy){return'var v=parseFloat(document.getElementById(\'manual-fx-'+ccy+'\').value);if(v>0){_fx[\''+ccy+'\']=v;}';}).join('')+'if(S){S.fx=Object.assign({},_fx);save();var ct=document.getElementById(\'ct\');var sp=ct?ct.scrollTop:0;render();if(ct)setTimeout(function(){ct.scrollTop=sp;},50);}alert(\'FX rates saved!\');})()" style="background:rgba(0,200,255,0.1);border:1px solid rgba(0,200,255,0.3);color:rgba(0,200,255,0.8);border-radius:8px;padding:5px 12px;font-size:11px;cursor:pointer">Save Override</button>'
+      +'</div>'
       +'</div>';
   } else if(fxList){fxList.innerHTML='';}
   window._settingsStocks=allStocks;window._settingsFxCcys=usedFxCcys;
@@ -1624,7 +1638,7 @@ function renderDashboard(){
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
         <div style="flex:1;min-width:0;position:relative">
           <div class="dash-aurora" style="position:absolute;inset:0;pointer-events:none;border-radius:12px"></div>
-          <div class="pv-val dash-nw" data-val="${grandMYR.toFixed(2)}" data-fmt="RM" style="font-size:34px;font-weight:300;color:#fff;letter-spacing:-1px;line-height:1;white-space:nowrap">RM ${grandMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+          <div class="pv-val dash-nw blur-it" data-val="${grandMYR.toFixed(2)}" data-fmt="RM" style="font-size:34px;font-weight:300;color:#fff;letter-spacing:-1px;line-height:1;white-space:nowrap">RM ${grandMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
           <div class="pv-hide" style="font-size:34px;color:#fff;font-weight:300;line-height:1;white-space:nowrap">••••••••</div>
           <div class="pv-val" style="font-size:10px;color:rgba(255,255,255,0.25);margin-top:4px;letter-spacing:1px;text-transform:uppercase;font-weight:600">MYR Equivalent</div>
           <div class="pv-hide" style="font-size:10px;color:rgba(255,255,255,0.2);margin-top:4px">••••</div>
@@ -2004,9 +2018,9 @@ async function fetchLivePrices(forceRefresh) {
     }
   }));
 
-  if (updated > 0) {
-    save();
-    // Don't render here — caller handles single render after both FX+prices done
+  // Don't save or render here — Promise.all caller does single save+render
+  if(updated>0&&S){
+    // prices already written to S.portfolios[].prices above — just flag
   }
   _priceUpdateStatus = failed.length === 0 ? 'done' : (updated > 0 ? 'partial' : 'error');
   _lastPriceFetch = Date.now();
@@ -6073,13 +6087,23 @@ $('restore-input').addEventListener('change',doRestore);
 render();
 // Auto-fetch prices on open
 window._allHistCache=null;window._pfHistCache={};window._stockHistCache={};window._histFxCache={};
-// Fetch FX and prices together — single render after both done
+// Fetch FX and prices together — reveal numbers only after done
+document.body.classList.add('loading-values');
 setTimeout(function(){
   Promise.all([fetchFX(), fetchLivePrices(true)]).then(function(){
+    save();
     var ct=document.getElementById('ct');
     var scrollPos=ct?ct.scrollTop:0;
     render();
     if(ct)setTimeout(function(){ct.scrollTop=scrollPos;},50);
+    // Small delay then reveal — smooth transition
+    setTimeout(function(){
+      document.body.classList.remove('loading-values');
+      document.body.classList.add('values-ready');
+    },100);
+  }).catch(function(){
+    document.body.classList.remove('loading-values');
+    document.body.classList.add('values-ready');
   });
 },1500);
 showWelcomeIfFirstLoad();
