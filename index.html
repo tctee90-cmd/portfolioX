@@ -691,58 +691,27 @@ async function fetchFX(){
   try{
     const ccys=Object.keys(_fx).filter(function(c){return c!=='MYR';});
     if(!ccys.length)return;
-    // Try multiple FX sources for best accuracy
-    const fxSources=[
-      // Yahoo Finance — same source as stock prices, most accurate
-      async function(){
-        var results={};
-        await Promise.all(ccys.map(async function(ccy){
-          var ticker=ccy+'MYR=X';
-          var url='https://query1.finance.yahoo.com/v8/finance/chart/'+ticker+'?interval=1d&range=1d';
-          var proxies2=['https://corsproxy.io/?'+encodeURIComponent(url),'https://api.allorigins.win/raw?url='+encodeURIComponent(url)];
-          for(var i=0;i<proxies2.length;i++){
-            try{
-              var r2=await fetch(proxies2[i],{cache:'no-store',signal:AbortSignal.timeout(6000)});
-              if(!r2.ok)continue;
-              var d2=await r2.json();
-              var meta=d2.chart&&d2.chart.result&&d2.chart.result[0]&&d2.chart.result[0].meta;
-              if(meta&&meta.regularMarketPrice>0){results[ccy]=meta.regularMarketPrice;break;}
-            }catch(e3){continue;}
-          }
-        }));
-        return results;
-      },
-      // Fallback: open.er-api.com
-      async function(){
-        var url2='https://open.er-api.com/v6/latest/MYR';
-        var proxies3=[url2,'https://corsproxy.io/?'+encodeURIComponent(url2)];
-        for(var i=0;i<proxies3.length;i++){
-          try{
-            var r3=await fetch(proxies3[i],{cache:'no-store',signal:AbortSignal.timeout(6000)});
-            if(!r3.ok)continue;
-            var d3=await r3.json();
-            var rates3=d3.rates||{};
-            var res3={};
-            ccys.forEach(function(ccy){if(rates3[ccy]>0)res3[ccy]=1/rates3[ccy];});
-            if(Object.keys(res3).length)return res3;
-          }catch(e4){continue;}
-        }
-        return {};
-      }
-    ];
-
+    // Yahoo Finance only — USDMYR=X, SGDMYR=X (same as stock prices)
     var fxResults={};
-    for(var si=0;si<fxSources.length;si++){
-      try{fxResults=await fxSources[si]();}catch(e5){}
-      if(Object.keys(fxResults).length>=ccys.length)break;
-    }
-
     var updated=false;
+    await Promise.all(ccys.map(async function(ccy){
+      var ticker=ccy+'MYR=X';
+      var url='https://query1.finance.yahoo.com/v8/finance/chart/'+ticker+'?interval=1d&range=5d&_='+Date.now();
+      var proxies=['https://corsproxy.io/?'+encodeURIComponent(url),
+                   'https://api.allorigins.win/raw?url='+encodeURIComponent(url)];
+      for(var i=0;i<proxies.length;i++){
+        try{
+          var r=await fetch(proxies[i],{cache:'no-store',signal:AbortSignal.timeout(8000)});
+          if(!r.ok)continue;
+          var d=await r.json();
+          var meta=d.chart&&d.chart.result&&d.chart.result[0]&&d.chart.result[0].meta;
+          if(meta&&meta.regularMarketPrice>0){fxResults[ccy]=meta.regularMarketPrice;break;}
+        }catch(e){}
+      }
+    }));
     ccys.forEach(function(ccy){
       if(fxResults[ccy]&&fxResults[ccy]>0){
         _fx[ccy]=Math.round(fxResults[ccy]*10000)/10000;
-        const el=document.getElementById('sfx-'+ccy);
-        if(el)el.value=_fx[ccy].toFixed(4);
         updated=true;
       }
     });
@@ -1175,7 +1144,7 @@ function renderSettingsPx(){
           +'<span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.6)">'+(_fx[ccy]||0).toFixed(4)+'</span>'
           +'</div>';
       }).join('')
-      +'<div style="font-size:9px;color:rgba(255,255,255,0.15);margin-top:5px;font-style:italic">Rates from Yahoo Finance · refreshes on pull-to-refresh</div>'
+      +'<div style="font-size:9px;color:rgba(255,255,255,0.15);margin-top:5px;font-style:italic">Rates from Yahoo Finance (USDMYR=X) · updates on open/refresh</div>'
       +'</div>';
   } else if(fxList){fxList.innerHTML='';}
   window._settingsStocks=allStocks;window._settingsFxCcys=usedFxCcys;
