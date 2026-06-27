@@ -696,14 +696,25 @@ async function fetchFX(){
     var updated=false;
     await Promise.all(ccys.map(async function(ccy){
       var ticker=ccy+'MYR=X';
-      var url='https://query1.finance.yahoo.com/v8/finance/chart/'+ticker+'?interval=1d&range=5d&_='+Date.now();
-      var proxies=['https://corsproxy.io/?'+encodeURIComponent(url),
-                   'https://api.allorigins.win/raw?url='+encodeURIComponent(url)];
+      var ts=Date.now();
+      // Use v7 quote endpoint for FX — more reliable real-time rate
+      var url='https://query1.finance.yahoo.com/v7/finance/quote?symbols='+ticker+'&_='+ts;
+      var url2='https://query1.finance.yahoo.com/v8/finance/chart/'+ticker+'?interval=1m&range=1d&_='+ts;
+      var proxies=[
+        'https://corsproxy.io/?'+encodeURIComponent(url),
+        'https://api.allorigins.win/raw?url='+encodeURIComponent(url),
+        'https://corsproxy.io/?'+encodeURIComponent(url2),
+        'https://api.allorigins.win/raw?url='+encodeURIComponent(url2),
+      ];
       for(var i=0;i<proxies.length;i++){
         try{
           var r=await fetch(proxies[i],{cache:'no-store',signal:AbortSignal.timeout(8000)});
           if(!r.ok)continue;
           var d=await r.json();
+          // v7 quote response
+          var q=d.quoteResponse&&d.quoteResponse.result&&d.quoteResponse.result[0];
+          if(q&&q.regularMarketPrice>0){fxResults[ccy]=q.regularMarketPrice;break;}
+          // v8 chart response
           var meta=d.chart&&d.chart.result&&d.chart.result[0]&&d.chart.result[0].meta;
           if(meta&&meta.regularMarketPrice>0){fxResults[ccy]=meta.regularMarketPrice;break;}
         }catch(e){}
@@ -1896,6 +1907,10 @@ function goPortfolioCcy(id,ccy){
       if(spinner)spinner.classList.add('spin');
       window._allHistCache=null;window._pfHistCache={};window._stockHistCache={};window._histFxCache={};
       Promise.all([fetchLivePrices(true), fetchFX()]).then(function(){
+        var ct2=document.getElementById('ct');
+        var sp2=ct2?ct2.scrollTop:0;
+        render();
+        if(ct2)setTimeout(function(){ct2.scrollTop=sp2;},50);
         if(txt)txt.textContent='✓ Updated';
         if(spinner)spinner.classList.remove('spin');
         setTimeout(function(){if(ind)ind.classList.remove('visible');},1000);
@@ -1991,11 +2006,7 @@ async function fetchLivePrices(forceRefresh) {
 
   if (updated > 0) {
     save();
-    // Force re-render current view without resetting scroll
-    var ct = document.getElementById('ct');
-    var scrollPos = ct ? ct.scrollTop : 0;
-    render();
-    if (ct) setTimeout(function(){ ct.scrollTop = scrollPos; }, 50);
+    // Don't render here — caller handles single render after both FX+prices done
   }
   _priceUpdateStatus = failed.length === 0 ? 'done' : (updated > 0 ? 'partial' : 'error');
   _lastPriceFetch = Date.now();
@@ -6062,9 +6073,14 @@ $('restore-input').addEventListener('change',doRestore);
 render();
 // Auto-fetch prices on open
 window._allHistCache=null;window._pfHistCache={};window._stockHistCache={};window._histFxCache={};
-// Fetch FX and prices together once — single re-render at the end
+// Fetch FX and prices together — single render after both done
 setTimeout(function(){
-  Promise.all([fetchFX(), fetchLivePrices(true)]);
+  Promise.all([fetchFX(), fetchLivePrices(true)]).then(function(){
+    var ct=document.getElementById('ct');
+    var scrollPos=ct?ct.scrollTop:0;
+    render();
+    if(ct)setTimeout(function(){ct.scrollTop=scrollPos;},50);
+  });
 },1500);
 showWelcomeIfFirstLoad();
 
