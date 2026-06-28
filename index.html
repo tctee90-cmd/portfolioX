@@ -515,10 +515,10 @@ body.privacy-on .kc > div:last-child *{
 @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(.7)}}
 @keyframes cardEntrance{0%{opacity:0;transform:translateX(-20px)}100%{opacity:1;transform:translateX(0)}}
 @keyframes glowPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4) saturate(1.3)}}
-@keyframes dashPip0{0%,100%{box-shadow:0 0 4px #00e5ff,0 0 8px #00e5ff}50%{box-shadow:0 0 10px #00e5ff,0 0 24px #00e5ff,0 0 40px #00e5ff}}
-@keyframes dashPip1{0%,100%{box-shadow:0 0 4px rgba(226,232,240,.8),0 0 8px rgba(226,232,240,.8)}50%{box-shadow:0 0 10px rgba(226,232,240,.8),0 0 20px rgba(226,232,240,.8)}}
-@keyframes dashPip2{0%,100%{box-shadow:0 0 4px rgba(100,116,139,.9),0 0 8px rgba(100,116,139,.9)}50%{box-shadow:0 0 10px rgba(100,116,139,.9),0 0 20px rgba(100,116,139,.9)}}
-@keyframes dashPip3{0%,100%{box-shadow:0 0 4px #69f0ae,0 0 8px #69f0ae}50%{box-shadow:0 0 10px #69f0ae,0 0 24px #69f0ae,0 0 40px #69f0ae}}
+@keyframes dashPip0{0%,100%{box-shadow:0 0 4px #ffd700,0 0 8px #ffd700}50%{box-shadow:0 0 10px #ffd700,0 0 24px #ffd700,0 0 40px #ffd700}}
+@keyframes dashPip1{0%,100%{box-shadow:0 0 4px #60a5fa,0 0 8px #60a5fa}50%{box-shadow:0 0 10px #60a5fa,0 0 24px #60a5fa,0 0 40px #60a5fa}}
+@keyframes dashPip2{0%,100%{box-shadow:0 0 4px #a3e635,0 0 8px #a3e635}50%{box-shadow:0 0 10px #a3e635,0 0 24px #a3e635,0 0 40px #a3e635}}
+@keyframes dashPip3{0%,100%{box-shadow:0 0 4px #f87171,0 0 8px #f87171}50%{box-shadow:0 0 10px #f87171,0 0 24px #f87171,0 0 40px #f87171}}
 @keyframes pnlFlash0{0%,100%{opacity:1}50%{opacity:.6}}
 @keyframes pnlFlash1{0%,100%{opacity:1}45%{opacity:.6}}
 @keyframes pnlFlash2{0%,100%{opacity:1}40%{opacity:.6}}
@@ -1416,10 +1416,10 @@ function renderDashboard(){
   // ── NEW DASHBOARD — WOW strip design ──
   // Premium palette — electric cyan · violet · rose gold · emerald
   const STRIP_ACCENTS=[
-    {c:'#c9a96e',c2:'#a07840',gr:'linear-gradient(135deg,#c9a96e,#a07840)',pip:'rgba(201,169,110,.85)'},
-    {c:'#8fb8d4',c2:'#5a8aaa',gr:'linear-gradient(135deg,#8fb8d4,#5a8aaa)',pip:'rgba(143,184,212,.85)'},
-    {c:'#b896c8',c2:'#8a5aaa',gr:'linear-gradient(135deg,#b896c8,#8a5aaa)',pip:'rgba(184,150,200,.85)'},
-    {c:'#d4a0a0',c2:'#a86060',gr:'linear-gradient(135deg,#d4a0a0,#a86060)',pip:'rgba(212,160,160,.85)'},
+    {c:'#ffd700',c2:'#ff6b00',gr:'linear-gradient(90deg,#ff6b00,#ffd700)',pip:'rgba(255,215,0,.9)'},
+    {c:'#60a5fa',c2:'#1e40af',gr:'linear-gradient(90deg,#1e40af,#60a5fa)',pip:'rgba(96,165,250,.9)'},
+    {c:'#a3e635',c2:'#365314',gr:'linear-gradient(90deg,#365314,#a3e635)',pip:'rgba(163,230,53,.9)'},
+    {c:'#f87171',c2:'#7f1d1d',gr:'linear-gradient(90deg,#7f1d1d,#f87171)',pip:'rgba(248,113,113,.9)'},
   ];
 
   function makeCard(d,idx){
@@ -1439,116 +1439,100 @@ function renderDashboard(){
     const cash=(d.pf0.cashBalances&&d.pf0.cashBalances[ccy])||0;
     const total=mv+cash;
     const alloc=Math.min(d.alloc,100);
-    const retCol=netPnl>=0?'#86efac':'#fca5a5';
+    const retCol=netPnl>=0?'#86efac':'#ff4d6a';
 
-    // Arc: full circle, alloc fill
-    const R=19,CIRC2=2*Math.PI*R;
-    const filled=(alloc/100)*CIRC2;
+    // Donut arc
+    const R=36,CIRC=2*Math.PI*R;
+    const filled=(alloc/100)*CIRC;
+
+    // Net P&L display — full amount
+    const absPnl=Math.abs(netPnl);
+    const pnlStr=(netPnl>=0?'+':'\u2212')+'RM '+absPnl.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});
 
     return `<div onclick="goPortfolio('${d.pf0.id}')"
-      style="position:relative;overflow:hidden;border-radius:18px;margin-bottom:10px;cursor:pointer;
-        background:linear-gradient(155deg,#0d0d0d 0%,#080808 100%);
-        border:1px solid rgba(255,255,255,0.07);
-        border-top:1px solid rgba(255,255,255,0.13);
+      style="position:relative;overflow:hidden;border-radius:20px;margin-bottom:12px;cursor:pointer;
+        background:linear-gradient(160deg,#13161d,#0a0c11);
+        border:1px solid rgba(255,255,255,0.08);
+        box-shadow:0 12px 32px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.07);
         -webkit-tap-highlight-color:transparent;
         transition:transform .18s cubic-bezier(.34,1.56,.64,1)"
       ontouchstart="this.style.transform='scale(0.982)'"
       ontouchend="this.style.transform=''">
 
-      <!-- colour wash from left -->
-      <div style="position:absolute;top:0;bottom:0;left:0;width:60%;pointer-events:none;
-        background:linear-gradient(90deg,${A.c} 0%,transparent 100%);opacity:0.045"></div>
+      <!-- colour glow -->
+      <div style="position:absolute;top:-40%;right:-15%;width:200px;height:200px;border-radius:50%;
+        background:${A.c};filter:blur(65px);opacity:0.18;pointer-events:none"></div>
 
-      <!-- foil top edge -->
-      <div style="position:absolute;top:0;left:0;right:0;height:1px;
-        background:linear-gradient(90deg,transparent 0%,${A.c} 30%,rgba(255,255,255,0.5) 50%,${A.c} 70%,transparent 100%);
-        opacity:0.5;pointer-events:none"></div>
+      <!-- header -->
+      <div style="display:flex;align-items:center;gap:10px;padding:16px 16px 12px;position:relative;z-index:2">
+        <div style="width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+          font-weight:800;font-size:14px;background:${A.c}22;color:${A.c};flex-shrink:0">
+          ${d.pf0.name.slice(0,2)}</div>
+        <div style="flex:1;font-weight:800;font-size:20px;letter-spacing:-0.5px;color:${A.c}">${d.pf0.name}</div>
+        <div style="display:flex;align-items:center;gap:4px;font-size:8px;color:#00d18f;
+          background:rgba(0,209,143,0.1);padding:3px 8px;border-radius:5px;border:1px solid rgba(0,209,143,0.2)">
+          <div class="dash-pulse" style="width:5px;height:5px;border-radius:50%;background:#00d18f;flex-shrink:0"></div>LIVE</div>
+      </div>
 
-      <!-- left accent stripe -->
-      <div style="position:absolute;top:0;bottom:0;left:0;width:3px;
-        background:linear-gradient(180deg,${A.c}cc,${A.c},${A.c}66);border-radius:3px 0 0 3px"></div>
-
-      <!-- corner marks -->
-      <div style="position:absolute;top:10px;left:10px;width:10px;height:10px;
-        border-top:1px solid ${A.c};border-left:1px solid ${A.c};opacity:0.3;border-radius:2px 0 0 0"></div>
-      <div style="position:absolute;bottom:10px;right:10px;width:10px;height:10px;
-        border-bottom:1px solid ${A.c};border-right:1px solid ${A.c};opacity:0.3;border-radius:0 0 2px 0"></div>
-
-      <!-- alloc bg fill -->
-      <div style="position:absolute;top:0;bottom:0;left:0;width:${alloc.toFixed(1)}%;
-        background:${A.c};opacity:0.03;border-radius:18px 0 0 18px;pointer-events:none"></div>
-
-      <div style="position:relative;z-index:2;padding:16px 16px 14px 20px">
-
-        <!-- ROW 1: name + tag + live dot -->
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
-          <div style="display:flex;align-items:center;gap:8px">
-            <div style="font-size:26px;font-weight:900;letter-spacing:-1.2px;color:#fff;line-height:1">${d.pf0.name}</div>
-            <div class="dash-pulse" style="width:5px;height:5px;border-radius:50%;margin-top:2px;
-              background:${A.c};box-shadow:0 0 6px ${A.c};flex-shrink:0"></div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-            <div style="font-size:7px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
-              padding:3px 8px;border-radius:20px;border:1px solid ${A.c}33;
-              color:${A.c};background:${A.c}0d">${String(idx+1).padStart(2,'0')}</div>
+      <!-- body: donut left, values right -->
+      <div style="display:flex;align-items:center;gap:16px;padding:0 16px 14px;position:relative;z-index:2">
+        <div style="position:relative;width:88px;height:88px;flex-shrink:0">
+          <svg viewBox="0 0 88 88" width="88" height="88">
+            <circle cx="44" cy="44" r="${R}" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="9"/>
+            <circle cx="44" cy="44" r="${R}" fill="none" stroke="url(#dg${idx})" stroke-width="9"
+              stroke-linecap="round" stroke-dasharray="${filled.toFixed(1)} ${CIRC.toFixed(1)}"
+              transform="rotate(-90 44 44)"/>
+            <defs><linearGradient id="dg${idx}" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="${A.c2}"/><stop offset="1" stop-color="${A.c}"/>
+            </linearGradient></defs>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+            <div class="pv-val" style="font-size:18px;font-weight:800;color:${A.c};line-height:1">${alloc.toFixed(0)}%</div>
+            <div style="font-size:6px;color:rgba(255,255,255,0.35);letter-spacing:1.5px;margin-top:2px">WEIGHT</div>
           </div>
         </div>
-
-        <!-- ROW 2: value + return side by side -->
-        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px">
-          <div>
-            <div class="pv-val" style="font-size:22px;font-weight:300;color:rgba(255,255,255,0.85);letter-spacing:-0.8px;line-height:1">RM ${d.pfMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
-            <div class="pv-hide" style="font-size:22px;color:rgba(255,255,255,.3)">••••••</div>
-            <div class="pv-val" style="font-size:8px;color:rgba(255,255,255,0.38);letter-spacing:2px;text-transform:uppercase;margin-top:3px;font-weight:500">MYR Equivalent</div>
-            <div class="pv-hide" style="font-size:8px;color:rgba(255,255,255,.2)">••••</div>
-          </div>
-          <div style="text-align:right">
-            <div class="pv-val dash-ret-val" data-val="${pct!==null?pct.toFixed(2):'0'}"
-              style="font-size:20px;font-weight:800;letter-spacing:-0.5px;line-height:1;color:${retCol};white-space:nowrap;
-              animation:pnlFlash${idx} 3s ease-in-out infinite">${pct!==null?(pct>=0?'+':'')+pct.toFixed(2)+'%':'—'}</div>
-            <div class="pv-hide" style="font-size:20px;color:rgba(255,255,255,.3)">••••</div>
-            <div style="font-size:7px;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;margin-top:3px">Return</div>
+        <div style="flex:1">
+          <div class="pv-val" style="font-size:22px;font-weight:200;letter-spacing:-1px;color:#fff">${d.pf0.cashBalances?'RM ':'RM '}${d.pfMYR.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2})}</div>
+          <div class="pv-hide" style="font-size:22px;color:rgba(255,255,255,.3)">••••••</div>
+          <div style="font-size:8px;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase;margin-top:3px">MYR Equivalent</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+            <div class="pv-val" style="font-size:17px;font-weight:800;color:${retCol}">${pct!==null?(pct>=0?'+':'')+pct.toFixed(2)+'%':'—'}</div>
+            <div class="pv-hide" style="font-size:17px;color:rgba(255,255,255,.3)">••••</div>
+            <div style="font-size:7px;color:rgba(255,255,255,0.3);letter-spacing:1.5px;text-transform:uppercase;margin-left:2px">RETURN</div>
           </div>
         </div>
+      </div>
 
-        <!-- ROW 3: allocation bar -->
-        <div style="border-top:1px solid rgba(255,255,255,0.05);padding-top:11px">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
-            <div style="font-size:7px;color:rgba(255,255,255,0.32);letter-spacing:2.5px;text-transform:uppercase">Portfolio Weight</div>
-            <div style="display:flex;align-items:center;gap:10px">
-              <div style="font-size:7px;color:rgba(255,255,255,0.32);letter-spacing:1px">${holdings.length} HLD</div>
-              <div style="display:flex;align-items:center;gap:3px;color:${A.c}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg><div style="font-size:12px;font-weight:700;letter-spacing:-0.3px">${alloc.toFixed(2)}%</div></div>
-            </div>
-          </div>
-          <!-- track with tick marks -->
-          <div style="height:4px;background:rgba(255,255,255,0.05);border-radius:4px;position:relative">
-            <!-- ticks at 25/50/75 -->
-            <div style="position:absolute;left:25%;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.06)"></div>
-            <div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.06)"></div>
-            <div style="position:absolute;left:75%;top:0;bottom:0;width:1px;background:rgba(255,255,255,0.06)"></div>
-            <!-- fill -->
-            <div class="pv-val dash-bar" data-w="${alloc.toFixed(1)}"
-              style="position:absolute;top:0;bottom:0;left:0;border-radius:4px;width:0;
-                background:linear-gradient(90deg,${A.c}44,${A.c});
-                transition:width 1.2s cubic-bezier(.4,0,.2,1)">
-              <!-- jewel cap -->
-              <div style="position:absolute;right:-5px;top:50%;transform:translateY(-50%);
-                width:10px;height:10px;border-radius:50%;
-                background:${A.c};border:2px solid #080808;
-                box-shadow:0 0 6px ${A.c},0 0 14px ${A.c};
-                animation:dashPip${idx} 2s ease-in-out infinite"></div>
-            </div>
-          </div>
-          <!-- tick labels -->
-          <div style="display:flex;justify-content:space-between;margin-top:4px">
-            <span style="font-size:6px;color:rgba(255,255,255,0.2);font-family:Courier New,monospace">0</span>
-            <span style="font-size:6px;color:rgba(255,255,255,0.2);font-family:Courier New,monospace">25%</span>
-            <span style="font-size:6px;color:rgba(255,255,255,0.2);font-family:Courier New,monospace">50%</span>
-            <span style="font-size:6px;color:rgba(255,255,255,0.2);font-family:Courier New,monospace">75%</span>
-            <span style="font-size:6px;color:rgba(255,255,255,0.2);font-family:Courier New,monospace">100%</span>
+      <!-- animated allocation bar -->
+      <div style="padding:0 16px 14px;position:relative;z-index:2">
+        <div style="height:5px;background:rgba(255,255,255,0.07);border-radius:5px;overflow:visible;position:relative">
+          <div class="pv-val dash-bar" data-w="${alloc.toFixed(1)}"
+            style="position:absolute;top:0;bottom:0;left:0;border-radius:5px;width:0;
+              background:${A.gr};
+              transition:width 1.2s cubic-bezier(.4,0,.2,1)">
+            <div style="position:absolute;right:-5px;top:50%;transform:translateY(-50%);
+              width:10px;height:10px;border-radius:50%;
+              background:${A.c};border:2px solid #0a0c11;
+              animation:dashPip${idx} 2s ease-in-out infinite"></div>
           </div>
         </div>
+      </div>
 
+      <!-- footer stats -->
+      <div style="display:flex;background:rgba(0,0,0,0.25);border-top:1px solid rgba(255,255,255,0.05)">
+        <div style="flex:1;padding:10px 8px;text-align:center;border-right:1px solid rgba(255,255,255,0.04)">
+          <div style="font-size:7px;color:rgba(255,255,255,0.28);letter-spacing:1.5px;text-transform:uppercase">Weight</div>
+          <div class="pv-val" style="font-size:13px;font-weight:700;margin-top:3px;color:${A.c}">${alloc.toFixed(2)}%</div>
+        </div>
+        <div style="flex:1;padding:10px 8px;text-align:center;border-right:1px solid rgba(255,255,255,0.04)">
+          <div style="font-size:7px;color:rgba(255,255,255,0.28);letter-spacing:1.5px;text-transform:uppercase">Holdings</div>
+          <div style="font-size:13px;font-weight:700;margin-top:3px">${holdings.length}</div>
+        </div>
+        <div style="flex:1;padding:10px 8px;text-align:center">
+          <div style="font-size:7px;color:rgba(255,255,255,0.28);letter-spacing:1.5px;text-transform:uppercase">${netPnl>=0?'Gained':'Lost'}</div>
+          <div class="pv-val" style="font-size:11px;font-weight:700;margin-top:3px;color:${retCol}">${pnlStr}</div>
+          <div class="pv-hide" style="font-size:11px;color:rgba(255,255,255,.3)">••••</div>
+        </div>
       </div>
     </div>`;
   }
