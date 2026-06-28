@@ -1426,19 +1426,23 @@ function renderDashboard(){
     const A=STRIP_ACCENTS[idx%STRIP_ACCENTS.length];
     const sum=getSummary(d.pf0);
     const holdings=getHoldings(d.pf0,true);
-    const ccys=Object.keys(sum.mktVal).sort((a,b)=>(sum.mktVal[b]||0)-(sum.mktVal[a]||0));
-    const ccy=ccys[0]||'MYR';
-    const mv=sum.mktVal[ccy]||0;
-    const co=sum.cost[ccy]||0;
-    const unreal=(sum.unreal||{})[ccy]||0;
-    const divs=(sum.divs||{})[ccy]||0;
-    const real=(sum.realized||{})[ccy]||0;
-    const pf=(sum.platformFees||{})[ccy]||0;
-    const netPnl=Math.round((unreal+divs+real-pf)*100)/100;
-    const pct=co>0?netPnl/co*100:null;
-    const cash=(d.pf0.cashBalances&&d.pf0.cashBalances[ccy])||0;
-    const total=mv+cash;
     const alloc=Math.min(d.alloc,100);
+
+    // Sum P&L across ALL currencies converted to MYR
+    const allCcys=Object.keys(sum.mktVal);
+    let totalCostMYR=0, totalNetPnlMYR=0;
+    allCcys.forEach(function(c){
+      const fx=toMYR(1,c);
+      totalCostMYR+=((sum.cost[c]||0)*fx);
+      const unreal=(sum.unreal||{})[c]||0;
+      const divs=(sum.divs||{})[c]||0;
+      const real=(sum.realized||{})[c]||0;
+      const pf=(sum.platformFees||{})[c]||0;
+      totalNetPnlMYR+=((unreal+divs+real-pf)*fx);
+    });
+    totalNetPnlMYR=Math.round(totalNetPnlMYR*100)/100;
+    const netPnl=totalNetPnlMYR;
+    const pct=totalCostMYR>0?netPnl/totalCostMYR*100:null;
     const retCol=netPnl>=0?'#86efac':'#ff4d6a';
 
     // Donut arc
