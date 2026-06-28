@@ -210,8 +210,7 @@ button.ghost{border-color:rgba(255,255,255,0.06);color:var(--t2);background:tran
   pointer-events:none;
 }
 .sk *{visibility:hidden!important;}
-.loading-values .blur-it,.loading-values .pv-val,.loading-values [data-val]{filter:blur(8px);transition:none;}
-.values-ready .blur-it,.values-ready .pv-val,.values-ready [data-val]{filter:none;transition:filter .5s ease;}
+
 @keyframes ptr-spin{to{transform:rotate(360deg)}}
 canvas{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
 #ptr-indicator{
@@ -1157,16 +1156,7 @@ function renderSettingsPx(){
           +'<span style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.6)">'+(_fx[ccy]||0).toFixed(4)+'</span>'
           +'</div>';
       }).join('')
-      +'<div style="font-size:9px;color:rgba(255,255,255,0.15);margin-top:5px;font-style:italic">Mid-market rates · may differ slightly from Google/banks</div>'
-      +'<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">'
-      +usedFxCcys.map(function(ccy){
-        return'<div style="display:flex;align-items:center;gap:4px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:5px 8px">'
-          +'<span style="font-size:10px;color:rgba(255,255,255,0.35)">'+ccy+'</span>'
-          +'<input type="number" id="manual-fx-'+ccy+'" step="0.0001" value="'+(_fx[ccy]||0).toFixed(4)+'" style="width:60px;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.15);color:#fff;font-size:12px;font-weight:600;text-align:center;padding:2px 0" />'
-          +'</div>';
-      }).join('')
-      +'<button onclick="(function(){'+usedFxCcys.map(function(ccy){return'var v=parseFloat(document.getElementById(\'manual-fx-'+ccy+'\').value);if(v>0){_fx[\''+ccy+'\']=v;}';}).join('')+'if(S){S.fx=Object.assign({},_fx);save();var ct=document.getElementById(\'ct\');var sp=ct?ct.scrollTop:0;render();if(ct)setTimeout(function(){ct.scrollTop=sp;},50);}alert(\'FX rates saved!\');})()" style="background:rgba(0,200,255,0.1);border:1px solid rgba(0,200,255,0.3);color:rgba(0,200,255,0.8);border-radius:8px;padding:5px 12px;font-size:11px;cursor:pointer">Save Override</button>'
-      +'</div>'
+      +'<div style="font-size:9px;color:rgba(255,255,255,0.15);margin-top:5px;font-style:italic">Pull down on dashboard to refresh rates</div>'
       +'</div>';
   } else if(fxList){fxList.innerHTML='';}
   window._settingsStocks=allStocks;window._settingsFxCcys=usedFxCcys;
@@ -6087,25 +6077,7 @@ $('restore-input').addEventListener('change',doRestore);
 render();
 // Auto-fetch prices on open
 window._allHistCache=null;window._pfHistCache={};window._stockHistCache={};window._histFxCache={};
-// Fetch FX and prices together — reveal numbers only after done
-document.body.classList.add('loading-values');
-setTimeout(function(){
-  Promise.all([fetchFX(), fetchLivePrices(true)]).then(function(){
-    save();
-    var ct=document.getElementById('ct');
-    var scrollPos=ct?ct.scrollTop:0;
-    render();
-    if(ct)setTimeout(function(){ct.scrollTop=scrollPos;},50);
-    // Small delay then reveal — smooth transition
-    setTimeout(function(){
-      document.body.classList.remove('loading-values');
-      document.body.classList.add('values-ready');
-    },100);
-  }).catch(function(){
-    document.body.classList.remove('loading-values');
-    document.body.classList.add('values-ready');
-  });
-},1500);
+// No auto-fetch on open — use saved values instantly, pull to refresh to update
 showWelcomeIfFirstLoad();
 
 // ── Swipe left/right to switch tabs ──────────────────────────────
