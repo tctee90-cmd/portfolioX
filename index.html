@@ -1876,13 +1876,18 @@ function goPortfolioCcy(id,ccy){
 
 // ── Pull-to-Refresh ──────────────────────────────────────────────────────────
 (function(){
-  var startY=0, pulling=false, threshold=70, ind, spinner, txt;
+  var startY=0, pulling=false, threshold=65, ind, spinner, txt;
   function getInd(){ind=document.getElementById('ptr-indicator');spinner=document.getElementById('ptr-spinner');txt=document.getElementById('ptr-text');}
   document.addEventListener('touchstart',function(e){
-    // Only trigger if scrolled to very top
+    // Check all possible scroll containers
     var ct=document.getElementById('ct');
-    var scrollTop=(ct&&ct.scrollTop)||window.scrollY||0;
-    if(scrollTop<=2){startY=e.touches[0].clientY;pulling=true;}
+    var scrollTop=Math.min(
+      (ct?ct.scrollTop:999),
+      window.scrollY||0,
+      document.documentElement.scrollTop||0,
+      document.body.scrollTop||0
+    );
+    if(scrollTop<=4){startY=e.touches[0].clientY;pulling=true;}
     else{pulling=false;}
   },{passive:true});
   document.addEventListener('touchmove',function(e){
