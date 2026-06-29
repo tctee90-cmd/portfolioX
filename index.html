@@ -1968,29 +1968,42 @@ async function fetchLivePrices(forceRefresh) {
     const ccy = TICKER_CCY[name];
     try {
       const ts2 = Date.now();
-      // Use Yahoo Finance v8 chart endpoint - more reliable through proxies
-      const url = 'https://query1.finance.yahoo.com/v8/finance/chart/' + ticker + '?interval=1d&range=5d&_=' + ts2;
-      const proxies = [
-        'https://corsproxy.io/?' + encodeURIComponent(url),
-        'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
-        'https://thingproxy.freeboard.io/fetch/' + url,
+      // Try multiple Yahoo endpoints through multiple proxies
+      const yUrls = [
+        'https://query1.finance.yahoo.com/v7/finance/quote?symbols='+ticker+'&_='+ts2,
+        'https://query2.finance.yahoo.com/v7/finance/quote?symbols='+ticker+'&_='+ts2,
+        'https://query1.finance.yahoo.com/v8/finance/chart/'+ticker+'?interval=1m&range=1d&_='+ts2,
+        'https://query2.finance.yahoo.com/v8/finance/chart/'+ticker+'?interval=1m&range=1d&_='+ts2,
+      ];
+      const yProxies = [
+        function(u){return 'https://corsproxy.io/?'+encodeURIComponent(u)+'&ts='+ts2;},
+        function(u){return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u)+'&ts='+ts2;},
+        function(u){return 'https://thingproxy.freeboard.io/fetch/'+u;},
       ];
       let price = null;
       let lastErr = '';
-      for (const p of proxies) {
-        try {
-          const r = await fetch(p, {signal: AbortSignal.timeout(8000), cache:'no-store'});
-          if (!r.ok){lastErr='HTTP'+r.status;continue;}
-          const txt = await r.text();
-          const d = JSON.parse(txt);
-          const meta = d.chart && d.chart.result && d.chart.result[0] && d.chart.result[0].meta;
-          if (meta && meta.regularMarketPrice > 0) {
-            price = meta.regularMarketPrice;
-            debugLog.push(name+'='+price+'✓');
-            break;
-          }
-          lastErr='no price in response';
-        } catch(e2){lastErr=String(e2).slice(0,40);continue;}
+      outer: for (const yUrl of yUrls) {
+        for (const proxyFn of yProxies) {
+          try {
+            const r = await fetch(proxyFn(yUrl), {signal: AbortSignal.timeout(6000), cache:'no-store',
+              headers:{'Cache-Control':'no-cache, no-store','Pragma':'no-cache'}});
+            if (!r.ok) continue;
+            const d = JSON.parse(await r.text());
+            // v7 response
+            const q = d.quoteResponse&&d.quoteResponse.result&&d.quoteResponse.result[0];
+            if (q&&q.regularMarketPrice>0){price=q.regularMarketPrice;debugLog.push(name+'='+price+'v7');break outer;}
+            // v8 chart response — use last close from quotes array for freshest price
+            const res = d.chart&&d.chart.result&&d.chart.result[0];
+            if (res) {
+              // Try regularMarketPrice from meta first
+              if (res.meta&&res.meta.regularMarketPrice>0){price=res.meta.regularMarketPrice;debugLog.push(name+'='+price+'v8m');break outer;}
+              // Try last close from quotes
+              const closes = res.indicators&&res.indicators.quote&&res.indicators.quote[0]&&res.indicators.quote[0].close||[];
+              const lastClose = closes.filter(function(c){return c!=null;}).pop();
+              if (lastClose>0){price=lastClose;debugLog.push(name+'='+price+'v8c');break outer;}
+            }
+          } catch(e2){lastErr=String(e2).slice(0,30);continue;}
+        }
       }
       if (!price || price <= 0) throw new Error(lastErr||'no price');
       // Update price in ALL portfolios that have this stock
