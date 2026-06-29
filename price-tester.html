@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0a0c11;font-family:monospace;color:#fff;padding:16px;font-size:12px;}
+h1{font-size:14px;color:#ffd700;margin-bottom:16px;}
+.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.ticker{color:rgba(255,255,255,0.5);width:80px;}
+.price{color:#00e676;font-weight:700;}
+.source{font-size:10px;color:rgba(255,255,255,0.3);}
+.err{color:#ff4d6a;}
+button{background:#ffd700;color:#000;border:none;padding:10px 20px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;margin-bottom:16px;width:100%;}
+</style></head>
+<body>
+<h1>Live Price Tester</h1>
+<button onclick="fetchAll()">Fetch All Prices Now</button>
+<div id="out"></div>
+<script>
+const TICKERS = {
+  'Harta':'5168.KL','Skyechip':'5357.KL',
+  'CapLand':'A17U.SI','MapleTree':'ME8U.SI','TopGlove SG':'BVA.SI',
+  'NVDA':'NVDA','TSLA':'TSLA','MSFT':'MSFT','NOW':'NOW','CRM':'CRM','ORCL':'ORCL',
+  'PLTR':'PLTR','DRAM ETF':'DRAM','NASA ETF':'ARKX',
+};
+
+async function fetchOne(ticker) {
+  const ts = Date.now();
+  const urls = [
+    ['corsproxy+v7','https://corsproxy.io/?'+encodeURIComponent('https://query1.finance.yahoo.com/v7/finance/quote?symbols='+ticker+'&_='+ts)],
+    ['allorigins+v7','https://api.allorigins.win/raw?url='+encodeURIComponent('https://query1.finance.yahoo.com/v7/finance/quote?symbols='+ticker+'&_='+ts)],
+    ['thingproxy+v7','https://thingproxy.freeboard.io/fetch/https://query1.finance.yahoo.com/v7/finance/quote?symbols='+ticker+'&_='+ts],
+    ['corsproxy+v8','https://corsproxy.io/?'+encodeURIComponent('https://query2.finance.yahoo.com/v8/finance/chart/'+ticker+'?interval=1m&range=1d&_='+ts)],
+    ['allorigins+v8','https://api.allorigins.win/raw?url='+encodeURIComponent('https://query2.finance.yahoo.com/v8/finance/chart/'+ticker+'?interval=1m&range=1d&_='+ts)],
+  ];
+  for (const [src, url] of urls) {
+    try {
+      const r = await fetch(url, {cache:'no-store', signal:AbortSignal.timeout(6000)});
+      if (!r.ok) continue;
+      const d = JSON.parse(await r.text());
+      const q = d.quoteResponse?.result?.[0];
+      if (q?.regularMarketPrice > 0) return {price: q.regularMarketPrice, src};
+      const meta = d.chart?.result?.[0]?.meta;
+      if (meta?.regularMarketPrice > 0) return {price: meta.regularMarketPrice, src};
+    } catch(e) {}
+  }
+  return {price: null, src: 'all failed'};
+}
+
+async function fetchAll() {
+  const out = document.getElementById('out');
+  out.innerHTML = '<div style="color:#ffd700;padding:8px 0">Fetching...</div>';
+  const results = await Promise.all(
+    Object.entries(TICKERS).map(async ([name, ticker]) => {
+      const {price, src} = await fetchOne(ticker);
+      return {name, ticker, price, src};
+    })
+  );
+  out.innerHTML = results.map(({name, ticker, price, src}) =>
+    '<div class="row"><span class="ticker">'+name+'</span>'
+    +'<span class="'+(price?'price':'err')+'">'+(price||'FAILED')+'</span>'
+    +'<span class="source">'+src+'</span></div>'
+  ).join('');
+}
+</script>
+</body></html>
