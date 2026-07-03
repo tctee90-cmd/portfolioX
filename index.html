@@ -1968,44 +1968,45 @@ async function fetchLivePrices(forceRefresh) {
     const ccy = TICKER_CCY[name];
     try {
       const ts2 = Date.now();
-      // Try multiple Yahoo endpoints through multiple proxies
-      const yUrls = [
-        'https://query1.finance.yahoo.com/v7/finance/quote?symbols='+ticker+'&_='+ts2,
-        'https://query2.finance.yahoo.com/v7/finance/quote?symbols='+ticker+'&_='+ts2,
-        'https://query1.finance.yahoo.com/v8/finance/chart/'+ticker+'?interval=1m&range=1d&_='+ts2,
-        'https://query2.finance.yahoo.com/v8/finance/chart/'+ticker+'?interval=1m&range=1d&_='+ts2,
-      ];
-      const yProxies = [
-        function(u){return 'https://corsproxy.io/?'+encodeURIComponent(u)+'&ts='+ts2;},
-        function(u){return 'https://api.allorigins.win/raw?url='+encodeURIComponent(u)+'&ts='+ts2;},
-        function(u){return 'https://thingproxy.freeboard.io/fetch/'+u;},
-      ];
       let price = null;
       let lastErr = '';
-      outer: for (const yUrl of yUrls) {
-        for (const proxyFn of yProxies) {
-          try {
-            const r = await fetch(proxyFn(yUrl), {signal: AbortSignal.timeout(6000), cache:'no-store',
-              headers:{'Cache-Control':'no-cache, no-store','Pragma':'no-cache'}});
-            if (!r.ok) continue;
-            const d = JSON.parse(await r.text());
-            // v7 response
-            const q = d.quoteResponse&&d.quoteResponse.result&&d.quoteResponse.result[0];
-            if (q&&q.regularMarketPrice>0){price=q.regularMarketPrice;debugLog.push(name+'='+price+'v7');break outer;}
-            // v8 chart response — use last close from quotes array for freshest price
-            const res = d.chart&&d.chart.result&&d.chart.result[0];
-            if (res) {
-              // Try regularMarketPrice from meta first
-              if (res.meta&&res.meta.regularMarketPrice>0){price=res.meta.regularMarketPrice;debugLog.push(name+'='+price+'v8m');break outer;}
-              // Try last close from quotes
-              const closes = res.indicators&&res.indicators.quote&&res.indicators.quote[0]&&res.indicators.quote[0].close||[];
-              const lastClose = closes.filter(function(c){return c!=null;}).pop();
-              if (lastClose>0){price=lastClose;debugLog.push(name+'='+price+'v8c');break outer;}
-            }
-          } catch(e2){lastErr=String(e2).slice(0,30);continue;}
-        }
+
+      // Build Yahoo Finance URL — works for all markets (USD, SGD .SI, MYR .KL)
+      const yUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/'+ticker+'?interval=1m&range=1d&_='+ts2;
+      const yUrl2 = 'https://query2.finance.yahoo.com/v7/finance/quote?symbols='+ticker+'&_='+ts2;
+
+      // Use multiple proxies — first one that returns a valid price wins
+      const proxyList = [
+        'https://corsproxy.io/?'+encodeURIComponent(yUrl),
+        'https://api.allorigins.win/raw?url='+encodeURIComponent(yUrl2),
+        'https://corsproxy.io/?'+encodeURIComponent(yUrl2),
+        'https://api.allorigins.win/raw?url='+encodeURIComponent(yUrl),
+        'https://thingproxy.freeboard.io/fetch/'+yUrl2,
+      ];
+
+      for (const proxyUrl of proxyList) {
+        try {
+          const r = await fetch(proxyUrl, {
+            cache: 'no-store',
+            signal: AbortSignal.timeout(7000),
+          });
+          if (!r.ok) continue;
+          const txt = await r.text();
+          const d = JSON.parse(txt);
+          // v7 quote response
+          const q = d.quoteResponse&&d.quoteResponse.result&&d.quoteResponse.result[0];
+          if (q&&q.regularMarketPrice>0){price=q.regularMarketPrice;debugLog.push(name+'='+price);break;}
+          // v8 chart response
+          const meta = d.chart&&d.chart.result&&d.chart.result[0]&&d.chart.result[0].meta;
+          if (meta&&meta.regularMarketPrice>0){price=meta.regularMarketPrice;debugLog.push(name+'='+price);break;}
+          // v8 chart — last minute close
+          const closes = d.chart&&d.chart.result&&d.chart.result[0]&&d.chart.result[0].indicators&&d.chart.result[0].indicators.quote&&d.chart.result[0].indicators.quote[0]&&d.chart.result[0].indicators.quote[0].close||[];
+          const lastClose = closes.filter(function(c){return c!=null;}).pop();
+          if (lastClose>0){price=lastClose;debugLog.push(name+'='+price+'c');break;}
+        } catch(e2){continue;}
       }
-      if (!price || price <= 0) throw new Error(lastErr||'no price');
+
+      if (!price || price <= 0) throw new Error('no price for '+name);
       // Update price in ALL portfolios that have this stock
       S.portfolios.forEach(function(p) {
         const holdings = getHoldings(p, true);
