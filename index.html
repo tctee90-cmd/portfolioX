@@ -1159,7 +1159,8 @@ function renderSettingsPx(){
           +'</div>';
       }).join('')
       +'<div style="font-size:9px;color:rgba(255,255,255,0.15);margin-top:5px;font-style:italic">Pull down on dashboard to refresh rates</div>'
-      +'</div>';
+      +'<div style="font-size:9px;color:rgba(255,255,255,0.15);margin-top:5px;font-style:italic">Pull down on dashboard to refresh rates</div>'
+      +renderUnknownTickers(allStocks)
   } else if(fxList){fxList.innerHTML='';}
   window._settingsStocks=allStocks;window._settingsFxCcys=usedFxCcys;
 }
@@ -1933,15 +1934,56 @@ function goPortfolioCcy(id,ccy){
 const LIVE_TICKERS = {
   // USD stocks
   'AMD':'AMD','CRM':'CRM','DRAM ETF':'DRAM','IBIT':'IBIT',
-  'MSFT':'MSFT','NASA ETF':'ARKX','NOW':'NOW','NVDA':'NVDA',
+  'MSFT':'MSFT','Micron':'MU','NASA ETF':'ARKX','NOW':'NOW','NVDA':'NVDA',
   'ORCL':'ORCL','Ondas':'ONDS','Opendoor':'OPEN','PLTR':'PLTR','TSLA':'TSLA',
   // SGD stocks (.SI = Singapore Exchange)
   'CapLand Ascendas':'A17U.SI','MapleTree':'ME8U.SI','TopGlove SG':'BVA.SI',
   // MYR stocks (.KL = Bursa Malaysia)
   'Harta':'5168.KL','Skyechip':'5357.KL','Alpha':'0255.KL'
 };
+
+// Auto-detect ticker for any stock not in LIVE_TICKERS
+function autoTicker(stockName, ccy) {
+  if (LIVE_TICKERS[stockName]) return LIVE_TICKERS[stockName];
+  // Check user-defined ticker map saved in S
+  if (S && S.tickerMap && S.tickerMap[stockName]) return S.tickerMap[stockName];
+  // For MYR stocks — assume name IS the Bursa code e.g. 5168
+  if (ccy === 'MYR') return stockName + '.KL';
+  // For SGD stocks — assume name IS the SGX code
+  if (ccy === 'SGD') return stockName + '.SI';
+  // For USD stocks — assume name IS the ticker e.g. AAPL
+  return stockName.toUpperCase().split(' ')[0];
+}
+
+// Save a custom ticker mapping for a stock
+function setCustomTicker(stockName, ticker) {
+  if (!S.tickerMap) S.tickerMap = {};
+  S.tickerMap[stockName] = ticker.trim().toUpperCase();
+  save();
+}
+
+function renderUnknownTickers(allStocks) {
+  var unknowns = allStocks.filter(function(s){
+    return !LIVE_TICKERS[s.stock] && !(S.tickerMap && S.tickerMap[s.stock]);
+  });
+  if (!unknowns.length) return '';
+  var html2 = '<div style="margin-top:14px;border-top:1px solid rgba(255,255,255,0.06);padding-top:12px">'
+    + '<div style="font-size:8px;font-weight:700;letter-spacing:2px;color:rgba(255,170,0,0.6);text-transform:uppercase;margin-bottom:8px">⚠ New stocks — enter ticker to get live price</div>';
+  unknowns.forEach(function(s) {
+    var id = 'tk_' + s.stock.replace(/[^a-z0-9]/gi,'_');
+    html2 += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+      + '<span style="font-size:12px;color:rgba(255,255,255,0.6);flex:1">' + s.stock + '</span>'
+      + '<input id="' + id + '" placeholder="e.g. AAPL" style="flex:1.5;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:5px 8px;color:#fff;font-size:12px"/>'
+      + '<button onclick="setCustomTicker(\'' + s.stock + '\',document.getElementById(\'' + id + '\').value);renderSettingsPx();" style="background:rgba(0,200,255,0.1);border:1px solid rgba(0,200,255,0.3);color:rgba(0,200,255,0.8);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer">Save</button>'
+      + '</div>';
+  });
+  html2 += '</div>';
+  return html2;
+}
+
+
 const TICKER_CCY = {
-  'AMD':'USD','CRM':'USD','DRAM ETF':'USD','IBIT':'USD','MSFT':'USD',
+  'AMD':'USD','CRM':'USD','DRAM ETF':'USD','IBIT':'USD','MSFT':'USD','Micron':'USD',
   'NASA ETF':'USD','NOW':'USD','NVDA':'USD','ORCL':'USD','Ondas':'USD',
   'Opendoor':'USD','PLTR':'USD','TSLA':'USD',
   'CapLand Ascendas':'SGD','MapleTree':'SGD','TopGlove SG':'SGD',
@@ -1964,7 +2006,7 @@ async function fetchLivePrices(forceRefresh) {
   const debugLog = [];
 
   await Promise.all(stocks.map(async function(name) {
-    const ticker = LIVE_TICKERS[name];
+    const ticker = LIVE_TICKERS[name] || autoTicker(name, TICKER_CCY[name]||ccy);
     const ccy = TICKER_CCY[name];
     try {
       const ts2 = Date.now();
