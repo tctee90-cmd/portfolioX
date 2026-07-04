@@ -1934,7 +1934,7 @@ function goPortfolioCcy(id,ccy){
 const LIVE_TICKERS = {
   // USD stocks
   'AMD':'AMD','CRM':'CRM','DRAM ETF':'DRAM','IBIT':'IBIT',
-  'MSFT':'MSFT','Micron':'MU','NASA ETF':'ARKX','NOW':'NOW','NVDA':'NVDA',
+  'MSFT':'MSFT','Micron':'MU','Micron Technology':'MU','MU':'MU','NASA ETF':'ARKX','NOW':'NOW','NVDA':'NVDA',
   'ORCL':'ORCL','Ondas':'ONDS','Opendoor':'OPEN','PLTR':'PLTR','TSLA':'TSLA',
   // SGD stocks (.SI = Singapore Exchange)
   'CapLand Ascendas':'A17U.SI','MapleTree':'ME8U.SI','TopGlove SG':'BVA.SI',
@@ -1945,14 +1945,28 @@ const LIVE_TICKERS = {
 // Auto-detect ticker for any stock not in LIVE_TICKERS
 function autoTicker(stockName, ccy) {
   if (LIVE_TICKERS[stockName]) return LIVE_TICKERS[stockName];
+  // Case-insensitive lookup
+  var lower = stockName.toLowerCase();
+  var keys = Object.keys(LIVE_TICKERS);
+  for (var i=0;i<keys.length;i++){
+    if (keys[i].toLowerCase()===lower) return LIVE_TICKERS[keys[i]];
+  }
   // Check user-defined ticker map saved in S
   if (S && S.tickerMap && S.tickerMap[stockName]) return S.tickerMap[stockName];
+  if (S && S.tickerMap) {
+    var tmKeys = Object.keys(S.tickerMap);
+    for (var j=0;j<tmKeys.length;j++){
+      if (tmKeys[j].toLowerCase()===lower) return S.tickerMap[tmKeys[j]];
+    }
+  }
   // For MYR stocks — assume name IS the Bursa code e.g. 5168
   if (ccy === 'MYR') return stockName + '.KL';
   // For SGD stocks — assume name IS the SGX code
   if (ccy === 'SGD') return stockName + '.SI';
-  // For USD stocks — assume name IS the ticker e.g. AAPL
-  return stockName.toUpperCase().split(' ')[0];
+  // For USD stocks — use first word uppercased as ticker
+  var firstWord = stockName.toUpperCase().split(' ')[0];
+  if (/^[A-Z]{1,5}$/.test(firstWord)) return firstWord;
+  return null;
 }
 
 // Save a custom ticker mapping for a stock
@@ -1983,7 +1997,7 @@ function renderUnknownTickers(allStocks) {
 
 
 const TICKER_CCY = {
-  'AMD':'USD','CRM':'USD','DRAM ETF':'USD','IBIT':'USD','MSFT':'USD','Micron':'USD',
+  'AMD':'USD','CRM':'USD','DRAM ETF':'USD','IBIT':'USD','MSFT':'USD','Micron':'USD','Micron Technology':'USD','MU':'USD',
   'NASA ETF':'USD','NOW':'USD','NVDA':'USD','ORCL':'USD','Ondas':'USD',
   'Opendoor':'USD','PLTR':'USD','TSLA':'USD',
   'CapLand Ascendas':'SGD','MapleTree':'SGD','TopGlove SG':'SGD',
