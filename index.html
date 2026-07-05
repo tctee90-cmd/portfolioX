@@ -6146,7 +6146,16 @@ $('restore-input').addEventListener('change',doRestore);
 render();
 // Auto-fetch prices on open
 window._allHistCache=null;window._pfHistCache={};window._stockHistCache={};window._histFxCache={};
-// No auto-fetch on open — use saved values instantly, pull to refresh to update
+// Auto-fetch on open — silent background update, single render when done
+setTimeout(function(){
+  Promise.all([fetchFX(), fetchLivePrices(true)]).then(function(){
+    save();
+    var ct=document.getElementById('ct');
+    var scrollPos=ct?ct.scrollTop:0;
+    render();
+    if(ct)setTimeout(function(){ct.scrollTop=scrollPos;},50);
+  });
+},800);
 showWelcomeIfFirstLoad();
 
 // ── Swipe left/right to switch tabs ──────────────────────────────
